@@ -11,7 +11,8 @@ dependencies = [
     "adafruit-circuitpython-dht (>=4.0.9,<5.0.0)",
     "pydantic (>=2.12.0,<3.0.0)",
     "pydantic-settings (>=2.11.0,<3.0.0)",
-    "rpi-gpio (>=0.7.1,<0.8.0)"
+    "rpi-gpio (>=0.7.1,<0.8.0)",
+    "w1thermsensor (>=2.3.0,<3.0.0)"
 ]
 
 [tool.poetry]

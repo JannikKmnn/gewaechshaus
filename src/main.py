@@ -2,12 +2,13 @@ import board
 import adafruit_dht
 import time
 
+from datetime import datetime
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
+from w1thermsensor import W1ThermSensor
+
 GPIO_PIN_HUMIDITY_TEMPERATURE_SENSOR = board.D4
-GPIO_PIN_TEMPERATURE_SENSOR_INSIDE = board.D17
-GPIO_PIN_TEMPERATURE_SENSOR_OUTSIDE = board.D22
 
 
 class Settings(BaseSettings):
@@ -38,10 +39,23 @@ def measure_humidity_temperature(device_object: adafruit_dht.DHT11):
 
     return humidity, temperature_c
 
+def measure_temperature(sensor_object: W1ThermSensor):
+    
+    try:
+
+        temperature_c = sensor_object.get_temperature()
+
+    except Exception as error:
+
+        print(f"Measuring outside temperature ran into unknown error: {error}")
+        temperature_c = None
+
+    return temperature_c
 
 def main():
 
     humidityTemperatureDevice = adafruit_dht.DHT11(GPIO_PIN_HUMIDITY_TEMPERATURE_SENSOR, use_pulseio=False)
+    temperatureOutsideSensor = W1ThermSensor()
 
     while True:
 
@@ -49,8 +63,17 @@ def main():
             device_object=humidityTemperatureDevice
         )
 
+        temperature_outside = measure_temperature(
+            sensor_object=temperatureOutsideSensor
+        )
+
         print(
-            f"Humidity: {humidity}%, Temperature (Middle): {temperature_middle}°C"
+            f"""
+            Measurements {datetime.now()}:
+            - Humidity: {humidity}%, 
+            - Temperature (Middle): {temperature_middle}°C
+            - Temperature (Outside): {temperature_outside}°C
+            """
         )
 
         time.sleep(settings.measure_interval_seconds)
