@@ -1,6 +1,7 @@
-import board
 import adafruit_dht
-import time
+import asyncio
+import board
+import logging
 
 from datetime import datetime
 from pydantic import Field
@@ -16,9 +17,16 @@ class Settings(BaseSettings):
     measure_interval_seconds: int = Field(default=20)
     display_switch_interval: int = Field(default=10)
 
+    log_lvl: str = Field(default="INFO")
+
+
 settings = Settings()
 
-def measure_humidity_temperature(device_object: adafruit_dht.DHT11):
+logging.basicConfig(level=settings.log_lvl)
+logger = logging.getLogger(__name__)
+
+
+async def measure_humidity_temperature(device_object: adafruit_dht.DHT11):
 
     try:
 
@@ -27,58 +35,62 @@ def measure_humidity_temperature(device_object: adafruit_dht.DHT11):
 
     except RuntimeError as error:
 
-        print(f"Measuring humidity and temperature ran into runtime error: {error}")
+        logger.warning(
+            f"Measuring humidity and temperature ran into runtime error: {error}"
+        )
         temperature_c = None
         humidity = None
 
     except Exception as error:
 
-        print(f"Measuring humidity and temperature ran into unknown error: {error}")
+        logger.warning(
+            f"Measuring humidity and temperature ran into unknown error: {error}"
+        )
         temperature_c = None
         humidity = None
 
     return humidity, temperature_c
 
-def measure_temperature(sensor_object: W1ThermSensor):
-    
+
+async def measure_temperature(sensor_object: W1ThermSensor):
+
     try:
 
         temperature_c = sensor_object.get_temperature()
 
     except Exception as error:
 
-        print(f"Measuring outside temperature ran into unknown error: {error}")
+        logger.warning(f"Measuring outside temperature ran into unknown error: {error}")
         temperature_c = None
 
     return temperature_c
 
-def main():
 
-    humidityTemperatureDevice = adafruit_dht.DHT11(GPIO_PIN_HUMIDITY_TEMPERATURE_SENSOR, use_pulseio=False)
+async def main():
+
+    humidityTemperatureDevice = adafruit_dht.DHT11(
+        GPIO_PIN_HUMIDITY_TEMPERATURE_SENSOR, use_pulseio=False
+    )
     temperatureOutsideSensor = W1ThermSensor()
 
     while True:
 
-        humidity, temperature_middle = measure_humidity_temperature(
-            device_object=humidityTemperatureDevice
+        results = await asyncio.gather(
+            measure_humidity_temperature(device_object=humidityTemperatureDevice),
+            measure_temperature(sensor_object=temperatureOutsideSensor),
         )
 
-        temperature_outside = measure_temperature(
-            sensor_object=temperatureOutsideSensor
-        )
-
-        print(
+        logger.info(
             f"""
             Measurements {datetime.now()}:
-            - Humidity: {humidity}%, 
-            - Temperature (Middle): {temperature_middle}°C
-            - Temperature (Outside): {temperature_outside}°C
+            - Humidity: {results[0][0]}%, 
+            - Temperature (Middle): {results[0][1]}°C
+            - Temperature (Outside): {results[1]}°C
             """
         )
 
-        time.sleep(settings.measure_interval_seconds)
+        await asyncio.sleep(settings.measure_interval_seconds)
 
-    
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
