@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  gewaechshaus:
+    build: .
+    container_name: gewaechshaus
+    restart: always
+    privileged: true
+    devices:
+      - "/dev/gpiomem:/dev/gpiomem"
+      - "/sys/bus/w1/devices:/sys/bus/w1/devices"
+    environment:
+      - MEASURE_INTERVAL_SECONDS=20
+      - DISPLAY_SWITCH_INTERVAL=20
+      - LOG_LVL=INFO
+    command: poetry run python src/main.py
