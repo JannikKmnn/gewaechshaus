@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     measure_interval_seconds: int = Field(default=20)
     display_switch_interval: int = Field(default=10)
 
+    temperature_outside_sensor_id: str = Field(default="000000b47976")
+    temperature_inside_sensor_id: str = Field(default="000000b998e3")
+
     log_lvl: str = Field(default="INFO")
 
 
@@ -52,7 +55,10 @@ async def measure_humidity_temperature(device_object: adafruit_dht.DHT11):
     return humidity, temperature_c
 
 
-async def measure_temperature(sensor_object: W1ThermSensor):
+async def measure_temperature(sensor_object: W1ThermSensor | None):
+
+    if not sensor_object:
+        return None
 
     try:
 
@@ -60,7 +66,7 @@ async def measure_temperature(sensor_object: W1ThermSensor):
 
     except Exception as error:
 
-        logger.warning(f"Measuring outside temperature ran into unknown error: {error}")
+        logger.warning(f"Measuring temperature ran into unknown error: {error}")
         temperature_c = None
 
     return temperature_c
@@ -71,13 +77,35 @@ async def main():
     humidityTemperatureDevice = adafruit_dht.DHT11(
         GPIO_PIN_HUMIDITY_TEMPERATURE_SENSOR, use_pulseio=False
     )
-    temperatureOutsideSensor = W1ThermSensor()
+
+    temperature_sensors = W1ThermSensor.get_available_sensors()
+
+    temperatureOutsideSensor = next(
+        (sens for sens in temperature_sensors
+        if sens.id == settings.temperature_outside_sensor_id), 
+        None
+    )
+    temperatureInsideSensor = next(
+        (sens for sens in temperature_sensors
+        if sens.id == settings.temperature_inside_sensor_id), 
+        None
+    )
+
+    logger.info(
+        f"""
+        Using Sensors:
+         - Humidity: {humidityTemperatureDevice}
+         - Temperature Outside: {temperatureOutsideSensor}
+         - Temperature Inside: {temperatureInsideSensor}
+        """
+    )
 
     while True:
 
         results = await asyncio.gather(
             measure_humidity_temperature(device_object=humidityTemperatureDevice),
             measure_temperature(sensor_object=temperatureOutsideSensor),
+            measure_temperature(sensor_object=temperatureInsideSensor),
         )
 
         logger.info(
@@ -86,6 +114,7 @@ async def main():
             - Humidity: {results[0][0]}%, 
             - Temperature (Middle): {results[0][1]}°C
             - Temperature (Outside): {results[1]}°C
+            - Temperature (Inside): {results[2]}°C
             """
         )
 

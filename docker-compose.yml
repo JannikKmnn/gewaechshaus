@@ -13,4 +13,6 @@ services:
       - MEASURE_INTERVAL_SECONDS=20
       - DISPLAY_SWITCH_INTERVAL=20
       - LOG_LVL=INFO
+      - TEMPERATURE_OUTSIDE_SENSOR_ID=000000b47976
+      - TEMPERATURE_INSIDE_SENSOR_ID=000000b998e3
     command: poetry run python src/main.py
