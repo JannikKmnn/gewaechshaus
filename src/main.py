@@ -81,14 +81,20 @@ async def main():
     temperature_sensors = W1ThermSensor.get_available_sensors()
 
     temperatureOutsideSensor = next(
-        (sens for sens in temperature_sensors
-        if sens.id == settings.temperature_outside_sensor_id), 
-        None
+        (
+            sens
+            for sens in temperature_sensors
+            if sens.id == settings.temperature_outside_sensor_id
+        ),
+        None,
     )
     temperatureInsideSensor = next(
-        (sens for sens in temperature_sensors
-        if sens.id == settings.temperature_inside_sensor_id), 
-        None
+        (
+            sens
+            for sens in temperature_sensors
+            if sens.id == settings.temperature_inside_sensor_id
+        ),
+        None,
     )
 
     logger.info(
