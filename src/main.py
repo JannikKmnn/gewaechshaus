@@ -7,6 +7,8 @@ from datetime import datetime
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
+from decorators import retry
+
 from RPLCD.i2c import CharLCD
 from w1thermsensor import W1ThermSensor
 
@@ -33,6 +35,7 @@ logging.basicConfig(level=settings.log_lvl)
 logger = logging.getLogger(__name__)
 
 
+@retry(times=3)
 async def measure_humidity_temperature(device_object: adafruit_dht.DHT11):
 
     try:
@@ -49,6 +52,7 @@ async def measure_humidity_temperature(device_object: adafruit_dht.DHT11):
     return humidity, temperature_c
 
 
+@retry(times=2)
 async def measure_temperature(sensor_object: W1ThermSensor | None):
 
     if not sensor_object:
