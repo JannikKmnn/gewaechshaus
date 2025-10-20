@@ -1,30 +1,28 @@
+import asyncio
+
 from exceptions import TooManyTries
+from typing import Callable
+from functools import wraps
 
 
-def retry(times):
+def retry(times, logger=None):
 
-    def func_wrapper(func):
-
+    def func_wrapper(func: Callable):
+        @wraps(func)
         async def wrapper(*args, **kwargs):
 
-            for _ in range(times):
+            for iteration in range(times):
+                if iteration > 0 and logger:
+                    logger.info(f"Retried function {func} {iteration} times.")
                 try:
-                    values = await func(*args, **kwargs)
+                    return await func(*args, **kwargs)
                 except Exception as e:
-                    pass
-
-                try:
-                    # return value iterable?
-                    if any([val is None for val in values]):
-                        pass
-                except TypeError:
-                    # return value not iterable
-                    if values is None:
-                        pass
-
-                return values
-
-            raise TooManyTries(f"Function {func} executed {times} times, never worked.")
+                    if iteration < times:
+                        await asyncio.sleep(0.1)
+                    else:
+                        if logger:
+                            logger.warning(f"Measuring via {func} failed due to: {e}")
+                        return None
 
         return wrapper
 

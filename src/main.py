@@ -40,19 +40,11 @@ logging.basicConfig(level=settings.log_lvl)
 logger = logging.getLogger(__name__)
 
 
-@retry(times=3)
+@retry(times=4, logger=logger)
 async def measure_humidity_temperature(device_object: adafruit_dht.DHT11):
 
-    try:
-
-        temperature_c = device_object.temperature
-        humidity = device_object.humidity
-
-    except Exception as error:
-
-        logger.warning(f"Measuring humidity and temperature ran into error: {error}")
-        temperature_c = None
-        humidity = None
+    temperature_c = device_object.temperature
+    humidity = device_object.humidity
 
     return humidity, temperature_c
 
@@ -63,14 +55,7 @@ async def measure_temperature(sensor_object: W1ThermSensor | None):
     if not sensor_object:
         return None
 
-    try:
-
-        temperature_c = sensor_object.get_temperature()
-
-    except Exception as error:
-
-        logger.warning(f"Measuring temperature ran into error: {error}")
-        temperature_c = None
+    temperature_c = sensor_object.get_temperature()
 
     return temperature_c
 
@@ -78,15 +63,8 @@ async def measure_temperature(sensor_object: W1ThermSensor | None):
 @retry(times=2)
 async def measure_soil_moisture(pin):
 
-    try:
-
-        value = GPIO.input(pin)
-        is_wet = value == GPIO.LOW
-
-    except Exception as error:
-
-        logger.warning(f"Measuring soil moisture ran into error: {error}")
-        is_wet = None
+    value = GPIO.input(pin)
+    is_wet = value == GPIO.LOW
 
     return is_wet
 
@@ -141,12 +119,16 @@ async def main():
     GPIO.setup(pin_front, GPIO.IN)
 
     ### Setup lcd display ###
-    lcdDisplay = CharLCD(
-        i2c_expander="PCF8574",
-        address=settings.lcd_i2c_address,
-        cols=settings.lcd_columns,
-        rows=settings.lcd_rows,
-    )
+    try:
+        lcdDisplay = CharLCD(
+            i2c_expander="PCF8574",
+            address=settings.lcd_i2c_address,
+            cols=settings.lcd_columns,
+            rows=settings.lcd_rows,
+        )
+    except Exception as err:
+        logger.warning("LCD display could not be detected due to: {err}")
+        lcdDisplay = None
 
     logger.info(
         f"""
@@ -187,13 +169,14 @@ async def main():
             - Temperature (Middle): {result_dict['temperature mid']}°C
             - Temperature (Outside): {result_dict['temperature out']}°C
             - Temperature (Inside): {result_dict['temperature in']}°C
-            - Soil is wet (back): {result_dict['soil moisture back']}
-            - Soil is wet (front): {result_dict['soil moisture front']}
+            - Soil is wet (back): {result_dict['soil moisture b']}
+            - Soil is wet (front): {result_dict['soil moisture f']}
             """
         )
 
         for sensor, value in result_dict.items():
-            display_measurements(lcd_object=lcdDisplay, line_1=sensor, line_2=value)
+            if lcdDisplay is not None:
+                display_measurements(lcd_object=lcdDisplay, line_1=sensor, line_2=value)
             await asyncio.sleep(
                 settings.measure_interval_seconds / len(result_dict.values())
             )
