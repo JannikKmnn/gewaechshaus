@@ -13,8 +13,14 @@ def retry(times):
                 except Exception as e:
                     pass
 
-                if any([val is None for val in values]):
-                    pass
+                try:
+                    # return value iterable?
+                    if any([val is None for val in values]):
+                        pass
+                except TypeError:
+                    # return value not iterable
+                    if values is None:
+                        pass
 
                 return values
 
