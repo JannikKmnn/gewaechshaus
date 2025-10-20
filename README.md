@@ -23,9 +23,20 @@ Currently, this MVP includes mainly displaying sensor values on the display to i
 ## 🧩 Hardware Setup
 
 - **Raspberry Pi** (any model with GPIO support, I use Pi 4 Model B) with ubuntu 24.04 lts
+- **micro SD card** for ubuntu & storage on Raspberry Pi (I use 32GB)
 - **1× DHT11** sensor
 - **2× DS18B20** temperature sensors, water resistant
 - **1× 10 kΩ pull-up resistor** between the DS18B20 data line and 3.3 V
-- All DS18B20 sensors share:
-  - the same GPIO data pin (default: GPIO17)
-  - the same 3.3 V and GND connections
+- **Jumper cables & breadboard** for sensor connections
+- **Case for raspberry & main case for display & cables** however you want, just DIY
+
+## </> OS & Software Setup
+
+### 1. Install ubuntu (desktop)
+
+Follow the instructions on https://ubuntu.com/tutorials/how-to-install-ubuntu-desktop-on-raspberry-pi-4#1-overview to install ubuntu (24.04) on the micro SD card. It's not necessary to use ubuntu desktop (shh also possible), but this way I can implement/control everything directly on the raspberry.
+
+### 2. Repository setup
+
+Connect to git and checkout this repository (check git documentations). Install Python 3.13 and create a virtual environment by navigating to this repo and run ```python -m venv .venv```. Activate the environment by calling ```source .venv/bin/activate```. If no poetry.lock file is present in the repo, run ````poetry lock``` and then ```poetry install``` to install every dependency needed for this project directly in the virtual environment.
+
