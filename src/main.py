@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     soil_moisture_sensor_channel_back: int = Field(default=23)
     soil_moisture_sensor_channel_front: int = Field(default=24)
 
-    lcd_i2c_address: str = Field(default="0x27")  # try 0x3F if not works
+    lcd_i2c_address: int = Field(default=0x27)  # try 0x3F if not works
     lcd_columns: int = Field(default=16)
     lcd_rows: int = Field(default=2)
 
@@ -80,7 +80,7 @@ def display_measurements(lcd_object: CharLCD | None, line_1: str, line_2: str):
     lcd_object.write_string(line_1[: settings.lcd_columns])
     if line_2:
         lcd_object.cursor_pos = (1, 0)
-        lcd_object.write_string(line_2[: settings.lcd_columns])
+        lcd_object.write_string(str(line_2))
 
 
 async def main():
@@ -123,11 +123,13 @@ async def main():
         lcdDisplay = CharLCD(
             i2c_expander="PCF8574",
             address=settings.lcd_i2c_address,
+            port=1,
             cols=settings.lcd_columns,
             rows=settings.lcd_rows,
+            charmap="A00",
         )
     except Exception as err:
-        logger.warning("LCD display could not be detected due to: {err}")
+        logger.warning(f"LCD display could not be detected due to: {err}")
         lcdDisplay = None
 
     logger.info(
