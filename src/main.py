@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     soil_moisture_sensor_channel_back: int = Field(default=23)
     soil_moisture_sensor_channel_front: int = Field(default=24)
 
-    lcd_i2c_address: str = Field(default=str(0x27))  # try 0x3F if not works
+    lcd_i2c_address: int = Field(default=0x27)  # try 0x3F if not works
     lcd_columns: int = Field(default=16)
     lcd_rows: int = Field(default=2)
 
@@ -159,13 +159,16 @@ async def main():
             measure_soil_moisture(pin=pin_front),
         )
 
+        soil_moisture_b = "wet" if results[3] else "dry"
+        soil_moisture_f = "wet" if results[4] else "dry"
+
         result_dict = {
-            "humidity": results[0][0],
-            "temperature mid": results[0][1],
-            "temperature out": results[1],
-            "temperature in": results[2],
-            "soil moisture b": results[3],
-            "soil moisture f": results[4],
+            "humidity": f"{results[0][0]}%",
+            "temperature mid": f"{results[0][1]}°C",
+            "temperature out": f"{results[1]}°C",
+            "temperature in": f"{results[2]}°C",
+            "soil moisture b": soil_moisture_b,
+            "soil moisture f": soil_moisture_f,
         }
 
         logger.info(
