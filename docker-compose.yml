@@ -5,6 +5,11 @@ services:
     build: .
     container_name: gewaechshaus
     restart: always
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "src/main.py"]
+      interval: 300s
+      timeout: 5s
+      retries: 3
     privileged: true
     devices:
       - "/dev/gpiomem:/dev/gpiomem"
