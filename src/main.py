@@ -164,7 +164,7 @@ async def main():
 
         result_dict = {
             "humidity": f"{results[0][0]}%",
-            "temperature mid": f"{results[0][1]}°C",
+            "temperature up": f"{results[0][1]}°C",
             "temperature out": f"{results[1]}°C",
             "temperature in": f"{results[2]}°C",
             "soil moisture b": soil_moisture_b,
@@ -175,7 +175,7 @@ async def main():
             f"""
             Measurements {datetime.now()}:
             - Humidity: {result_dict['humidity']}%, 
-            - Temperature (Middle): {result_dict['temperature mid']}°C
+            - Temperature (Up): {result_dict['temperature mid']}°C
             - Temperature (Outside): {result_dict['temperature out']}°C
             - Temperature (Inside): {result_dict['temperature in']}°C
             - Soil is wet (back): {result_dict['soil moisture b']}
