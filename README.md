@@ -36,7 +36,28 @@ Currently, this MVP includes mainly displaying sensor values on the display to i
 
 Follow the instructions on https://ubuntu.com/tutorials/how-to-install-ubuntu-desktop-on-raspberry-pi-4#1-overview to install ubuntu (24.04) on the micro SD card. It's not necessary to use ubuntu desktop (shh also possible), but this way I can implement/control everything directly on the raspberry.
 
-### 2. Repository setup
+### 2. OS setup
 
-Connect to git and checkout this repository (check git documentations). Install Python 3.13 and create a virtual environment by navigating to this repo and run ```python -m venv .venv```. Activate the environment by calling ```source .venv/bin/activate```. If no poetry.lock file is present in the repo, run ````poetry lock``` and then ```poetry install``` to install every dependency needed for this project directly in the virtual environment.
+First, install python & i2c tools for the lcd display:
+
+```sudo apt update && sudo apt upgrade -y```
+```sudo apt install -y python3 python3-pip python3-venv git curl i2c-tools```
+
+Then, activate SPI, i2c and 1-wire for the temperature sensors:
+
+```echo "i2c-bcm2835" | sudo tee -a /etc/modules```
+```echo "i2c-dev" | sudo tee -a /etc/modules```
+```echo "w1-gpio" | sudo tee -a /etc/modules```
+```echo "w1-therm" | sudo tee -a /etc/modules```
+
+Activate in boot config:
+
+```echo "dtparam=i2c_arm=on" | sudo tee -a /boot/firmware/config.txt```
+```echo "dtoverlay=w1-gpio,gpiopin=17" | sudo tee -a /boot/firmware/config.txt```
+
+And reboot by calling ```sudo reboot```.
+
+### 3. Repository setup
+
+Connect to git and checkout this repository (check git documentations). Install Python 3.13 and create a virtual environment by navigating to this repo and run ```python -m venv .venv```. Activate the environment by calling ```source .venv/bin/activate``` (ubuntu). If no poetry.lock file is present in the repo, run ````poetry lock``` and then ```poetry install``` to install every dependency needed for this project directly in the virtual environment.
 
