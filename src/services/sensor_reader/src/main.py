@@ -31,6 +31,13 @@ class Settings(BaseSettings):
     lcd_columns: int = Field(default=16)
     lcd_rows: int = Field(default=2)
 
+    # MQTT settings
+
+    mqtt_broker: str = Field(...)
+    mqtt_port: str = Field(...)
+    mqtt_user: str = Field(...)
+    mqtt_password: str = Field(...)
+
     log_lvl: str = Field(default="INFO")
 
 
