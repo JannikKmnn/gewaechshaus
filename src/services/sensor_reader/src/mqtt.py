@@ -1,7 +1,28 @@
 import paho.mqtt.client as mqtt
 
-def setup_client():
-    pass
+from logging import Logger
 
-def publish_message():
+
+def setup_client(
+    mqtt_user: str,
+    mqtt_pw: str,
+    mqtt_host: str,
+    mqtt_port: int,
+    logger: Logger,
+    start_loop: bool = True,
+) -> mqtt.Client | None:
+
+    client = mqtt.Client()
+    client.username_pw_set(username=mqtt_user, password=mqtt_pw)
+    try:
+        client.connect(host=mqtt_host, port=mqtt_port)
+        if start_loop:
+            client.loop_start()
+        return client
+    except Exception as err:
+        logger.warning(f"Mqtt connection/loop start failed due to: {err}")
+        return None
+
+
+async def publish_message():
     pass

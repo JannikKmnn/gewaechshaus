@@ -8,6 +8,7 @@ from pydantic import Field
 from pydantic_settings import BaseSettings
 
 from decorators import retry
+from mqtt import setup_client
 
 from RPLCD.i2c import CharLCD
 from w1thermsensor import W1ThermSensor
@@ -34,7 +35,7 @@ class Settings(BaseSettings):
     # MQTT settings
 
     mqtt_broker: str = Field(...)
-    mqtt_port: str = Field(...)
+    mqtt_port: int = Field(...)
     mqtt_user: str = Field(...)
     mqtt_password: str = Field(...)
 
@@ -154,6 +155,17 @@ async def main():
         Using Display:
          - LCD Display: {lcdDisplay}
         """
+    )
+
+    ### Setup mqtt client ###
+
+    mqtt_client = setup_client(
+        mqtt_user=settings.mqtt_user,
+        mqtt_pw=settings.mqtt_password,
+        mqtt_host=settings.mqtt_broker,
+        mqtt_port=settings.mqtt_port,
+        logger=logger,
+        start_loop=True,
     )
 
     while True:
