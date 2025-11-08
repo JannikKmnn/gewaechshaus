@@ -28,4 +28,8 @@ def setup_client(
 
 
 async def publish_message(client: mqtt.Client, result_dict: dict):
-    pass
+
+    result_dict["timestamp"] = datetime.now(tz=timezone.utc).replace(second=0)
+
+    payload = json.dumps(result_dict)
+    client.publish("greenhouse/sensors", payload=payload, qos=1)
