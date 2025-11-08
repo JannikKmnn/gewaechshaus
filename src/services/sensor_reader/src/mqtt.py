@@ -18,6 +18,7 @@ def setup_client(
     client = mqtt.Client()
     client.username_pw_set(username=mqtt_user, password=mqtt_pw)
     try:
+        client.tls_set()
         client.connect(host=mqtt_host, port=mqtt_port)
         if start_loop:
             client.loop_start()
