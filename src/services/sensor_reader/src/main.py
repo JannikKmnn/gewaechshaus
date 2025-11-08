@@ -8,7 +8,8 @@ from pydantic import Field
 from pydantic_settings import BaseSettings
 
 from decorators import retry
-from mqtt import setup_client
+from display import display_task
+from mqtt import setup_client, publish_message
 
 from RPLCD.i2c import CharLCD
 from w1thermsensor import W1ThermSensor
@@ -202,12 +203,12 @@ async def main():
             """
         )
 
-        for sensor, value in result_dict.items():
-            if lcdDisplay is not None:
-                display_measurements(lcd_object=lcdDisplay, line_1=sensor, line_2=value)
-            await asyncio.sleep(
-                settings.measure_interval_seconds / len(result_dict.values())
-            )
+        _ = await asyncio.gather(
+            display_task(lcd_object=lcdDisplay, result_dict=result_dict),
+            publish_message(),
+        )
+
+        await asyncio.sleep(delay=settings.measure_interval_seconds)
 
 
 if __name__ == "__main__":

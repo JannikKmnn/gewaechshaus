@@ -1,5 +1,8 @@
 import paho.mqtt.client as mqtt
 
+import json
+
+from datetime import datetime, timezone
 from logging import Logger
 
 
@@ -24,5 +27,5 @@ def setup_client(
         return None
 
 
-async def publish_message():
+async def publish_message(client: mqtt.Client, result_dict: dict):
     pass
