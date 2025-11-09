@@ -11,6 +11,8 @@ from decorators import retry
 from display import display_task
 from mqtt import setup_client, publish_message
 
+from models.enums import MQTTProperties
+
 from RPLCD.i2c import CharLCD
 from w1thermsensor import W1ThermSensor
 
@@ -160,11 +162,15 @@ async def main():
 
     ### Setup mqtt client ###
 
+    mqtt_settings = MQTTProperties(
+        broker=settings.mqtt_broker,
+        port=settings.mqtt_port,
+        user=settings.mqtt_user,
+        password=settings.mqtt_password,
+    )
+
     mqtt_client = setup_client(
-        mqtt_user=settings.mqtt_user,
-        mqtt_pw=settings.mqtt_password,
-        mqtt_host=settings.mqtt_broker,
-        mqtt_port=settings.mqtt_port,
+        mqtt_settings=mqtt_settings,
         logger=logger,
         start_loop=True,
     )
@@ -205,7 +211,7 @@ async def main():
 
         _ = await asyncio.gather(
             display_task(lcd_object=lcdDisplay, result_dict=result_dict),
-            publish_message(),
+            publish_message(client=mqtt_client, result_dict=result_dict),
         )
 
         await asyncio.sleep(delay=settings.measure_interval_seconds)
