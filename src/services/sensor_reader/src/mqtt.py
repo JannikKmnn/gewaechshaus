@@ -1,5 +1,4 @@
 import paho.mqtt.client as mqtt
-
 import json
 
 from datetime import datetime, timezone
@@ -9,16 +8,19 @@ from models.enums import MQTTProperties
 
 
 def setup_client(
-    mqtt_settings: MQTTProperties,
+    broker: str,
+    port: int,
+    user: str,
+    password: str,
     logger: Logger,
     start_loop: bool = True,
 ) -> mqtt.Client | None:
 
     client = mqtt.Client()
-    client.username_pw_set(username=mqtt_settings.user, password=mqtt_settings.password)
+    client.username_pw_set(username=user, password=password)
     try:
         client.tls_set()
-        client.connect(host=mqtt_settings.broker, port=mqtt_settings.port)
+        client.connect(host=broker, port=port)
         if start_loop:
             client.loop_start()
         return client
@@ -29,7 +31,11 @@ def setup_client(
 
 async def publish_message(client: mqtt.Client, result_dict: dict):
 
-    result_dict["timestamp"] = datetime.now(tz=timezone.utc).replace(second=0)
+    result_dict["timestamp"] = str(datetime.now(tz=timezone.utc).replace(second=0))
 
     payload = json.dumps(result_dict)
+
+    if client is None:
+        return
+
     client.publish("greenhouse/sensors", payload=payload, qos=1)

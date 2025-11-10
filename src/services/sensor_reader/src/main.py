@@ -16,7 +16,7 @@ from models.enums import MQTTProperties
 from RPLCD.i2c import CharLCD
 from w1thermsensor import W1ThermSensor
 
-import RPi.GPIO as GPIO # type: ignore
+import RPi.GPIO as GPIO  # type: ignore
 
 GPIO_PIN_HUMIDITY_TEMPERATURE_SENSOR = board.D4
 
@@ -37,10 +37,10 @@ class Settings(BaseSettings):
 
     # MQTT settings
 
-    mqtt_broker: str = Field(...)
-    mqtt_port: int = Field(...)
-    mqtt_user: str = Field(...)
-    mqtt_password: str = Field(...)
+    mqtt_broker: str = Field(default="test")
+    mqtt_port: int = Field(default="1111")
+    mqtt_user: str = Field(default="greenhouse")
+    mqtt_password: str = Field("123456")
 
     log_lvl: str = Field(default="INFO")
 
@@ -162,15 +162,11 @@ async def main():
 
     ### Setup mqtt client ###
 
-    mqtt_settings = MQTTProperties(
+    mqtt_client = setup_client(
         broker=settings.mqtt_broker,
         port=settings.mqtt_port,
         user=settings.mqtt_user,
         password=settings.mqtt_password,
-    )
-
-    mqtt_client = setup_client(
-        mqtt_settings=mqtt_settings,
         logger=logger,
         start_loop=True,
     )
@@ -200,17 +196,21 @@ async def main():
         logger.info(
             f"""
             Measurements {datetime.now()}:
-            - Humidity: {result_dict['humidity']}%, 
-            - Temperature (Up): {result_dict['temperature mid']}°C
-            - Temperature (Outside): {result_dict['temperature out']}°C
-            - Temperature (Inside): {result_dict['temperature in']}°C
+            - Humidity: {result_dict['humidity']}, 
+            - Temperature (Up): {result_dict['temperature up']}
+            - Temperature (Outside): {result_dict['temperature out']}
+            - Temperature (Inside): {result_dict['temperature in']}
             - Soil is wet (back): {result_dict['soil moisture b']}
             - Soil is wet (front): {result_dict['soil moisture f']}
             """
         )
 
         _ = await asyncio.gather(
-            display_task(lcd_object=lcdDisplay, result_dict=result_dict),
+            display_task(
+                lcd_object=lcdDisplay,
+                result_dict=result_dict,
+                measure_interval=settings.measure_interval_seconds,
+            ),
             publish_message(client=mqtt_client, result_dict=result_dict),
         )
 

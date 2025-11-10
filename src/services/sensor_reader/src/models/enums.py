@@ -1,7 +1,4 @@
-from enum import Enum
-
-
-class MQTTProperties(Enum):
+class MQTTProperties:
 
     broker: str
     port: int
