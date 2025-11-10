@@ -16,7 +16,7 @@ from models.enums import MQTTProperties
 from RPLCD.i2c import CharLCD
 from w1thermsensor import W1ThermSensor
 
-import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO # type: ignore
 
 GPIO_PIN_HUMIDITY_TEMPERATURE_SENSOR = board.D4
 
@@ -213,8 +213,6 @@ async def main():
             display_task(lcd_object=lcdDisplay, result_dict=result_dict),
             publish_message(client=mqtt_client, result_dict=result_dict),
         )
-
-        await asyncio.sleep(delay=settings.measure_interval_seconds)
 
 
 if __name__ == "__main__":
