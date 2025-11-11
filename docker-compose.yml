@@ -26,4 +26,4 @@ services:
       - SOIL_MOISTURE_SENSOR_CHANNEL_FRONT=24
       - LCD_COLUMNS=16
       - LCD_ROWS=2
-    command: poetry run python src/services/sensor_reader/main.py
+    command: poetry run python src/services/sensor_reader/src/main.py
