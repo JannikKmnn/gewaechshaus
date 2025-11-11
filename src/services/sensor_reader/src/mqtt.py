@@ -31,11 +31,7 @@ def setup_client(
 
 async def publish_message(client: mqtt.Client, result_dict: dict):
 
-    timestamp = datetime.now(tz=timezone.utc)
-    if timestamp.second > 30:
-        timestamp.replace(minute=timestamp.minute + 1)
-
-    timestamp.replace(second=0, microsecond=0)
+    timestamp = datetime.now(tz=timezone.utc).replace(microsecond=0)
     result_dict["timestamp"] = str(timestamp)
 
     payload = json.dumps(result_dict)
