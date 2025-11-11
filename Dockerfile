@@ -27,4 +27,4 @@ ENV MEASURE_INTERVAL_SECONDS=40 \
     LCD_COLUMNS=16 \
     LCD_ROWS=2
 
-CMD ["poetry", "run", "python", "src/main.py"]
+CMD ["poetry", "run", "python", "src/services/sensor_reader/src/main.py"]
