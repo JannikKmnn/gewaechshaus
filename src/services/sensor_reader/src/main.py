@@ -215,7 +215,7 @@ async def main():
                 result_dict=result_dict,
                 measure_interval=settings.measure_interval_seconds,
             ),
-            publish_message(client=mqtt_client, result_dict=result_dict),
+            publish_message(client=mqtt_client, result_dict=result_dict, logger=logger),
         )
 
 

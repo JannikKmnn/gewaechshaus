@@ -28,7 +28,7 @@ def setup_client(
         return None
 
 
-async def publish_message(client: mqtt.Client, result_dict: dict):
+async def publish_message(client: mqtt.Client, result_dict: dict, logger: Logger):
 
     timestamp = datetime.now(tz=timezone.utc).replace(microsecond=0)
     result_dict["timestamp"] = str(timestamp)
@@ -38,4 +38,8 @@ async def publish_message(client: mqtt.Client, result_dict: dict):
     if client is None:
         return
 
-    client.publish("greenhouse/sensors", payload=payload, qos=1)
+    try:
+        client.publish("greenhouse/sensors", payload=payload, qos=1)
+    except Exception as err:
+        logger.warning(f"Message on {timestamp} could not be published due to: {err}")
+        return None
