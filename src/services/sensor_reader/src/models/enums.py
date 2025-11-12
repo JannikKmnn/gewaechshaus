@@ -1,0 +1,12 @@
+from enum import Enum
+
+class SensorType(str, Enum):
+
+    TEMPERATURE = "Temperature"
+    HUMIDITY = "Humidity"
+    SOIL_MOISTURE = "SoilMoisture"
+
+class MeasureUnit(str, Enum):
+
+    CELSIUS = "°C"
+    PERCENT = "%"
