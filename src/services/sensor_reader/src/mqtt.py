@@ -4,23 +4,22 @@ import json
 from datetime import datetime, timezone
 from logging import Logger
 
-from models.enums import MQTTProperties
+from services.sensor_reader.src.models.mqtt import MQTTProperties
 
 
 def setup_client(
-    broker: str,
-    port: int,
-    user: str,
-    password: str,
+    client_properties: MQTTProperties,
     logger: Logger,
     start_loop: bool = True,
 ) -> mqtt.Client | None:
 
     client = mqtt.Client()
-    client.username_pw_set(username=user, password=password)
+    client.username_pw_set(
+        username=client_properties.user, password=client_properties.password
+    )
     try:
         client.tls_set()
-        client.connect(host=broker, port=port)
+        client.connect(host=client_properties.broker, port=client_properties.port)
         if start_loop:
             client.loop_start()
         return client
