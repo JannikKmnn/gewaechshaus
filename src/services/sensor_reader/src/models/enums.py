@@ -1,6 +1,25 @@
-class MQTTProperties:
+from enum import Enum
 
-    broker: str
-    port: int
-    user: str
-    password: str
+
+class SensorType(str, Enum):
+
+    TEMPERATURE = "Temperature"
+    HUMIDITY = "Humidity"
+    SOIL_MOISTURE = "SoilMoisture"
+
+
+class MeasureUnit(str, Enum):
+
+    CELSIUS = "°C"
+    PERCENT = "%"
+
+
+class Position(str, Enum):
+
+    LEFT = "Left"
+    RIGHT = "Right"
+    BACK = "Back"
+    FRONT = "Front"
+    UP = "Up"
+    MIDDLE = "Middle"
+    DOWN = "Down"

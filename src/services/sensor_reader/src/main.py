@@ -11,7 +11,7 @@ from decorators import retry
 from display import display_task
 from mqtt import setup_client, publish_message
 
-from models.enums import MQTTProperties
+from services.sensor_reader.src.models.mqtt import MQTTProperties
 
 from RPLCD.i2c import CharLCD
 from w1thermsensor import W1ThermSensor
@@ -162,11 +162,15 @@ async def main():
 
     ### Setup mqtt client ###
 
-    mqtt_client = setup_client(
+    mqtt_client_properties = MQTTProperties(
         broker=settings.mqtt_broker,
         port=settings.mqtt_port,
         user=settings.mqtt_user,
         password=settings.mqtt_password,
+    )
+
+    mqtt_client = setup_client(
+        client_properties=mqtt_client_properties,
         logger=logger,
         start_loop=True,
     )
@@ -211,7 +215,7 @@ async def main():
                 result_dict=result_dict,
                 measure_interval=settings.measure_interval_seconds,
             ),
-            publish_message(client=mqtt_client, result_dict=result_dict),
+            publish_message(client=mqtt_client, result_dict=result_dict, logger=logger),
         )
 
 
