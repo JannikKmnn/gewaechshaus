@@ -4,7 +4,7 @@ import json
 from datetime import datetime, timezone
 from logging import Logger
 
-from services.sensor_reader.src.models.mqtt import MQTTProperties
+from models.mqtt import MQTTProperties
 
 
 def setup_client(
