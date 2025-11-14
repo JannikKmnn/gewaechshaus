@@ -7,23 +7,25 @@ from datetime import datetime
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
-from decorators import retry
 from display import display_task
 from mqtt import setup_client, publish_message
+from setup import setup_display, setup_soil_moisture_sensors, setup_temperature_sensors
 
-from services.sensor_reader.src.models.mqtt import MQTTProperties
-
-from RPLCD.i2c import CharLCD
-from w1thermsensor import W1ThermSensor
-
-import RPi.GPIO as GPIO  # type: ignore
+from models.enums import MeasureUnit, Position, SensorType
+from models.mqtt import MQTTProperties
+from models.sensor import (
+    Sensor,
+    HumiditySensor,
+    TemperatureSensor,
+    SoilMoistureSensor,
+)
 
 GPIO_PIN_HUMIDITY_TEMPERATURE_SENSOR = board.D4
 
 
 class Settings(BaseSettings):
 
-    measure_interval_seconds: int = Field(default=40)
+    measure_interval_seconds: int = Field(default=60)
 
     temperature_outside_sensor_id: str = Field(default="000000b47976")
     temperature_inside_sensor_id: str = Field(default="000000b998e3")
@@ -51,112 +53,68 @@ logging.basicConfig(level=settings.log_lvl)
 logger = logging.getLogger(__name__)
 
 
-@retry(times=4, logger=logger)
-async def measure_humidity_temperature(device_object: adafruit_dht.DHT11):
+def init_sensor_group() -> list[Sensor]:
 
-    temperature_c = device_object.temperature
-    humidity = device_object.humidity
-
-    return humidity, temperature_c
-
-
-@retry(times=2)
-async def measure_temperature(sensor_object: W1ThermSensor | None):
-
-    if not sensor_object:
-        return None
-
-    temperature_c = sensor_object.get_temperature()
-
-    return temperature_c
-
-
-@retry(times=2)
-async def measure_soil_moisture(pin):
-
-    value = GPIO.input(pin)
-    is_wet = value == GPIO.LOW
-
-    return is_wet
-
-
-def display_measurements(lcd_object: CharLCD | None, line_1: str, line_2: str):
-
-    if not lcd_object:
-        return None
-
-    lcd_object.clear()
-
-    # make sure only the first {lcd_columns} characters are displayed
-    lcd_object.write_string(line_1[: settings.lcd_columns])
-    if line_2:
-        lcd_object.cursor_pos = (1, 0)
-        lcd_object.write_string(str(line_2))
-
-
-async def main():
+    sensors: list[Sensor] = []
 
     ### Setup humidity sensor ###
+
     humidityTemperatureDevice = adafruit_dht.DHT11(
         GPIO_PIN_HUMIDITY_TEMPERATURE_SENSOR, use_pulseio=False
     )
 
-    ### Setup temperature sensors ###
-    temperature_sensors = W1ThermSensor.get_available_sensors()
+    humidity_sensor = HumiditySensor(
+        identifier="humidity",
+        display_name="humidity",
+        type=SensorType.HUMIDITY,
+        unit=MeasureUnit.PERCENT,
+        position=Position.UP,
+        logger=logger,
+        sensor_obj=humidityTemperatureDevice,
+    )
 
-    temperatureOutsideSensor = next(
-        (
-            sens
-            for sens in temperature_sensors
-            if sens.id == settings.temperature_outside_sensor_id
-        ),
-        None,
+    sensors.append(humidity_sensor)
+
+    ### Setup temperature sensors ###
+
+    temperature_sensors = setup_temperature_sensors(
+        outside_sensor_id=settings.temperature_outside_sensor_id,
+        inside_sensor_id=settings.temperature_inside_sensor_id,
+        sensor_up=humidityTemperatureDevice,
     )
-    temperatureInsideSensor = next(
-        (
-            sens
-            for sens in temperature_sensors
-            if sens.id == settings.temperature_inside_sensor_id
-        ),
-        None,
-    )
+
+    sensors.extend(temperature_sensors)
 
     ### Setup soil moisture sensors ###
-    GPIO.setmode(GPIO.BCM)
+    soil_moisture_sensors = setup_soil_moisture_sensors(
+        pin_back=settings.soil_moisture_sensor_channel_back,
+        pin_front=settings.soil_moisture_sensor_channel_front,
+    )
 
-    pin_back = settings.soil_moisture_sensor_channel_back
-    pin_front = settings.soil_moisture_sensor_channel_front
-    GPIO.setup(pin_back, GPIO.IN)
-    GPIO.setup(pin_front, GPIO.IN)
+    sensors.extend(soil_moisture_sensors)
+
+    return sensors
+
+
+async def main():
+
+    sensors: list[Sensor] = init_sensor_group()
 
     ### Setup lcd display ###
-    try:
-        if isinstance(settings.lcd_i2c_address, int):
-            lcd_address = settings.lcd_i2c_address
-        else:
-            lcd_address = int(settings.lcd_i2c_address)
-        lcdDisplay = CharLCD(
-            i2c_expander="PCF8574",
-            address=lcd_address,
-            port=1,
-            cols=settings.lcd_columns,
-            rows=settings.lcd_rows,
-            charmap="A00",
-        )
-    except Exception as err:
-        logger.warning(f"LCD display could not be detected due to: {err}")
-        lcdDisplay = None
+
+    lcd_display = setup_display(
+        i2c_address=settings.lcd_i2c_address,
+        lcd_columns=settings.lcd_columns,
+        lcd_rows=settings.lcd_rows,
+        logger=logger,
+    )
 
     logger.info(
         f"""
         Using Sensors:
-         - Humidity: {humidityTemperatureDevice}
-         - Temperature Outside: {temperatureOutsideSensor}
-         - Temperature Inside: {temperatureInsideSensor}
-         - Soil Moisture Back: {pin_back}
-         - Soil Moisture Front: {pin_front}
+         {[sens.model_dump_json() for sens in sensors]}
         Using Display:
-         - LCD Display: {lcdDisplay}
+         - LCD Display: {lcd_display}
         """
     )
 
@@ -177,42 +135,28 @@ async def main():
 
     while True:
 
-        results = await asyncio.gather(
-            measure_humidity_temperature(device_object=humidityTemperatureDevice),
-            measure_temperature(sensor_object=temperatureOutsideSensor),
-            measure_temperature(sensor_object=temperatureInsideSensor),
-            measure_soil_moisture(pin=pin_back),
-            measure_soil_moisture(pin=pin_front),
-        )
-
-        soil_moisture_b = "wet" if results[3] else "dry"
-        soil_moisture_f = "wet" if results[4] else "dry"
+        results = await asyncio.gather(*[sensor.measure() for sensor in sensors])
 
         result_dict = {
-            "humidity": f"{results[0][0]}%",
-            "temperature up": f"{results[0][1]}°C",
-            "temperature out": f"{results[1]}°C",
-            "temperature in": f"{results[2]}°C",
-            "soil moisture b": soil_moisture_b,
-            "soil moisture f": soil_moisture_f,
+            sens.display_name: value for value, sens in zip(results, sensors)
+        }
+
+        display_dict = {
+            sens.display_name: f"{value} {sens.unit}"
+            for value, sens in zip(results, sensors)
         }
 
         logger.info(
             f"""
             Measurements {datetime.now()}:
-            - Humidity: {result_dict['humidity']}, 
-            - Temperature (Up): {result_dict['temperature up']}
-            - Temperature (Outside): {result_dict['temperature out']}
-            - Temperature (Inside): {result_dict['temperature in']}
-            - Soil is wet (back): {result_dict['soil moisture b']}
-            - Soil is wet (front): {result_dict['soil moisture f']}
+            {display_dict}
             """
         )
 
         _ = await asyncio.gather(
             display_task(
-                lcd_object=lcdDisplay,
-                result_dict=result_dict,
+                lcd_object=lcd_display,
+                display_dict=display_dict,
                 measure_interval=settings.measure_interval_seconds,
             ),
             publish_message(client=mqtt_client, result_dict=result_dict, logger=logger),

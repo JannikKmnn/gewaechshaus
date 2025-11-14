@@ -1,10 +1,12 @@
-from pydantic import BaseModel
+import os
+
+from pydantic import BaseModel, field_validator
 from abc import ABC, abstractmethod
 from logging import Logger
 
 from typing import Literal, Optional, Union
 from enums import MeasureUnit, SensorType, Position
-from decorators import retry
+from utils.decorators import retry
 
 from adafruit_dht import DHT11
 from w1thermsensor import W1ThermSensor
@@ -19,6 +21,15 @@ class Sensor(ABC, BaseModel):
     unit: Optional[MeasureUnit] = None
     position: Optional[Position] = None
     logger: Optional[Logger] = None
+
+    @field_validator("display_name", mode="after")
+    def validate(cls, v: str) -> str:
+        num_lcd_columns = os.getenv("LCD_COLUMNS")
+        if num_lcd_columns is None:
+            raise KeyError("Max Number of LCD columns not findable as env variable.")
+        if len(v) > int(num_lcd_columns):
+            raise ValueError("display name longer than lcd columns available.")
+        return v
 
     @abstractmethod
     async def measure(self):
@@ -43,6 +54,10 @@ class TemperatureSensor(Sensor):
 class SoilMoistureSensor(Sensor):
 
     pin: int
+
+    def setup(self) -> None:
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(self.pin, GPIO.IN)
 
     @retry(times=2)
     async def measure(self) -> Literal["wet", "dry"]:

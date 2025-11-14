@@ -1,13 +1,73 @@
-from w1thermsensor import W1ThermSensor
+from logging import Logger
+from typing import Optional
 
-from models.sensor import TemperatureSensor
+from adafruit_dht import DHT11
+from w1thermsensor import W1ThermSensor
+from RPLCD.i2c import CharLCD
+
+from models.sensor import TemperatureSensor, SoilMoistureSensor
 from models.enums import Position, SensorType, MeasureUnit
+
+
+def setup_display(
+    i2c_address: int,
+    lcd_columns: int,
+    lcd_rows: int,
+    logger: Logger,
+) -> CharLCD | None:
+    try:
+        lcdDisplay = CharLCD(
+            i2c_expander="PCF8574",
+            address=i2c_address,
+            port=1,
+            cols=lcd_columns,
+            rows=lcd_rows,
+            charmap="A00",
+        )
+    except Exception as err:
+        logger.warning(f"LCD display could not be detected due to: {err}")
+        lcdDisplay = None
+
+    return lcdDisplay
+
+
+def setup_soil_moisture_sensors(
+    pin_back: int,
+    pin_front: int,
+) -> list[SoilMoistureSensor]:
+
+    soil_moisture_sensor_back = SoilMoistureSensor(
+        identifier="soil_moisture_back",
+        display_name="soil moisture b",
+        type=SensorType.SOIL_MOISTURE,
+        unit=MeasureUnit,
+        position=Position.BACK,
+        pin=pin_back,
+    )
+
+    soil_moisture_sensor_back.setup()
+
+    soil_moisture_sensor_front = SoilMoistureSensor(
+        identifier="soil_moisture_front",
+        display_name="soil moisture f",
+        type=SensorType.SOIL_MOISTURE,
+        unit=MeasureUnit,
+        position=Position.FRONT,
+        pin=pin_front,
+    )
+
+    soil_moisture_sensor_front.setup()
+
+    return [soil_moisture_sensor_back, soil_moisture_sensor_front]
 
 
 def setup_temperature_sensors(
     outside_sensor_id: str,
     inside_sensor_id: str,
+    sensor_up: Optional[DHT11] = None,
 ) -> list[TemperatureSensor]:
+
+    temperature_sensors = []
 
     temperature_sensors = W1ThermSensor.get_available_sensors()
 
@@ -25,6 +85,8 @@ def setup_temperature_sensors(
         sensor_obj=temperatureOutsideSensor,
     )
 
+    temperature_sensors.append(outside_sensor)
+
     temperatureInsideSensor = next(
         (sens for sens in temperature_sensors if sens.id == inside_sensor_id),
         None,
@@ -39,4 +101,18 @@ def setup_temperature_sensors(
         sensor_obj=temperatureInsideSensor,
     )
 
-    return [outside_sensor, inside_sensor]
+    temperature_sensors.append(inside_sensor)
+
+    if sensor_up:
+        temperature_sensors.append(
+            TemperatureSensor(
+                identifier="temperature_up",
+                display_name="temperature up",
+                type=SensorType.TEMPERATURE,
+                unit=MeasureUnit.CELSIUS,
+                position=Position.UP,
+                sensor_obj=sensor_up,
+            )
+        )
+
+    return temperature_sensors
