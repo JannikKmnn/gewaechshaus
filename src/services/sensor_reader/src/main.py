@@ -137,9 +137,7 @@ async def main():
 
         results = await asyncio.gather(*[sensor.measure() for sensor in sensors])
 
-        result_dict = {
-            sens.display_name: value for value, sens in zip(results, sensors)
-        }
+        result_dict = {sens.identifier: value for value, sens in zip(results, sensors)}
 
         display_dict = {
             sens.display_name: f"{value} {sens.unit}"
