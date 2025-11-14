@@ -23,3 +23,5 @@ class Position(str, Enum):
     UP = "Up"
     MIDDLE = "Middle"
     DOWN = "Down"
+    OUTSIDE = "Outside"
+    INSIDE = "Inside"
