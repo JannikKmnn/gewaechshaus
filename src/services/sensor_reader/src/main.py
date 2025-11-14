@@ -8,11 +8,15 @@ from pydantic import Field
 from pydantic_settings import BaseSettings
 
 from display import display_task
-from mqtt import setup_client, publish_message
-from setup import setup_display, setup_soil_moisture_sensors, setup_temperature_sensors
+from mqtt import publish_message
+from setup import (
+    setup_display,
+    setup_mqtt,
+    setup_soil_moisture_sensors,
+    setup_temperature_sensors,
+)
 
 from models.enums import MeasureUnit, Position, SensorType
-from models.mqtt import MQTTProperties
 from models.sensor import (
     Sensor,
     HumiditySensor,
@@ -57,7 +61,7 @@ def init_sensor_group() -> list[Sensor]:
 
     sensors: list[Sensor] = []
 
-    ### Setup humidity sensor ###
+    ### 1. 1 Setup humidity sensor ###
 
     humidityTemperatureDevice = adafruit_dht.DHT11(
         GPIO_PIN_HUMIDITY_TEMPERATURE_SENSOR, use_pulseio=False
@@ -75,9 +79,9 @@ def init_sensor_group() -> list[Sensor]:
 
     sensors.append(humidity_sensor)
 
-    ### Setup temperature sensors ###
+    ### 1.2 Setup temperature sensors ###
 
-    temperature_sensors = setup_temperature_sensors(
+    temperature_sensors: list[TemperatureSensor] = setup_temperature_sensors(
         outside_sensor_id=settings.temperature_outside_sensor_id,
         inside_sensor_id=settings.temperature_inside_sensor_id,
         sensor_up=humidityTemperatureDevice,
@@ -85,8 +89,8 @@ def init_sensor_group() -> list[Sensor]:
 
     sensors.extend(temperature_sensors)
 
-    ### Setup soil moisture sensors ###
-    soil_moisture_sensors = setup_soil_moisture_sensors(
+    ### 1.3 Setup soil moisture sensors ###
+    soil_moisture_sensors: list[SoilMoistureSensor] = setup_soil_moisture_sensors(
         pin_back=settings.soil_moisture_sensor_channel_back,
         pin_front=settings.soil_moisture_sensor_channel_front,
     )
@@ -100,7 +104,7 @@ async def main():
 
     sensors: list[Sensor] = init_sensor_group()
 
-    ### Setup lcd display ###
+    ### 1. Setup lcd display ###
 
     lcd_display = setup_display(
         i2c_address=settings.lcd_i2c_address,
@@ -118,22 +122,21 @@ async def main():
         """
     )
 
-    ### Setup mqtt client ###
-
-    mqtt_client_properties = MQTTProperties(
-        broker=settings.mqtt_broker,
-        port=settings.mqtt_port,
-        user=settings.mqtt_user,
-        password=settings.mqtt_password,
-    )
-
-    mqtt_client = setup_client(
-        client_properties=mqtt_client_properties,
-        logger=logger,
-        start_loop=True,
-    )
+    mqtt_client = None
 
     while True:
+
+        ### 2. Initial mqtt client connect ###
+        # and reconnection every time client fails
+        # TODO add cron scheduler instead
+        if mqtt_client is None:
+            mqtt_client = setup_mqtt(
+                broker=settings.mqtt_broker,
+                port=settings.mqtt_port,
+                user=settings.mqtt_user,
+                password=settings.mqtt_password,
+                logger=logger,
+            )
 
         results = await asyncio.gather(*[sensor.measure() for sensor in sensors])
 
@@ -151,14 +154,17 @@ async def main():
             """
         )
 
-        _ = await asyncio.gather(
+        mqtt_response, _ = await asyncio.gather(
+            publish_message(client=mqtt_client, result_dict=result_dict, logger=logger),
             display_task(
                 lcd_object=lcd_display,
                 display_dict=display_dict,
                 measure_interval=settings.measure_interval_seconds,
             ),
-            publish_message(client=mqtt_client, result_dict=result_dict, logger=logger),
         )
+
+        if mqtt_response["return_msg"] == "crashed_client":
+            mqtt_client = None
 
 
 if __name__ == "__main__":

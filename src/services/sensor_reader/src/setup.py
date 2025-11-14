@@ -5,8 +5,11 @@ from adafruit_dht import DHT11
 from w1thermsensor import W1ThermSensor
 from RPLCD.i2c import CharLCD
 
-from models.sensor import TemperatureSensor, SoilMoistureSensor
+from mqtt import setup_client
+
 from models.enums import Position, SensorType, MeasureUnit
+from models.mqtt import MQTTProperties
+from models.sensor import TemperatureSensor, SoilMoistureSensor
 
 
 def setup_display(
@@ -29,6 +32,30 @@ def setup_display(
         lcdDisplay = None
 
     return lcdDisplay
+
+
+def setup_mqtt(
+    broker: str,
+    port: int,
+    user: str,
+    password: str,
+    logger: Logger,
+):
+
+    mqtt_client_properties = MQTTProperties(
+        broker=broker,
+        port=port,
+        user=user,
+        password=password,
+    )
+
+    mqtt_client = setup_client(
+        client_properties=mqtt_client_properties,
+        logger=logger,
+        start_loop=True,
+    )
+
+    return mqtt_client
 
 
 def setup_soil_moisture_sensors(
