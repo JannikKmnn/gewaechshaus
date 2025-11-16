@@ -5,11 +5,11 @@ from adafruit_dht import DHT11
 from w1thermsensor import W1ThermSensor
 from RPLCD.i2c import CharLCD
 
-from mqtt import setup_client
+from src.services.sensor_reader.mqtt import setup_client
 
-from models.enums import Position, SensorType, MeasureUnit
-from models.mqtt import MQTTProperties
-from models.sensor import TemperatureSensor, SoilMoistureSensor
+from src.models.enums import Position, SensorType, MeasureUnit
+from src.models.mqtt import MQTTProperties
+from src.models.sensor import TemperatureSensor, SoilMoistureSensor
 
 
 def setup_display(
@@ -67,7 +67,6 @@ def setup_soil_moisture_sensors(
         identifier="soil_moisture_back",
         display_name="soil moisture b",
         type=SensorType.SOIL_MOISTURE,
-        unit=MeasureUnit,
         position=Position.BACK,
         pin=pin_back,
     )
@@ -78,7 +77,6 @@ def setup_soil_moisture_sensors(
         identifier="soil_moisture_front",
         display_name="soil moisture f",
         type=SensorType.SOIL_MOISTURE,
-        unit=MeasureUnit,
         position=Position.FRONT,
         pin=pin_front,
     )
@@ -94,7 +92,7 @@ def setup_temperature_sensors(
     sensor_up: Optional[DHT11] = None,
 ) -> list[TemperatureSensor]:
 
-    temperature_sensors = []
+    temperature_sensors_return = []
 
     temperature_sensors = W1ThermSensor.get_available_sensors()
 
@@ -112,7 +110,7 @@ def setup_temperature_sensors(
         sensor_obj=temperatureOutsideSensor,
     )
 
-    temperature_sensors.append(outside_sensor)
+    temperature_sensors_return.append(outside_sensor)
 
     temperatureInsideSensor = next(
         (sens for sens in temperature_sensors if sens.id == inside_sensor_id),
@@ -128,10 +126,10 @@ def setup_temperature_sensors(
         sensor_obj=temperatureInsideSensor,
     )
 
-    temperature_sensors.append(inside_sensor)
+    temperature_sensors_return.append(inside_sensor)
 
     if sensor_up:
-        temperature_sensors.append(
+        temperature_sensors_return.append(
             TemperatureSensor(
                 identifier="temperature_up",
                 display_name="temperature up",
@@ -142,4 +140,4 @@ def setup_temperature_sensors(
             )
         )
 
-    return temperature_sensors
+    return temperature_sensors_return

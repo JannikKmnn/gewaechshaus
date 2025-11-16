@@ -1,12 +1,11 @@
 import os
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator
 from abc import ABC, abstractmethod
-from logging import Logger
 
 from typing import Literal, Optional, Union
-from enums import MeasureUnit, SensorType, Position
-from utils.decorators import retry
+from src.models.enums import MeasureUnit, SensorType, Position
+from src.utils.decorators import retry
 
 from adafruit_dht import DHT11
 from w1thermsensor import W1ThermSensor
@@ -20,13 +19,14 @@ class Sensor(ABC, BaseModel):
     type: SensorType
     unit: Optional[MeasureUnit] = None
     position: Optional[Position] = None
-    logger: Optional[Logger] = None
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @field_validator("display_name", mode="after")
     def validate(cls, v: str) -> str:
         num_lcd_columns = os.getenv("LCD_COLUMNS")
         if num_lcd_columns is None:
-            raise KeyError("Max Number of LCD columns not findable as env variable.")
+            num_lcd_columns = 16
         if len(v) > int(num_lcd_columns):
             raise ValueError("display name longer than lcd columns available.")
         return v

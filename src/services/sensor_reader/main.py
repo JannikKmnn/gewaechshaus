@@ -7,17 +7,17 @@ from datetime import datetime
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
-from display import display_task
-from mqtt import publish_message
-from setup import (
+from src.services.sensor_reader.display import display_task
+from src.services.sensor_reader.mqtt import publish_message
+from src.services.sensor_reader.setup import (
     setup_display,
     setup_mqtt,
     setup_soil_moisture_sensors,
     setup_temperature_sensors,
 )
 
-from models.enums import MeasureUnit, Position, SensorType
-from models.sensor import (
+from src.models.enums import MeasureUnit, MQTTResponse, Position, SensorType
+from src.models.sensor import (
     Sensor,
     HumiditySensor,
     TemperatureSensor,
@@ -116,7 +116,7 @@ async def main():
     logger.info(
         f"""
         Using Sensors:
-         {[sens.model_dump_json() for sens in sensors]}
+         {sensors}
         Using Display:
          - LCD Display: {lcd_display}
         """
@@ -143,7 +143,7 @@ async def main():
         result_dict = {sens.identifier: value for value, sens in zip(results, sensors)}
 
         display_dict = {
-            sens.display_name: f"{value} {sens.unit}"
+            sens.display_name: f"{value} {sens.unit.value if sens.unit else ''}"
             for value, sens in zip(results, sensors)
         }
 
@@ -154,6 +154,7 @@ async def main():
             """
         )
 
+        ### 3. Send MQTT message and display measurements ###
         mqtt_response, _ = await asyncio.gather(
             publish_message(client=mqtt_client, result_dict=result_dict, logger=logger),
             display_task(
@@ -163,7 +164,13 @@ async def main():
             ),
         )
 
-        if mqtt_response["return_msg"] == "crashed_client":
+        logger.debug(
+            f"""
+            MQTT response: {mqtt_response.value}
+            """
+        )
+
+        if mqtt_response == MQTTResponse.CLIENT_CRASHED:
             mqtt_client = None
 
 

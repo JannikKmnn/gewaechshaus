@@ -18,7 +18,7 @@ RUN poetry install --no-interaction
 
 COPY . .
 
-ENV MEASURE_INTERVAL_SECONDS=40 \
+ENV MEASURE_INTERVAL_SECONDS=60 \
     LOG_LVL=INFO \
     TEMPERATURE_OUTSIDE_SENSOR_ID=000000b47976 \
     TEMPERATURE_INSIDE_SENSOR_ID=000000b998e3 \
@@ -27,4 +27,4 @@ ENV MEASURE_INTERVAL_SECONDS=40 \
     LCD_COLUMNS=16 \
     LCD_ROWS=2
 
-CMD ["poetry", "run", "python", "src/services/sensor_reader/src/main.py"]
+CMD ["poetry", "run", "python", "-m", "src.services.sensor_reader.main"]
