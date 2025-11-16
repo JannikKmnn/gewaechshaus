@@ -1,14 +1,17 @@
 import asyncio
 
+from logging import Logger
 from typing import Callable
 from functools import wraps
 
 
-def retry(times, logger=None):
+def retry(times: int):
 
     def func_wrapper(func: Callable):
         @wraps(func)
         async def wrapper(*args, **kwargs):
+
+            logger: Logger = getattr(self, "logger", None)  # type: ignore
 
             for iteration in range(times):
                 if iteration > 0 and logger:
