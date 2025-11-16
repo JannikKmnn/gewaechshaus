@@ -23,3 +23,12 @@ class Position(str, Enum):
     UP = "Up"
     MIDDLE = "Middle"
     DOWN = "Down"
+    OUTSIDE = "Outside"
+    INSIDE = "Inside"
+
+
+class MQTTResponse(str, Enum):
+
+    NO_CLIENT = "No client defined."
+    CLIENT_CRASHED = "Client crashed while publishing message."
+    SUCCESS = "Message published."

@@ -4,7 +4,8 @@ import json
 from datetime import datetime, timezone
 from logging import Logger
 
-from services.sensor_reader.src.models.mqtt import MQTTProperties
+from src.models.mqtt import MQTTProperties
+from src.models.enums import MQTTResponse
 
 
 def setup_client(
@@ -28,7 +29,9 @@ def setup_client(
         return None
 
 
-async def publish_message(client: mqtt.Client, result_dict: dict, logger: Logger):
+async def publish_message(
+    client: mqtt.Client, result_dict: dict, logger: Logger
+) -> MQTTResponse:
 
     timestamp = datetime.now(tz=timezone.utc).replace(microsecond=0)
     result_dict["timestamp"] = str(timestamp)
@@ -36,10 +39,11 @@ async def publish_message(client: mqtt.Client, result_dict: dict, logger: Logger
     payload = json.dumps(result_dict)
 
     if client is None:
-        return
+        return MQTTResponse.NO_CLIENT
 
     try:
         client.publish("greenhouse/sensors", payload=payload, qos=1)
+        return MQTTResponse.SUCCESS
     except Exception as err:
         logger.warning(f"Message on {timestamp} could not be published due to: {err}")
-        return None
+        return MQTTResponse.CLIENT_CRASHED
