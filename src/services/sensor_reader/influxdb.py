@@ -36,7 +36,14 @@ async def write_to_influxdb(
 
     records = []
     for key, value in result_dict.items():
-        sensor = next(s for s in sensors if s.identifier == key)
+        if key == "timestamp":
+            continue
+        sensor = next((s for s in sensors if s.identifier == key), None)
+        if sensor is None:
+            logger.warning(
+                f"Sensor not found with identifier {key} in sensors {sensors}"
+            )
+            continue
         records.append(
             Point(measurement_name=sensor.type.value)
             .tag(
