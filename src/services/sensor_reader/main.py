@@ -144,62 +144,68 @@ async def main():
         logger=logger,
     )
 
-    while True:
+    async with influxdb_asnyc_client:
 
-        ### 3. Initial mqtt client connect ###
-        # and reconnection every time client fails
-        # TODO add cron scheduler instead
-        if mqtt_client is None:
-            mqtt_client = setup_mqtt(
-                broker=settings.mqtt_broker,
-                port=settings.mqtt_port,
-                user=settings.mqtt_user,
-                password=settings.mqtt_password,
-                logger=logger,
+        while True:
+
+            ### 3. Initial mqtt client connect ###
+            # and reconnection every time client fails
+            # TODO add cron scheduler instead
+            if mqtt_client is None:
+                mqtt_client = setup_mqtt(
+                    broker=settings.mqtt_broker,
+                    port=settings.mqtt_port,
+                    user=settings.mqtt_user,
+                    password=settings.mqtt_password,
+                    logger=logger,
+                )
+
+            results = await asyncio.gather(*[sensor.measure() for sensor in sensors])
+
+            result_dict = {
+                sens.identifier: value for value, sens in zip(results, sensors)
+            }
+
+            display_dict = {
+                sens.display_name: f"{value} {sens.unit.value if sens.unit else ''}"
+                for value, sens in zip(results, sensors)
+            }
+
+            logger.info(
+                f"""
+                Measurements {datetime.now()}:
+                {display_dict}
+                """
             )
 
-        results = await asyncio.gather(*[sensor.measure() for sensor in sensors])
+            ### 4. Send MQTT message, save influxdb record and display measurements ###
+            mqtt_response, influxdb_response, _ = await asyncio.gather(
+                publish_message(
+                    client=mqtt_client, result_dict=result_dict, logger=logger
+                ),
+                write_to_influxdb(
+                    client=influxdb_asnyc_client,
+                    bucket=settings.influxdb_bucket,
+                    result_dict=result_dict,
+                    sensors=sensors,
+                    logger=logger,
+                ),
+                display_task(
+                    lcd_object=lcd_display,
+                    display_dict=display_dict,
+                    measure_interval=settings.measure_interval_seconds,
+                ),
+            )
 
-        result_dict = {sens.identifier: value for value, sens in zip(results, sensors)}
+            logger.debug(
+                f"""
+                MQTT response: {mqtt_response.value}
+                InfluxDB response: {influxdb_response.value}
+                """
+            )
 
-        display_dict = {
-            sens.display_name: f"{value} {sens.unit.value if sens.unit else ''}"
-            for value, sens in zip(results, sensors)
-        }
-
-        logger.info(
-            f"""
-            Measurements {datetime.now()}:
-            {display_dict}
-            """
-        )
-
-        ### 4. Send MQTT message, save influxdb record and display measurements ###
-        mqtt_response, influxdb_response, _ = await asyncio.gather(
-            publish_message(client=mqtt_client, result_dict=result_dict, logger=logger),
-            write_to_influxdb(
-                client=influxdb_asnyc_client,
-                bucket=settings.influxdb_bucket,
-                result_dict=result_dict,
-                sensors=sensors,
-                logger=logger,
-            ),
-            display_task(
-                lcd_object=lcd_display,
-                display_dict=display_dict,
-                measure_interval=settings.measure_interval_seconds,
-            ),
-        )
-
-        logger.debug(
-            f"""
-            MQTT response: {mqtt_response.value}
-            InfluxDB response: {influxdb_response.value}
-            """
-        )
-
-        if mqtt_response == MQTTResponse.CLIENT_CRASHED:
-            mqtt_client = None
+            if mqtt_response == MQTTResponse.CLIENT_CRASHED:
+                mqtt_client = None
 
 
 if __name__ == "__main__":

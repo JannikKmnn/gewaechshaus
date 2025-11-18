@@ -54,11 +54,10 @@ async def write_to_influxdb(
         )
 
     try:
-        async with client:
-            _ = await client.write_api().write(
-                bucket=bucket,
-                record=records,
-            )
+        _ = await client.write_api().write(
+            bucket=bucket,
+            record=records,
+        )
         return InfluxDBResponse.SUCCESS
     except Exception as err:
         logger.warning(f"Inserting DB data failed due to: {err}")
