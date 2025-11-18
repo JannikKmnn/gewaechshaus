@@ -1,5 +1,6 @@
 import os
 
+from logging import Logger
 from pydantic import BaseModel, ConfigDict, field_validator
 from abc import ABC, abstractmethod
 
@@ -19,6 +20,7 @@ class Sensor(ABC, BaseModel):
     type: SensorType
     unit: Optional[MeasureUnit] = None
     position: Optional[Position] = None
+    logger: Optional[Logger] = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
