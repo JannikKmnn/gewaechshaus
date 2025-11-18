@@ -5,9 +5,11 @@ from adafruit_dht import DHT11
 from w1thermsensor import W1ThermSensor
 from RPLCD.i2c import CharLCD
 
+from src.services.sensor_reader.influxdb import setup_influxdb_client
 from src.services.sensor_reader.mqtt import setup_client
 
 from src.models.enums import Position, SensorType, MeasureUnit
+from src.models.influxdb import InfluxDBProperties
 from src.models.mqtt import MQTTProperties
 from src.models.sensor import TemperatureSensor, SoilMoistureSensor
 
@@ -56,6 +58,28 @@ def setup_mqtt(
     )
 
     return mqtt_client
+
+
+def setup_influxdb(
+    host: str,
+    org: str,
+    token: str,
+    timeout: int,
+    logger: Logger,
+):
+
+    influxdb_properties = InfluxDBProperties(
+        host=host,
+        org=org,
+        token=token,
+        timeout=timeout,
+    )
+
+    influxdb_client = setup_influxdb_client(
+        influxdb_properties=influxdb_properties, logger=logger
+    )
+
+    return influxdb_client
 
 
 def setup_soil_moisture_sensors(
