@@ -6,7 +6,8 @@ from w1thermsensor import W1ThermSensor
 from RPLCD.i2c import CharLCD
 from smbus2 import SMBus
 
-from src.services.sensor_reader.influxdb import setup_influxdb_client
+from src.shared.influxdb import setup_influxdb_client
+from src.services.sensor_reader.mqtt import setup_client
 
 from src.models.enums import Position, SensorType, MeasureUnit
 from src.models.influxdb import InfluxDBProperties
