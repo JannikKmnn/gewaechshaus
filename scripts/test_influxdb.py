@@ -14,7 +14,7 @@ async def main():
 
     print(os.getenv("INFLUXDB_HOST"))
     print(os.getenv("INFLUXDB_ORG"))
-    print(os.getenv("INFLUXDB_BUCKET"))
+    print(os.getenv("INFLUXDB_BUCKET_TEST"))
 
     client = InfluxDBClientAsync(
         url=os.getenv("INFLUXDB_HOST"),
@@ -22,6 +22,10 @@ async def main():
         org=os.getenv("INFLUXDB_ORG"),
         timeout=10000,
     )
+
+    print(client)
+
+    client.close()
 
     print(client)
 

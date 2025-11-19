@@ -160,8 +160,10 @@ async def main():
                     logger=logger,
                 )
 
+            # ETL EXTRACTION
             results = await asyncio.gather(*[sensor.measure() for sensor in sensors])
 
+            # ETL TRANSFORMATION
             result_dict = {
                 sens.identifier: value for value, sens in zip(results, sensors)
             }
@@ -179,6 +181,7 @@ async def main():
             )
 
             ### 4. Send MQTT message, save influxdb record and display measurements ###
+            # ETL LOAD
             mqtt_response, influxdb_response, _ = await asyncio.gather(
                 publish_message(
                     client=mqtt_client, result_dict=result_dict, logger=logger
