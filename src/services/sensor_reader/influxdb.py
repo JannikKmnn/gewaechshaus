@@ -45,12 +45,9 @@ async def write_to_influxdb(
             )
             continue
         records.append(
-            Point(measurement_name=sensor.type.value)
-            .tag(
-                key="position",
-                value=sensor.position.value if sensor.position else "unknown",
+            Point(measurement_name=sensor.type.value).field(
+                field=sensor.identifier, value=value
             )
-            .field(field=sensor.identifier, value=value)
         )
 
     try:
