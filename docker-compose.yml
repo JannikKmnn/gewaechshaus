@@ -6,10 +6,7 @@ services:
     container_name: gewaechshaus-sensor-reader
     restart: always
     healthcheck:
-      test: ["CMD", "pgrep", "-f", "src/services/sensor_reader/main.py"]
-      interval: 300s
-      timeout: 5s
-      retries: 3
+      disable: true
     privileged: true
     devices:
       - "/dev/gpiomem:/dev/gpiomem"
