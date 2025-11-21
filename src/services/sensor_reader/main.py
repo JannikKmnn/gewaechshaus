@@ -1,6 +1,4 @@
-import adafruit_dht
 import asyncio
-import board
 import logging
 
 from datetime import datetime
@@ -14,19 +12,18 @@ from src.services.sensor_reader.setup import (
     setup_display,
     setup_mqtt,
     setup_influxdb,
+    setup_barometric_sensor,
     setup_soil_moisture_sensors,
     setup_temperature_sensors,
 )
 
-from src.models.enums import MeasureUnit, MQTTResponse, Position, SensorType
+from src.models.enums import MQTTResponse
 from src.models.sensor import (
     Sensor,
-    HumiditySensor,
+    BarometricSensor,
     TemperatureSensor,
     SoilMoistureSensor,
 )
-
-GPIO_PIN_HUMIDITY_TEMPERATURE_SENSOR = board.D4
 
 
 class Settings(BaseSettings):
@@ -38,6 +35,9 @@ class Settings(BaseSettings):
 
     soil_moisture_sensor_channel_back: int = Field(default=23)
     soil_moisture_sensor_channel_front: int = Field(default=24)
+
+    bme280_i2c_address: int = Field(default=0x76)  # try 0x77 if not works
+    i2c_port: int = Field(default=1)
 
     lcd_i2c_address: int = Field(default=0x27)  # try 0x3F if not works
     lcd_columns: int = Field(default=16)
@@ -71,30 +71,20 @@ def init_sensor_group() -> list[Sensor]:
 
     sensors: list[Sensor] = []
 
-    ### 1. 1 Setup humidity sensor ###
+    ### 1. 1 Setup barometric sensor ###
 
-    humidityTemperatureDevice = adafruit_dht.DHT11(
-        GPIO_PIN_HUMIDITY_TEMPERATURE_SENSOR, use_pulseio=False
+    barometric_sensor: BarometricSensor = setup_barometric_sensor(
+        i2c_address=settings.bme280_i2c_address,
+        i2c_port=settings.i2c_port,
     )
 
-    humidity_sensor = HumiditySensor(
-        identifier="humidity",
-        display_name="humidity",
-        type=SensorType.HUMIDITY,
-        unit=MeasureUnit.PERCENT,
-        position=Position.UP,
-        logger=logger,
-        sensor_obj=humidityTemperatureDevice,
-    )
-
-    sensors.append(humidity_sensor)
+    sensors.append(barometric_sensor)
 
     ### 1.2 Setup temperature sensors ###
 
     temperature_sensors: list[TemperatureSensor] = setup_temperature_sensors(
         outside_sensor_id=settings.temperature_outside_sensor_id,
         inside_sensor_id=settings.temperature_inside_sensor_id,
-        sensor_up=humidityTemperatureDevice,
     )
 
     sensors.extend(temperature_sensors)
@@ -162,14 +152,25 @@ async def main():
 
             results = await asyncio.gather(*[sensor.measure() for sensor in sensors])
 
-            result_dict = {
-                sens.identifier: value for value, sens in zip(results, sensors)
-            }
+            result_dict = {}
+            display_dict = {}
 
-            display_dict = {
-                sens.display_name: f"{value} {sens.unit.value if sens.unit else ''}"
-                for value, sens in zip(results, sensors)
-            }
+            for value, sens in zip(results, sensors):
+                if type(value) == dict:
+                    # barometric results with multiple measurements
+                    for _, baro_result in value.items():
+                        identifier = baro_result["identifier"]
+                        baro_value = baro_result["value"]
+                        result_dict[identifier] = baro_value
+                        display_dict[baro_result["display_name"]] = (
+                            f"{baro_value} {baro_result['unit']}"
+                        )
+                else:
+                    # other sensor readings
+                    result_dict[sens.identifier] = value
+                    display_dict[sens.display_name] = (
+                        f"{value} {sens.unit.value if sens.unit else ''}"
+                    )
 
             logger.info(
                 f"""

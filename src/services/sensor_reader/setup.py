@@ -1,9 +1,10 @@
-from logging import Logger
-from typing import Optional
+import bme280
 
-from adafruit_dht import DHT11
+from logging import Logger
+
 from w1thermsensor import W1ThermSensor
 from RPLCD.i2c import CharLCD
+from smbus2 import SMBus
 
 from src.services.sensor_reader.influxdb import setup_influxdb_client
 from src.services.sensor_reader.mqtt import setup_client
@@ -11,7 +12,7 @@ from src.services.sensor_reader.mqtt import setup_client
 from src.models.enums import Position, SensorType, MeasureUnit
 from src.models.influxdb import InfluxDBProperties
 from src.models.mqtt import MQTTProperties
-from src.models.sensor import TemperatureSensor, SoilMoistureSensor
+from src.models.sensor import BarometricSensor, TemperatureSensor, SoilMoistureSensor
 
 
 def setup_display(
@@ -82,6 +83,30 @@ def setup_influxdb(
     return influxdb_client
 
 
+def setup_barometric_sensor(
+    i2c_address: int,
+    i2c_port: int,
+) -> BarometricSensor:
+
+    bus = SMBus(i2c_port)
+    params = bme280.load_calibration_params(
+        bus=bus,
+        address=i2c_address,
+    )
+
+    barometric_sensor = BarometricSensor(
+        identifier="barometric_up",
+        display_name="barometric up",
+        type=SensorType.BAROMETRIC,
+        position=Position.UP,
+        sensor_obj=bus,
+        bme280_params=params,
+        sensor_address=i2c_address,
+    )
+
+    return barometric_sensor
+
+
 def setup_soil_moisture_sensors(
     pin_back: int,
     pin_front: int,
@@ -113,7 +138,6 @@ def setup_soil_moisture_sensors(
 def setup_temperature_sensors(
     outside_sensor_id: str,
     inside_sensor_id: str,
-    sensor_up: Optional[DHT11] = None,
 ) -> list[TemperatureSensor]:
 
     temperature_sensors_return = []
@@ -151,17 +175,5 @@ def setup_temperature_sensors(
     )
 
     temperature_sensors_return.append(inside_sensor)
-
-    if sensor_up:
-        temperature_sensors_return.append(
-            TemperatureSensor(
-                identifier="temperature_up",
-                display_name="temperature up",
-                type=SensorType.TEMPERATURE,
-                unit=MeasureUnit.CELSIUS,
-                position=Position.UP,
-                sensor_obj=sensor_up,
-            )
-        )
 
     return temperature_sensors_return

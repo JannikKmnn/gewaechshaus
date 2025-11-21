@@ -6,12 +6,15 @@ class SensorType(str, Enum):
     TEMPERATURE = "Temperature"
     HUMIDITY = "Humidity"
     SOIL_MOISTURE = "SoilMoisture"
+    AIR_PRESSURE = "AirPressure"
+    BAROMETRIC = "Barometric"
 
 
 class MeasureUnit(str, Enum):
 
     CELSIUS = "°C"
     PERCENT = "%"
+    HECTOPASCAL = "hPa"
 
 
 class Position(str, Enum):

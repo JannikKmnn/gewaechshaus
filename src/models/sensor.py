@@ -1,13 +1,15 @@
 import os
 
+import bme280
+
 from pydantic import BaseModel, ConfigDict, field_validator
 from abc import ABC, abstractmethod
 
-from typing import Literal, Optional, Union
+from typing import Literal, Optional
 from src.models.enums import MeasureUnit, SensorType, Position
 from src.utils.decorators import retry
 
-from adafruit_dht import DHT11
+from smbus2 import SMBus
 from w1thermsensor import W1ThermSensor
 import RPi.GPIO as GPIO  # type: ignore
 
@@ -36,17 +38,53 @@ class Sensor(ABC, BaseModel):
         pass
 
 
-class TemperatureSensor(Sensor):
+class BarometricSensor(Sensor):
 
-    sensor_obj: Union[W1ThermSensor, DHT11]
+    sensor_obj: SMBus
+    bme280_params: bme280.params
+    sensor_address: int
 
     @retry(times=3)
-    async def measure(self):
+    async def measure(self) -> dict:
 
-        if isinstance(self.sensor_obj, W1ThermSensor):
-            temperature_c = self.sensor_obj.get_temperature()
-        elif isinstance(self.sensor_obj, DHT11):
-            temperature_c = self.sensor_obj.temperature
+        data = bme280.sample(
+            bus=self.sensor_obj,
+            address=self.sensor_address,
+            compensation_params=self.bme280_params,
+        )
+
+        position = self.position.value
+
+        return {
+            "temperature": {
+                "value": data.temperature,
+                "unit": MeasureUnit.CELSIUS.value,
+                "identifier": f"temperature_{position}",
+                "display_name": f"temperature {position}",
+            },
+            "humidity": {
+                "value": data.humidity,
+                "unit": MeasureUnit.PERCENT.value,
+                "identifier": f"humidity_{position}",
+                "display_name": f"humidity {position}",
+            },
+            "air_pressure": {
+                "value": data.pressure,
+                "unit": MeasureUnit.HECTOPASCAL.value,
+                "identifier": f"air_pressure_{position}",
+                "display_name": f"air pressure {position}",
+            },
+        }
+
+
+class TemperatureSensor(Sensor):
+
+    sensor_obj: W1ThermSensor
+
+    @retry(times=3)
+    async def measure(self) -> float:
+
+        temperature_c = self.sensor_obj.get_temperature()
 
         return temperature_c
 
@@ -66,14 +104,3 @@ class SoilMoistureSensor(Sensor):
         is_wet = value == GPIO.LOW
 
         return "wet" if is_wet else "dry"
-
-
-class HumiditySensor(Sensor):
-
-    sensor_obj: DHT11
-
-    @retry(times=2)
-    async def measure(self) -> float:
-
-        humidity = self.sensor_obj.humidity
-        return humidity
