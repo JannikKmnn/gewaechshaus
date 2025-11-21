@@ -3,9 +3,9 @@ from logging import Logger
 from influxdb_client import Point
 from influxdb_client.client.influxdb_client_async import InfluxDBClientAsync
 
+from src.models.data import Measurement
 from src.models.influxdb import InfluxDBProperties
 from src.models.enums import InfluxDBResponse
-from src.models.sensor import Sensor
 
 
 def setup_influxdb_client(
@@ -29,26 +29,16 @@ def setup_influxdb_client(
 async def write_to_influxdb(
     client: InfluxDBClientAsync,
     bucket: str,
-    result_dict: dict,
-    sensors: list[Sensor],
+    measurement_results: list[Measurement],
     logger: Logger,
 ) -> InfluxDBResponse:
 
-    records = []
-    for key, value in result_dict.items():
-        if key == "timestamp":
-            continue
-        sensor = next((s for s in sensors if s.identifier == key), None)
-        if sensor is None:
-            logger.warning(
-                f"Sensor not found with identifier {key} in sensors {sensors}"
-            )
-            continue
-        records.append(
-            Point(measurement_name=sensor.type.value).field(
-                field=sensor.identifier, value=value
-            )
+    records = [
+        Point(measurement_name=rec.type.value).field(
+            field=rec.identifier, value=rec.value
         )
+        for rec in measurement_results
+    ]
 
     try:
         _ = await client.write_api().write(

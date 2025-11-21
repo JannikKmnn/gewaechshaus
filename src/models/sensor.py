@@ -6,6 +6,7 @@ from pydantic import BaseModel, ConfigDict, field_validator
 from abc import ABC, abstractmethod
 
 from typing import Literal, Optional
+from src.models.data import Measurement
 from src.models.enums import MeasureUnit, SensorType, Position
 from src.utils.decorators import retry
 
@@ -45,7 +46,7 @@ class BarometricSensor(Sensor):
     sensor_address: int
 
     @retry(times=3)
-    async def measure(self) -> dict:
+    async def measure(self) -> list[Measurement]:
 
         data = bme280.sample(
             bus=self.sensor_obj,
@@ -53,28 +54,29 @@ class BarometricSensor(Sensor):
             compensation_params=self.bme280_params,
         )
 
-        position = self.position.value
-
-        return {
-            "temperature": {
-                "value": data.temperature,
-                "unit": MeasureUnit.CELSIUS.value,
-                "identifier": f"temperature_{position}",
-                "display_name": f"temperature {position}",
-            },
-            "humidity": {
-                "value": data.humidity,
-                "unit": MeasureUnit.PERCENT.value,
-                "identifier": f"humidity_{position}",
-                "display_name": f"humidity {position}",
-            },
-            "air_pressure": {
-                "value": data.pressure,
-                "unit": MeasureUnit.HECTOPASCAL.value,
-                "identifier": f"air_pressure_{position}",
-                "display_name": f"air pressure {position}",
-            },
-        }
+        return [
+            Measurement(
+                identifier=f"temperature_{self.position.value.lower()}",
+                value=round(data.temperature, 2),
+                unit=MeasureUnit.CELSIUS,
+                type=SensorType.TEMPERATURE,
+                display_name=f"temperature {self.position.value.lower()}",
+            ),
+            Measurement(
+                identifier="humidity",
+                value=int(data.humidity),
+                unit=MeasureUnit.PERCENT,
+                type=SensorType.HUMIDITY,
+                display_name="humidity",
+            ),
+            Measurement(
+                identifier="air_pressure",
+                value=round(data.pressure, 2),
+                unit=MeasureUnit.HECTOPASCAL,
+                type=SensorType.AIR_PRESSURE,
+                display_name="air pressure",
+            ),
+        ]
 
 
 class TemperatureSensor(Sensor):
@@ -82,11 +84,19 @@ class TemperatureSensor(Sensor):
     sensor_obj: W1ThermSensor
 
     @retry(times=3)
-    async def measure(self) -> float:
+    async def measure(self) -> list[Measurement]:
 
         temperature_c = self.sensor_obj.get_temperature()
 
-        return temperature_c
+        return [
+            Measurement(
+                identifier=self.identifier,
+                value=temperature_c,
+                unit=MeasureUnit.CELSIUS,
+                type=self.type,
+                display_name=self.display_name,
+            ),
+        ]
 
 
 class SoilMoistureSensor(Sensor):
@@ -98,9 +108,18 @@ class SoilMoistureSensor(Sensor):
         GPIO.setup(self.pin, GPIO.IN)
 
     @retry(times=2)
-    async def measure(self) -> Literal["wet", "dry"]:
+    async def measure(self) -> list[Measurement]:
 
         value = GPIO.input(self.pin)
         is_wet = value == GPIO.LOW
+        result = "wet" if is_wet else "dry"
 
-        return "wet" if is_wet else "dry"
+        return [
+            Measurement(
+                identifier=self.identifier,
+                value=result,
+                type=self.type,
+                display_name=self.display_name,
+                unit=None,
+            )
+        ]

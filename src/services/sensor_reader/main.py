@@ -17,6 +17,7 @@ from src.services.sensor_reader.setup import (
     setup_temperature_sensors,
 )
 
+from src.models.data import Measurement
 from src.models.enums import MQTTResponse
 from src.models.sensor import (
     Sensor,
@@ -152,27 +153,18 @@ async def main():
 
             results = await asyncio.gather(*[sensor.measure() for sensor in sensors])
 
-            result_dict = {}
-            display_dict = {}
+            measurement_results: list[Measurement] = []
+            for res in results:
+                measurement_results.extend(res)
 
-            for value, sens in zip(results, sensors):
-                if type(value) == dict:
-                    # barometric results with multiple measurements
-                    for _, baro_result in value.items():
-                        identifier = baro_result["identifier"]
-                        baro_value = baro_result["value"]
-                        result_dict[identifier] = baro_value
-                        display_dict[baro_result["display_name"]] = (
-                            f"{baro_value} {baro_result['unit']}"
-                        )
-                else:
-                    # other sensor readings
-                    result_dict[sens.identifier] = value
-                    display_dict[sens.display_name] = (
-                        f"{value} {sens.unit.value if sens.unit else ''}"
-                    )
+            result_dict = {mr.identifier: mr.value for mr in measurement_results}
 
-            logger.info(
+            display_dict = {
+                mr.display_name: f"{mr.value} {mr.unit.value if mr.unit else ''}"
+                for mr in measurement_results
+            }
+
+            logger.debug(
                 f"""
                 Measurements {datetime.now()}:
                 {display_dict}
@@ -187,8 +179,7 @@ async def main():
                 write_to_influxdb(
                     client=influxdb_asnyc_client,
                     bucket=settings.influxdb_bucket,
-                    result_dict=result_dict,
-                    sensors=sensors,
+                    measurement_results=measurement_results,
                     logger=logger,
                 ),
                 display_task(
