@@ -1,6 +1,4 @@
-import adafruit_dht
 import asyncio
-import board
 import logging
 
 from datetime import datetime
@@ -14,19 +12,19 @@ from src.services.sensor_reader.setup import (
     setup_display,
     setup_mqtt,
     setup_influxdb,
+    setup_barometric_sensor,
     setup_soil_moisture_sensors,
     setup_temperature_sensors,
 )
 
-from src.models.enums import MeasureUnit, MQTTResponse, Position, SensorType
+from src.models.data import Measurement
+from src.models.enums import MQTTResponse
 from src.models.sensor import (
     Sensor,
-    HumiditySensor,
+    BarometricSensor,
     TemperatureSensor,
     SoilMoistureSensor,
 )
-
-GPIO_PIN_HUMIDITY_TEMPERATURE_SENSOR = board.D4
 
 
 class Settings(BaseSettings):
@@ -38,6 +36,9 @@ class Settings(BaseSettings):
 
     soil_moisture_sensor_channel_back: int = Field(default=23)
     soil_moisture_sensor_channel_front: int = Field(default=24)
+
+    bme280_i2c_address: int = Field(default=0x76)  # try 0x77 if not works
+    i2c_port: int = Field(default=1)
 
     lcd_i2c_address: int = Field(default=0x27)  # try 0x3F if not works
     lcd_columns: int = Field(default=16)
@@ -71,30 +72,20 @@ def init_sensor_group() -> list[Sensor]:
 
     sensors: list[Sensor] = []
 
-    ### 1. 1 Setup humidity sensor ###
+    ### 1. 1 Setup barometric sensor ###
 
-    humidityTemperatureDevice = adafruit_dht.DHT11(
-        GPIO_PIN_HUMIDITY_TEMPERATURE_SENSOR, use_pulseio=False
+    barometric_sensor: BarometricSensor = setup_barometric_sensor(
+        i2c_address=settings.bme280_i2c_address,
+        i2c_port=settings.i2c_port,
     )
 
-    humidity_sensor = HumiditySensor(
-        identifier="humidity",
-        display_name="humidity",
-        type=SensorType.HUMIDITY,
-        unit=MeasureUnit.PERCENT,
-        position=Position.UP,
-        logger=logger,
-        sensor_obj=humidityTemperatureDevice,
-    )
-
-    sensors.append(humidity_sensor)
+    sensors.append(barometric_sensor)
 
     ### 1.2 Setup temperature sensors ###
 
     temperature_sensors: list[TemperatureSensor] = setup_temperature_sensors(
         outside_sensor_id=settings.temperature_outside_sensor_id,
         inside_sensor_id=settings.temperature_inside_sensor_id,
-        sensor_up=humidityTemperatureDevice,
     )
 
     sensors.extend(temperature_sensors)
@@ -162,16 +153,18 @@ async def main():
 
             results = await asyncio.gather(*[sensor.measure() for sensor in sensors])
 
-            result_dict = {
-                sens.identifier: value for value, sens in zip(results, sensors)
-            }
+            measurement_results: list[Measurement] = []
+            for res in results:
+                measurement_results.extend(res)
+
+            result_dict = {mr.identifier: mr.value for mr in measurement_results}
 
             display_dict = {
-                sens.display_name: f"{value} {sens.unit.value if sens.unit else ''}"
-                for value, sens in zip(results, sensors)
+                mr.display_name: f"{mr.value} {mr.unit.value if mr.unit else ''}"
+                for mr in measurement_results
             }
 
-            logger.info(
+            logger.debug(
                 f"""
                 Measurements {datetime.now()}:
                 {display_dict}
@@ -186,8 +179,7 @@ async def main():
                 write_to_influxdb(
                     client=influxdb_asnyc_client,
                     bucket=settings.influxdb_bucket,
-                    result_dict=result_dict,
-                    sensors=sensors,
+                    measurement_results=measurement_results,
                     logger=logger,
                 ),
                 display_task(
