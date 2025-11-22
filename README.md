@@ -14,27 +14,27 @@ Currently, this MVP includes mainly storing & displaying sensor values to indica
 
 The greenhous is made out of wood and isolated with standard greenhouse foil to trap heat inside. It's 70cm x 90cm x ca. 160cm, while the bottom is directly connected to the surrounding soil and a second level is addable. This level serves also as an option either to add more plant pots...
 
-<div class="center">
+<p align="center">
     <img src="images/inside_greenhouse.jpg" alt="Inside the greenhouse" width="300"/>
-</div>
+</p>
 
 ...or to develop directly at a desktop inside the greenhouse!
 
-<div class="center">
+<p align="center">
     <img src="images/desktop_greenhouse.jpg" alt="Desktop in greenhouse" width="300"/>
-</div>
+</p>
 
 The box at the top left position is the "house" of the rasperry and the 16x2 lcd display. Inside, a breadboard and a bunch of jumper cables ensure a stable connection between the sensors and the pi, which measures on different GPIO pins asynchronously.
 
-<div class="center">
+<p align="center">
     <img src="images/inside_box.jpg" alt="Inside box" width="300"/>
-</div>
+</p>
 
 Another cool feature is the lightning in the night since different leds indicate wet or dry soil moistures, and together with the display a futuristic effect is made:
 
-<div class="center">
+<p align="center">
     <img src="images/night_greenhouse.jpg" alt="Greenhouse at night" width="300"/>
-</div>
+</p>
 
 ---
 
