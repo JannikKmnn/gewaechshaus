@@ -16,7 +16,7 @@ The greenhous is made out of wood and isolated with standard greenhouse foil to 
 
 ![Inside the greenhouse](images/inside_greenhouse.jpg?raw=true "Greenhouse inside")
 
-Or to develop directly at a desktop inside the greenhouse!
+...or to develop directly at a desktop inside the greenhouse!
 
 ![Desktop in greenhouse](images/desktop_greenhouse.jpg?raw=true "Greenhouse with desktop")
 
