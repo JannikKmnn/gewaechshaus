@@ -1,12 +1,13 @@
-# 🧠 Raspberry Pi Temperature & Humidity Monitor
+# 🧠🌱 Raspberry Pi Greenhouse Automations
 
-This smart home automation project represents the codebase to collect physical data inside my little garden greenhouse from multiple sensors connected to a Raspberry Pi 4 — including temperature, humidity and soil moisture.  
-The application runs inside a lightweight **Docker container** and can be reproduced by following the setup as described below. Dependency management is done with **Poetry**.
+This smart home automation project represents the codebase to collect physical data inside my little garden greenhouse from multiple sensors connected to a Raspberry Pi 4 — including temperature, humidity, air pressure and soil moisture.
 
-All sensor readings are periodically collected, logged, and displayed via a 16x2 lcd display for arduino or raspberry pi.  
-Each DS18B20 temperature sensor is uniquely identified by its 1-Wire address, allowing you to label them (e.g., *inside* / *outside*) without needing multiple GPIO pins.
+All sensor readings are periodically collected, logged, displayed inside a little self-made box for the raspi as well as published via MQTT and stored inside an InfluxDB cloud instance. This allows both real time and historical data analysis on the measurements:
+
+![InfluxDB dashboard (this one from winter time... 🧊)](relative%20images/influxdb_dashboard.png?raw=true "Sensor Monitoring")
 
 Currently, this MVP includes mainly displaying sensor values on the display to indicate if certain actions on the greenhouse are required (watering, ventilation). The idea is to build a fully automated system to minimize manual work in the greenhouse as well as implementing a full-on web application from scratch to monitor and control every sensor remotely.
+
 ---
 
 ## ✨ Features
@@ -37,6 +38,8 @@ Currently, this MVP includes mainly displaying sensor values on the display to i
 Follow the instructions on https://ubuntu.com/tutorials/how-to-install-ubuntu-desktop-on-raspberry-pi-4#1-overview to install ubuntu (24.04) on the micro SD card. It's not necessary to use ubuntu desktop (shh also possible), but this way I can implement/control everything directly on the raspberry.
 
 ### 2. OS setup
+
+The pi is running on ubuntu 25.10 (desktop version)
 
 First, install python & i2c tools for the lcd display:
 
