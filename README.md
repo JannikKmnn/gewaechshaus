@@ -18,7 +18,7 @@ The greenhous is made out of wood and isolated with standard greenhouse foil to 
     <img src="images/inside_greenhouse.jpg" alt="Inside the greenhouse" width="300"/>
 </p>
 
-...or to develop directly at a desktop inside the greenhouse!
+...or to develop directly at a desktop inside the greenhouse! (ssh access is activated now so not required but still cool)
 
 <p align="center">
     <img src="images/desktop_greenhouse.jpg" alt="Desktop in greenhouse" width="300"/>
