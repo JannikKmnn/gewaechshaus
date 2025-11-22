@@ -4,7 +4,7 @@ This smart home automation project represents the codebase to collect physical d
 
 All sensor readings are periodically collected, logged, displayed inside a little self-made box for the raspi as well as published via MQTT and stored inside an InfluxDB cloud instance. This allows both real time and historical data analysis on the measurements:
 
-![InfluxDB dashboard (this one from winter time... 🧊)](relative%20images/influxdb_dashboard.png?raw=true "Sensor Monitoring")
+![InfluxDB dashboard (this one from winter time... 🧊)](images/influxdb_dashboard.png?raw=true "Sensor Monitoring")
 
 Currently, this MVP includes mainly displaying sensor values on the display to indicate if certain actions on the greenhouse are required (watering, ventilation). The idea is to build a fully automated system to minimize manual work in the greenhouse as well as implementing a full-on web application from scratch to monitor and control every sensor remotely.
 
