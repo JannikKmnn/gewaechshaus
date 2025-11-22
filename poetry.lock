@@ -283,9 +283,9 @@ sniffio = ">=1.1"
 trio = ["trio (>=0.31.0)"]
 
 [[package]]
-name = "anyio"
-version = "4.11.0"
-description = "High-level concurrency and networking framework on top of asyncio or Trio"
+name = "attrs"
+version = "25.4.0"
+description = "Classes Without Boilerplate"
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
@@ -293,21 +293,6 @@ files = [
     {file = "attrs-25.4.0-py3-none-any.whl", hash = "sha256:adcf7e2a1fb3b36ac48d97835bb6d8ade15b8dcce26aba8bf1d14847b57a3373"},
     {file = "attrs-25.4.0.tar.gz", hash = "sha256:16d5969b87f0859ef33a48b35d55ac1be6e42ae49d5e853b597db70c35c57e11"},
 ]
-
-[[package]]
-name = "binho-host-adapter"
-version = "0.1.6"
-description = "Python Libraries for Binho Multi-Protocol USB Host Adapters"
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "binho-host-adapter-0.1.6.tar.gz", hash = "sha256:1e6da7a84e208c13b5f489066f05774bff1d593d0f5bf1ca149c2b8e83eae856"},
-    {file = "binho_host_adapter-0.1.6-py3-none-any.whl", hash = "sha256:f71ca176c1e2fc1a5dce128beb286da217555c6c7c805f2ed282a6f3507ec277"},
-]
-
-[package.dependencies]
-pyserial = "*"
 
 [[package]]
 name = "black"
@@ -1644,4 +1629,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "28e54fd746dc4d4fff6a26b32c080623a9c42daca67e1ebddb137ac4fbc20908"
+content-hash = "b7569ff12e90866919afa1731f1be83788f0feddcac32148a7fc7230d0a509ad"
