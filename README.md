@@ -38,11 +38,28 @@ Another cool feature is the lightning in the night since different leds indicate
 
 ---
 
-## 🎛️ Sensor Setup
+## 🎛️ Sensor Setup & GPIO wiring
 
 - 🧠 **Raspberry Pi 4 Model B**
-- 🖥️ **1× 16c2 lcd display**
+- 🖥️ **1× 16c2 lcd display** with IIC/I2c interface for easy wiring:
+    - 5V VCC -> 5V VCC
+    - GND -> GND
+    - SDA -> SDA
+    - SCL -> SCL 
 - 🫧 **1× GY-BME280** barometric sensor for temperature, air humidity and air pressure
+    - 5V VCC -> 5V VCC
+    - GND -> GND
+    - SDA -> SDA
+    - SCL -> SCL 
+    - (Since SDA/SCL are bus pins, multiple wiring together with the display shouldn't be a problem)
 - 🌡️ **2× DS18B20** temperature sensors, water resistant
+    - 3V VCC -> 3V VCC
+    - GND -> GND
+    - (Any GPIO pins, 10k Ohm resistor required)
 - 🫗 **2× Soil Moisture Sensors**
+    - 5V VCC -> 5V VCC
+    - GND -> GND
+    - DATA SM1 -> GPIO 23 (Physical 16)
+    - DATA SM2 -> GPIO 24 (Physical 18)
+
 
