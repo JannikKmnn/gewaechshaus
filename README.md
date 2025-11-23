@@ -62,4 +62,14 @@ Another cool feature is the lightning in the night since different leds indicate
     - DATA SM1 -> GPIO 23 (Physical 16)
     - DATA SM2 -> GPIO 24 (Physical 18)
 
+---
+
+# 🕹️ OS setup & software resources
+
+The pi runs on ubuntu 25.10 lts (desktop version) and Python 3.13. The OS setup for the sensors (i2cdetect, config.txt lines, modules etc.) are readable in the specific documentations.
+
+The repository contains poetry for dependency management and docker/docker-compose to run the application inside a container on the pi. The models and settings are wrapped by pydantic models and the envrionment variables are set either inside the docker files or (for sensitive informations like the influxdb connection details) inside an .env file. For local development, I use vscode and a virtual environment managed with poetry.
+
+Details for reproducability in progress...
+
 
