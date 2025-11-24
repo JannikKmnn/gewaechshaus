@@ -1,3 +1,5 @@
+import os
+
 from logging import Logger
 
 from influxdb_client import Point
@@ -22,6 +24,19 @@ def setup_influxdb_client(
     except Exception as err:
         logger.warning(f"Influxdb setup failed due to: {err}")
         client = None
+
+    return client
+
+
+async def setup_client():
+
+    properties = InfluxDBProperties(
+        host=os.getenv("INFLUXDB_HOST"),
+        org=os.getenv("INFLUXDB_ORG"),
+        token=os.getenv("INFLUXDB_TOKEN")
+    )
+
+    client = setup_influxdb_client(influxdb_properties=properties)
 
     return client
 
