@@ -7,10 +7,8 @@ from pydantic_settings import BaseSettings
 
 from src.services.sensor_reader.display import display_task
 from src.services.sensor_reader.influxdb import write_to_influxdb
-from src.services.sensor_reader.mqtt import publish_message
 from src.services.sensor_reader.setup import (
     setup_display,
-    setup_mqtt,
     setup_influxdb,
     setup_barometric_sensor,
     setup_soil_moisture_sensors,
@@ -18,7 +16,6 @@ from src.services.sensor_reader.setup import (
 )
 
 from src.models.data import Measurement
-from src.models.enums import MQTTResponse
 from src.models.sensor import (
     Sensor,
     BarometricSensor,
@@ -43,13 +40,6 @@ class Settings(BaseSettings):
     lcd_i2c_address: int = Field(default=0x27)  # try 0x3F if not works
     lcd_columns: int = Field(default=16)
     lcd_rows: int = Field(default=2)
-
-    # MQTT settings
-
-    mqtt_broker: str = Field(default="test")
-    mqtt_port: int = Field(default=1111)
-    mqtt_user: str = Field(default="greenhouse")
-    mqtt_password: str = Field("")
 
     # InfluxDB settings
 
@@ -123,8 +113,6 @@ async def main():
         """
     )
 
-    mqtt_client = None
-
     ### 2. Setup influxdb client ###
 
     influxdb_asnyc_client = setup_influxdb(
@@ -139,25 +127,13 @@ async def main():
 
         while True:
 
-            ### 3. Initial mqtt client connect ###
-            # and reconnection every time client fails
-            # TODO add cron scheduler instead
-            if mqtt_client is None:
-                mqtt_client = setup_mqtt(
-                    broker=settings.mqtt_broker,
-                    port=settings.mqtt_port,
-                    user=settings.mqtt_user,
-                    password=settings.mqtt_password,
-                    logger=logger,
-                )
+            # TODO add cron scheduler
 
             results = await asyncio.gather(*[sensor.measure() for sensor in sensors])
 
             measurement_results: list[Measurement] = []
             for res in results:
                 measurement_results.extend(res)
-
-            result_dict = {mr.identifier: mr.value for mr in measurement_results}
 
             display_dict = {
                 mr.display_name: f"{mr.value} {mr.unit.value if mr.unit else ''}"
@@ -171,11 +147,8 @@ async def main():
                 """
             )
 
-            ### 4. Send MQTT message, save influxdb record and display measurements ###
-            mqtt_response, influxdb_response, _ = await asyncio.gather(
-                publish_message(
-                    client=mqtt_client, result_dict=result_dict, logger=logger
-                ),
+            ### 3. Save influxdb record and display measurements ###
+            influxdb_response, _ = await asyncio.gather(
                 write_to_influxdb(
                     client=influxdb_asnyc_client,
                     bucket=settings.influxdb_bucket,
@@ -191,13 +164,9 @@ async def main():
 
             logger.debug(
                 f"""
-                MQTT response: {mqtt_response.value}
                 InfluxDB response: {influxdb_response.value}
                 """
             )
-
-            if mqtt_response == MQTTResponse.CLIENT_CRASHED:
-                mqtt_client = None
 
 
 if __name__ == "__main__":

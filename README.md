@@ -2,7 +2,7 @@
 
 This smart home automation project represents the codebase to collect physical data inside my little garden greenhouse from multiple sensors connected to a Raspberry Pi 4 — including temperature, humidity, air pressure and soil moisture.
 
-All sensor readings are periodically collected, logged, displayed inside a little self-made box for the raspi as well as published via MQTT and stored inside an InfluxDB cloud instance. This allows both real time and historical data analysis on the measurements:
+All sensor readings are periodically collected, logged, displayed inside a little self-made box for the raspi as well as stored inside an InfluxDB cloud instance. This allows both real time and historical data analysis on the measurements:
 
 ![InfluxDB dashboard (this one from winter time...)](images/influxdb_dashboard.png?raw=true "Sensor Monitoring")
 

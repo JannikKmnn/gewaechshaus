@@ -7,11 +7,9 @@ from RPLCD.i2c import CharLCD
 from smbus2 import SMBus
 
 from src.services.sensor_reader.influxdb import setup_influxdb_client
-from src.services.sensor_reader.mqtt import setup_client
 
 from src.models.enums import Position, SensorType, MeasureUnit
 from src.models.influxdb import InfluxDBProperties
-from src.models.mqtt import MQTTProperties
 from src.models.sensor import BarometricSensor, TemperatureSensor, SoilMoistureSensor
 
 
@@ -35,30 +33,6 @@ def setup_display(
         lcdDisplay = None
 
     return lcdDisplay
-
-
-def setup_mqtt(
-    broker: str,
-    port: int,
-    user: str,
-    password: str,
-    logger: Logger,
-):
-
-    mqtt_client_properties = MQTTProperties(
-        broker=broker,
-        port=port,
-        user=user,
-        password=password,
-    )
-
-    mqtt_client = setup_client(
-        client_properties=mqtt_client_properties,
-        logger=logger,
-        start_loop=True,
-    )
-
-    return mqtt_client
 
 
 def setup_influxdb(
