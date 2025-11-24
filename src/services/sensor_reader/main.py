@@ -147,7 +147,7 @@ async def main():
                 """
             )
 
-            ### 4. Save influxdb record and display measurements ###
+            ### 3. Save influxdb record and display measurements ###
             influxdb_response, _ = await asyncio.gather(
                 write_to_influxdb(
                     client=influxdb_asnyc_client,
