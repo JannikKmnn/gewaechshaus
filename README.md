@@ -24,7 +24,7 @@ The greenhous is made out of wood and isolated with standard greenhouse foil to 
     <img src="images/desktop_greenhouse.jpg" alt="Desktop in greenhouse" width="300"/>
 </p>
 
-The box at the top left position is the "house" of the rasperry and the 16x2 lcd display. Inside, a breadboard and a bunch of jumper cables ensure a stable connection between the sensors and the pi, which measures on different GPIO pins asynchronously.
+The box at the top left position is the "house" of the rasperry and the 16x2 lcd display, which displays all the measurements successively in every measure cycle. Inside, a breadboard and a bunch of jumper cables ensure a stable connection between the sensors and the pi, which measures on different GPIO pins asynchronously.
 
 <p align="center">
     <img src="images/inside_box.jpg" alt="Inside box" width="300"/>
@@ -55,7 +55,8 @@ Another cool feature is the lightning in the night since different leds indicate
 - 🌡️ **2× DS18B20** temperature sensors, water resistant
     - 3V VCC -> 3V VCC
     - GND -> GND
-    - (Any GPIO pins, 10k Ohm resistor required)
+    - DATA -> Any GPIO pin, checkout this [tutorial](https://www.circuitbasics.com/raspberry-pi-ds18b20-temperature-sensor-tutorial/)
+    - (10k Ohm resistor in parallel to the sensors required)
 - 🫗 **2× Soil Moisture Sensors**
     - 5V VCC -> 5V VCC
     - GND -> GND
@@ -66,10 +67,39 @@ Another cool feature is the lightning in the night since different leds indicate
 
 # 🕹️ OS setup & software resources
 
-The pi runs on ubuntu 25.10 lts (desktop version) and Python 3.13. The OS setup for the sensors (i2cdetect, config.txt lines, modules etc.) are readable in the specific documentations.
+The pi runs on ubuntu 25.10 lts (desktop version) and Python 3.13. Other ubuntu version should also work, just select one that suites best from the [Raspberry Pi Imager](https://www.raspberrypi.com/software/). The OS setup for the sensors (i2cdetect, config.txt lines, modules etc.) are readable in the specific documentations.
 
 The repository contains poetry for dependency management and docker/docker-compose to run the application inside a container on the pi. The models and settings are wrapped by pydantic models and the envrionment variables are set either inside the docker files or (for sensitive informations like the influxdb connection details) inside an .env file. For local development, I use vscode and a virtual environment managed with poetry.
 
-Details for reproducability in progress...
+Basic python and
+
+## 🔛 (Virtual) environment setup
+
+The following setup is suited to develop directly on the pi, this is why allowing ssh access or the ubuntu desktop version is recommended.
+
+After checking out this repository, navigate to the root folder (/gewaechshaus) and run
+
+```python -m venv .venv```
+
+This creates a .venv folder containing the python virtual environment which can by activated by running
+
+```source .venv/bin/activate```
+
+on ubuntu. Next, every dependency defined in this repo can be directly installed and managed via poetry. For that, install poetry according to the [documentation](https://www.digitalocean.com/community/tutorials/how-to-install-poetry-to-manage-python-dependencies-on-ubuntu-22-04) and simply run
+
+```poetry install```
+
+This will install all dependencies necessary for this project into your venv.
+
+To secretly store your influxDB properties, create an .env file in your root folder containing following environment variables (insert your values from InfluxDB cloud):
+
+```
+INFLUXDB_HOST=<YOUR_HOST>
+INFLUXDB_ORG=<YOUR_ORGANISATION_NAME>
+INFLUXDB_BUCKET=<YOUR_BUCKET_NAME>
+INFLUXDB_TOKEN=<YOUR_TOKEN>
+```
+
+The docker-compose will load these environment variables while building the image.
 
 
