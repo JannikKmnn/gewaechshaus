@@ -24,7 +24,7 @@ The greenhous is made out of wood and isolated with standard greenhouse foil to 
     <img src="images/desktop_greenhouse.jpg" alt="Desktop in greenhouse" width="300"/>
 </p>
 
-The box at the top left position is the "house" of the rasperry and the 16x2 lcd display. Inside, a breadboard and a bunch of jumper cables ensure a stable connection between the sensors and the pi, which measures on different GPIO pins asynchronously.
+The box at the top left position is the "house" of the rasperry and the 16x2 lcd display, which displays all the measurements successively in every measure cycle. Inside, a breadboard and a bunch of jumper cables ensure a stable connection between the sensors and the pi, which measures on different GPIO pins asynchronously.
 
 <p align="center">
     <img src="images/inside_box.jpg" alt="Inside box" width="300"/>
