@@ -1,5 +1,3 @@
-import os
-
 from datetime import datetime, timezone
 from fastapi import Depends
 from typing import Literal, Optional
@@ -17,10 +15,8 @@ async def get_measurements(
 ):
     
     query = f"""
-        SELECT *
-        FROM {measurement}
-        WHERE time >= {str(start_time)} AND time <= {str(end_time)}
-        AND ({field_identifer} IS NOT NULL)
+        from(bucket:{measurement})
+        |> range(start: {start_time})
     """
 
     async with influxdb_client:
