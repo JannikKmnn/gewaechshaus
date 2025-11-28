@@ -71,8 +71,6 @@ The pi runs on ubuntu 25.10 lts (desktop version) and Python 3.13. Other ubuntu 
 
 The repository contains poetry for dependency management and docker/docker-compose to run the application inside a container on the pi. The models and settings are wrapped by pydantic models and the envrionment variables are set either inside the docker files or (for sensitive informations like the influxdb connection details) inside an .env file. For local development, I use vscode and a virtual environment managed with poetry.
 
-Basic python and
-
 ## 🔛 (Virtual) environment setup
 
 The following setup is suited to develop directly on the pi, this is why allowing ssh access or the ubuntu desktop version is recommended.
