@@ -10,7 +10,7 @@ from src.shared.influxdb import setup_influxdb_client
 
 from src.models.enums import Position, SensorType, MeasureUnit
 from src.models.influxdb import InfluxDBProperties
-from src.models.sensor import BarometricSensor, TemperatureSensor, SoilMoistureSensor
+from src.models.components.sensor import BarometricSensor, TemperatureSensor, SoilMoistureSensor
 
 
 def setup_display(
