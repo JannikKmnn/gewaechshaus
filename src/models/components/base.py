@@ -5,6 +5,7 @@ from typing import Optional
 
 from src.models.enums import Position
 
+
 class Component(ABC, BaseModel):
 
     identifier: str

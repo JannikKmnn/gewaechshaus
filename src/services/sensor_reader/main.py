@@ -16,7 +16,7 @@ from src.services.sensor_reader.setup import (
 )
 
 from src.models.data import Measurement
-from src.models.sensor import (
+from src.models.components.sensor import (
     Sensor,
     BarometricSensor,
     TemperatureSensor,
@@ -27,6 +27,8 @@ from src.models.sensor import (
 class Settings(BaseSettings):
 
     measure_interval_seconds: int = Field(default=60)
+
+    # Sensor Setup
 
     temperature_outside_sensor_id: str = Field(default="000000b47976")
     temperature_inside_sensor_id: str = Field(default="000000b998e3")
@@ -40,6 +42,14 @@ class Settings(BaseSettings):
     lcd_i2c_address: int = Field(default=0x27)  # try 0x3F if not works
     lcd_columns: int = Field(default=16)
     lcd_rows: int = Field(default=2)
+
+    # Actuator Setup
+
+    window_actuator_left_extend_pin: int = Field(default=5)
+    window_actuator_left_retract_pin: int = Field(default=6)
+
+    window_actuator_right_extend_pin: int = Field(default=16)
+    window_actuator_right_retract_pin: int = Field(default=20)
 
     # InfluxDB settings
 
