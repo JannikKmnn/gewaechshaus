@@ -2,13 +2,13 @@ import os
 
 import bme280
 
-from pydantic import BaseModel, ConfigDict, field_validator
-from abc import ABC, abstractmethod
+from pydantic import field_validator
+from abc import abstractmethod
 
 from typing import Optional
-from src.models.components.base import Component
+from base import Component
 from src.models.data import Measurement
-from src.models.enums import MeasureUnit, SensorType, Position
+from src.models.enums import MeasureUnit, SensorType
 from src.utils.decorators import retry
 
 from smbus2 import SMBus
@@ -19,6 +19,7 @@ import RPi.GPIO as GPIO  # type: ignore
 class Sensor(Component):
 
     display_name: str
+    type: SensorType
     unit: Optional[MeasureUnit] = None
 
     @field_validator("display_name", mode="after")
