@@ -10,7 +10,7 @@ Currently, this MVP includes mainly storing & displaying sensor values to indica
 
 ---
 
-## 📸 Pictures & Greenhouse Informations
+## 📸 Pictures & Greenhouse Information
 
 The greenhous is made out of wood and isolated with standard greenhouse foil to trap heat inside. It's 70cm x 90cm x ca. 160cm, while the bottom is directly connected to the surrounding soil and a second level is addable. This level serves also as an option either to add more plant pots...
 
