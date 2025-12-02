@@ -3,37 +3,63 @@ import sys
 
 from src.services.sensor_reader.setup import setup_linear_actuators
 
-import RPi.GPIO as GPIO  # type: ignore
+WINDOW_ACTUATOR_LEFT_EXTEND_PIN = 5
+WINDOW_ACTUATOR_LEFT_RETRACT_PIN = 6
+
+WINDOW_ACTUATOR_RIGHT_EXTEND_PIN = 16
+WINDOW_ACTUATOR_RIGHT_RETRACT_PIN = 20
+
+MOVE_TIME = 15.0
 
 
 async def main(position, movement):
 
-    window_actuator_left_extend_pin = 5
-    window_actuator_left_retract_pin = 6
-
-    window_actuator_right_extend_pin = 16
-    window_actuator_right_retract_pin = 20
-
-    move_time = 15.0
-
     left_actuator, right_actuator = setup_linear_actuators(
-        left_extend_pin=window_actuator_left_extend_pin,
-        left_retract_pin=window_actuator_left_retract_pin,
-        right_extend_pin=window_actuator_right_extend_pin,
-        right_retract_pin=window_actuator_right_retract_pin,
-        moving_time=move_time,
+        left_extend_pin=WINDOW_ACTUATOR_LEFT_EXTEND_PIN,
+        left_retract_pin=WINDOW_ACTUATOR_LEFT_RETRACT_PIN,
+        right_extend_pin=WINDOW_ACTUATOR_RIGHT_EXTEND_PIN,
+        right_retract_pin=WINDOW_ACTUATOR_RIGHT_RETRACT_PIN,
+        moving_time=MOVE_TIME,
     )
 
     if not position and not movement:
-        _ = await asyncio.gather(left_actuator.extend, right_actuator.extend)
+
+        assert not left_actuator.is_extended
+        assert not right_actuator.is_extended
+
+        _ = await asyncio.gather(left_actuator.extend(), right_actuator.extend())
 
         await asyncio.sleep(5.0)
 
-        _ = await asyncio.gather(left_actuator.retract, right_actuator.retract)
+        assert left_actuator.is_extended
+        assert right_actuator.is_extended
+
+        _ = await asyncio.gather(left_actuator.retract(), right_actuator.retract())
+
+        assert not left_actuator.is_extended
+        assert not right_actuator.is_extended
+
+    if position == "left":
+        actuator_to_test = left_actuator
+    elif position == "right":
+        actuator_to_test = right_actuator
+
+    if actuator_to_test:
+        if movement == "extend":
+            await actuator_to_test.extend()
+            assert actuator_to_test.is_extended
+        elif movement == "retract":
+            await actuator_to_test.retract()
+            assert not actuator_to_test.is_extended
+        else:
+            # opens and closes window if closed
+            await actuator_to_test.extend()
+            assert actuator_to_test.is_extended
+            await asyncio.sleep(5.0)
+            await actuator_to_test.retract()
+            assert not actuator_to_test.is_extended
 
     await asyncio.sleep(5.0)
-
-    GPIO.cleanup()
 
     return
 
