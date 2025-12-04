@@ -1,7 +1,7 @@
 from typing import Optional
 
-from models.data import DataRequestProperties
-from db.data import get_measurements as get_db_measurements
+from src.services.api.models.data import DataRequestProperties
+from src.services.api.db.data import get_measurements as get_db_measurements
 
 
 async def get_measurements(

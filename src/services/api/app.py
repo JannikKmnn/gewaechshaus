@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from router.data import router as data_router
+from src.services.api.router.data import router as data_router
 
 app = FastAPI()
 
