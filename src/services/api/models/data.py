@@ -8,7 +8,8 @@ import numpy as np
 @dataclass
 class DataRequestProperties:
 
-    start_time: Union[datetime, None] = None
+    measurement: str
+    start_time: datetime
     end_time: Union[datetime, None] = None
 
 
