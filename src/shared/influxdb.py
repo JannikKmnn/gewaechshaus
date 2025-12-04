@@ -1,4 +1,7 @@
+import os
+
 from logging import Logger
+from typing import Optional
 
 from influxdb_client import Point
 from influxdb_client.client.influxdb_client_async import InfluxDBClientAsync
@@ -10,7 +13,7 @@ from src.models.enums import InfluxDBResponse
 
 def setup_influxdb_client(
     influxdb_properties: InfluxDBProperties,
-    logger: Logger,
+    logger: Optional[Logger] = None,
 ) -> InfluxDBClientAsync | None:
     try:
         client = InfluxDBClientAsync(
@@ -20,8 +23,23 @@ def setup_influxdb_client(
             timeout=influxdb_properties.timeout,
         )
     except Exception as err:
-        logger.warning(f"Influxdb setup failed due to: {err}")
+        if logger:
+            logger.warning(f"Influxdb setup failed due to: {err}")
         client = None
+
+    return client
+
+
+async def setup_client() -> InfluxDBClientAsync | None:
+
+    properties = InfluxDBProperties(
+        host=os.getenv("INFLUXDB_HOST"),
+        org=os.getenv("INFLUXDB_ORG"),
+        token=os.getenv("INFLUXDB_TOKEN"),
+        timeout=10000,
+    )
+
+    client = setup_influxdb_client(influxdb_properties=properties)
 
     return client
 

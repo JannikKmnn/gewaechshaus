@@ -6,7 +6,7 @@ from pydantic import Field
 from pydantic_settings import BaseSettings
 
 from src.services.sensor_reader.display import display_task
-from src.services.sensor_reader.influxdb import write_to_influxdb
+from src.shared.influxdb import write_to_influxdb
 from src.services.sensor_reader.setup import (
     setup_display,
     setup_influxdb,
