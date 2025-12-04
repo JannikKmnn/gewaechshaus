@@ -6,7 +6,7 @@ from src.services.api.handlers.data import get_measurements as get_handlers_meas
 router = APIRouter()
 
 
-@router.get("/", tags=["measurements"])
+@router.post("/", tags=["measurements"])
 async def get_measurements(req_properties: DataRequestProperties):
 
     values = await get_handlers_measurements(req_properties=req_properties)
@@ -14,7 +14,7 @@ async def get_measurements(req_properties: DataRequestProperties):
     return values
 
 
-@router.get("/{sensor_identifier}", tags=["measurements"])
+@router.post("/{sensor_identifier}", tags=["measurements"])
 async def get_measurements(
     sensor_identifier: str, req_properties: DataRequestProperties
 ):

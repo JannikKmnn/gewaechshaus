@@ -4,18 +4,18 @@ from typing import Literal, Optional
 
 from influxdb_client.client.influxdb_client_async import InfluxDBClientAsync
 
+from src.models.enums import SensorType
 from src.shared.influxdb import setup_client
 
 
 async def get_measurements(
     start_time: datetime,
-    measurement: Optional[
-        Literal["AirPressure", "Humidity", "SoilMoisture", "Temperature"]
-    ] = None,
+    measurement: Optional[SensorType] = None,
     end_time: Optional[list[str]] = None,
     field_identifier: Optional[list[str]] = None,
-    influxdb_client: InfluxDBClientAsync = Depends(setup_client),
 ) -> list[list]:
+
+    influxdb_client = await setup_client()
 
     if end_time is None:
         end_time = datetime.now(tz=timezone.utc)
@@ -26,7 +26,9 @@ async def get_measurements(
     """
 
     if measurement:
-        query += f"""    |> filter(fn: (r) => r["_measurement"] == "{measurement}")"""
+        query += (
+            f"""    |> filter(fn: (r) => r["_measurement"] == "{measurement.value}")"""
+        )
 
     if field_identifier:
         filters = " or ".join(
