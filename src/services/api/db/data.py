@@ -16,7 +16,8 @@ async def get_measurements(
     
     query = f"""
         from(bucket:{measurement})
-        |> range(start: {start_time})
+        |> range(start: {start_time}, stop: {end_time})
+        |> filter(fn: (r) => r["_measurement"] == {measurement})
     """
 
     async with influxdb_client:

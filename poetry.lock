@@ -598,17 +598,6 @@ extra = ["numpy", "pandas (>=1.0.0)"]
 test = ["aioresponses (>=0.7.3)", "coverage (>=4.0.3)", "flake8 (>=5.0.3)", "httpretty (==1.0.5)", "jinja2 (>=3.1.4)", "nose (>=1.3.7)", "pluggy (>=0.3.1)", "psutil (>=5.6.3)", "py (>=1.4.31)", "pytest (>=5.0.0)", "pytest-cov (>=3.0.0)", "pytest-timeout (>=2.1.0)", "randomize (>=0.13)", "sphinx (==1.8.5)", "sphinx-rtd-theme"]
 
 [[package]]
-name = "mqtt"
-version = "0.0.1"
-description = "frp NAT."
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "mqtt-0.0.1.tar.gz", hash = "sha256:c670eefc1f9717f5e8c575a7b6f3594a5b6faea34dc6c2badbd9fd99dfbf2ff4"},
-]
-
-[[package]]
 name = "multidict"
 version = "6.7.0"
 description = "multidict implementation"
@@ -871,21 +860,6 @@ files = [
     {file = "packaging-25.0-py3-none-any.whl", hash = "sha256:29572ef2b1f17581046b3a2227d5c611fb25ec70ca1ba8554b24b0e69331a484"},
     {file = "packaging-25.0.tar.gz", hash = "sha256:d443872c98d677bf60f6a1f2f8c1cb748e8fe762d2bf9d3148b5599295b0fc4f"},
 ]
-
-[[package]]
-name = "paho-mqtt"
-version = "2.1.0"
-description = "MQTT version 5.0/3.1.1 client class"
-optional = false
-python-versions = ">=3.7"
-groups = ["main"]
-files = [
-    {file = "paho_mqtt-2.1.0-py3-none-any.whl", hash = "sha256:6db9ba9b34ed5bc6b6e3812718c7e06e2fd7444540df2455d2c51bd58808feee"},
-    {file = "paho_mqtt-2.1.0.tar.gz", hash = "sha256:12d6e7511d4137555a3f6ea167ae846af2c7357b10bc6fa4f7c3968fc1723834"},
-]
-
-[package.extras]
-proxy = ["pysocks"]
 
 [[package]]
 name = "pathspec"
@@ -1655,4 +1629,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "b7569ff12e90866919afa1731f1be83788f0feddcac32148a7fc7230d0a509ad"
+content-hash = "072ec96dd6a009b97f50399129cb7ccd3f2ae452bd6b0f95844d99cc88c566b7"
