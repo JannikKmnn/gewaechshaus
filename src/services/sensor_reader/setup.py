@@ -10,7 +10,6 @@ from src.shared.influxdb import setup_influxdb_client
 
 from src.models.enums import Position, SensorType, MeasureUnit
 from src.models.influxdb import InfluxDBProperties
-from src.models.components.actuators import LinearActuator
 from src.models.components.sensor import (
     BarometricSensor,
     TemperatureSensor,
