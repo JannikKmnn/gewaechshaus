@@ -1,4 +1,3 @@
-import asyncio
 import time
 
 from RPLCD.i2c import CharLCD

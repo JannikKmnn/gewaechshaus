@@ -1,7 +1,25 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from src.services.api.router.data import router as data_router
+from src.services.api.router.windows import router as windows_router
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    try:
+        from src.shared.actuators import setup_linear_actuators
+
+        app.state.actuators = setup_linear_actuators()
+    except ModuleNotFoundError:
+        # happens while dev on another machine than the pi
+        pass
+    finally:
+        yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 app.include_router(data_router, prefix="/data", tags=["measurements"])
+app.include_router(windows_router, prefix="/window", tags=["actuators"])
