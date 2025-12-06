@@ -2,7 +2,7 @@ import asyncio
 
 from datetime import datetime, timezone
 
-from base import Component
+from src.models.components.base import Component
 from src.models.exceptions import StateAlreadyReached
 
 import RPi.GPIO as GPIO  # type: ignore
@@ -15,7 +15,7 @@ class LinearActuator(Component):
     moving_time_seconds: float
 
     last_extension: datetime = datetime(2025, 12, 1, tzinfo=timezone.utc)
-    last_retraction: datetime = datetime(2025, 12, 1, tzinfo=timezone.utc)
+    last_retraction: datetime = datetime(2025, 12, 2, tzinfo=timezone.utc)
 
     is_extended: bool = False
 

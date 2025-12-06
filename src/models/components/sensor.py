@@ -6,7 +6,7 @@ from pydantic import field_validator
 from abc import abstractmethod
 
 from typing import Optional
-from base import Component
+from src.models.components.base import Component
 from src.models.data import Measurement
 from src.models.enums import MeasureUnit, SensorType
 from src.utils.decorators import retry
