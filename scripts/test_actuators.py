@@ -1,7 +1,7 @@
 import asyncio
 import sys
 
-from src.services.sensor_reader.setup import setup_linear_actuators
+from src.shared.actuators import setup_window_openers
 
 WINDOW_ACTUATOR_LEFT_EXTEND_PIN = 5
 WINDOW_ACTUATOR_LEFT_RETRACT_PIN = 6
@@ -14,13 +14,7 @@ MOVE_TIME = 15.0
 
 async def main(position, movement):
 
-    left_actuator, right_actuator = setup_linear_actuators(
-        left_extend_pin=WINDOW_ACTUATOR_LEFT_EXTEND_PIN,
-        left_retract_pin=WINDOW_ACTUATOR_LEFT_RETRACT_PIN,
-        right_extend_pin=WINDOW_ACTUATOR_RIGHT_EXTEND_PIN,
-        right_retract_pin=WINDOW_ACTUATOR_RIGHT_RETRACT_PIN,
-        moving_time=MOVE_TIME,
-    )
+    left_actuator, right_actuator = setup_window_openers()
 
     if not position and not movement:
 
