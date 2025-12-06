@@ -9,9 +9,9 @@ from src.services.api.router.windows import router as windows_router
 async def lifespan(app: FastAPI):
     # Startup
     try:
-        from src.shared.actuators import setup_linear_actuators
+        from src.shared.actuators import setup_window_openers
 
-        app.state.actuators = setup_linear_actuators()
+        app.state.actuators = setup_window_openers()
     except ModuleNotFoundError:
         # happens while dev on another machine than the pi
         pass

@@ -1,8 +1,5 @@
 from datetime import datetime, timezone
-from fastapi import Depends
-from typing import Literal, Optional
-
-from influxdb_client.client.influxdb_client_async import InfluxDBClientAsync
+from typing import Optional
 
 from src.models.enums import SensorType
 from src.shared.influxdb import setup_client

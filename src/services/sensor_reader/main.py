@@ -43,14 +43,6 @@ class Settings(BaseSettings):
     lcd_columns: int = Field(default=16)
     lcd_rows: int = Field(default=2)
 
-    # Actuator Setup
-
-    window_actuator_left_extend_pin: int = Field(default=5)
-    window_actuator_left_retract_pin: int = Field(default=6)
-
-    window_actuator_right_extend_pin: int = Field(default=16)
-    window_actuator_right_retract_pin: int = Field(default=20)
-
     # InfluxDB settings
 
     influxdb_host: str = Field(default="https://localhost:8000")
