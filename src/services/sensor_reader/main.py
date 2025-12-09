@@ -16,7 +16,7 @@ from src.services.sensor_reader.setup import (
 )
 
 from src.models.data import Measurement
-from src.models.sensor import (
+from src.models.components.sensor import (
     Sensor,
     BarometricSensor,
     TemperatureSensor,
@@ -27,6 +27,8 @@ from src.models.sensor import (
 class Settings(BaseSettings):
 
     measure_interval_seconds: int = Field(default=60)
+
+    # Sensor Setup
 
     temperature_outside_sensor_id: str = Field(default="000000b47976")
     temperature_inside_sensor_id: str = Field(default="000000b998e3")

@@ -62,6 +62,18 @@ Another cool feature is the lightning in the night since different leds indicate
     - GND -> GND
     - DATA SM1 -> GPIO 23 (Physical 16)
     - DATA SM2 -> GPIO 24 (Physical 18)
+- ⚙️ **2× Linear Actuators for Wiring** (+ 2 Double-Pole 5V Relays)
+    - Actuator - -> COM2
+    - Actuator + -> COM1
+    - 12V DC - -> NC1 and NC2
+    - 12V DC + -> NO1 and NO2
+    - 5V VCC -> Relays VCC
+    - Pi GND -> Relays GND
+    - Actuator Right Extend Pin (GPIO 16) -> Relays (R) IN1
+    - Actuator Right Retract Pin (GPIO 20) -> Relays (R) IN2
+    - Actuator Left Extend Pin (GPIO 5) -> Relays (L) IN1
+    - Actuator Left Retract Pin (GPIO 6) -> Relays (L) IN2
+
 
 ---
 
@@ -89,13 +101,19 @@ on ubuntu. Next, every dependency defined in this repo can be directly installed
 
 This will install all dependencies necessary for this project into your venv.
 
-To secretly store your influxDB properties, create an .env file in your root folder containing following environment variables (insert your values from InfluxDB cloud):
+To secretly store your influxDB properties as well as the environment variables for the actuator pins, create an .env file in your root folder containing following environment variables (insert your values from InfluxDB cloud):
 
 ```
 INFLUXDB_HOST=<YOUR_HOST>
 INFLUXDB_ORG=<YOUR_ORGANISATION_NAME>
 INFLUXDB_BUCKET=<YOUR_BUCKET_NAME>
 INFLUXDB_TOKEN=<YOUR_TOKEN>
+
+WINDOW_ACTUATOR_LEFT_EXTEND_PIN=<GPIO_PIN_LEFT_EXTEND>
+WINDOW_ACTUATOR_LEFT_RETRACT_PIN=<GPIO_PIN_LEFT_RETRACT>
+WINDOW_ACTUATOR_RIGHT_EXTEND_PIN=<GPIO_PIN_RIGHT_EXTEND>
+WINDOW_ACTUATOR_RIGHT_RETRACT_PIN=<GPIO_PIN_RIGHT_RETRACT>
+WINDOW_MOVING_TIME=<HOW_LONG_ACTUATOR_TAKES>
 ```
 
 The docker-compose will load these environment variables while building the image.

@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-ENV POETRY_VERSION=2.1.2
+ENV POETRY_VERSION=2.2.1
 RUN pip install --no-cache-dir "poetry==$POETRY_VERSION"
 
 WORKDIR /app

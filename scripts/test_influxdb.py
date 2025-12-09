@@ -10,6 +10,7 @@ load_dotenv()
 
 logger = Logger(name="test_influxdb")
 
+
 async def main():
 
     print(os.getenv("INFLUXDB_HOST"))
@@ -27,5 +28,6 @@ async def main():
 
     # test API
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     asyncio.run(main())
