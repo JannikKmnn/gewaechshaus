@@ -33,7 +33,7 @@ class LinearActuator(Component):
 
         GPIO.output(self.retract_pin, False)
         GPIO.output(self.extend_pin, True)
-        asyncio.sleep(delay=self.moving_time_seconds)
+        await asyncio.sleep(delay=self.moving_time_seconds)
         GPIO.output(self.extend_pin, False)
 
         self.is_extended = True
@@ -46,7 +46,7 @@ class LinearActuator(Component):
 
         GPIO.output(self.extend_pin, False)
         GPIO.output(self.retract_pin, True)
-        asyncio.sleep(delay=self.moving_time_seconds)
+        await asyncio.sleep(delay=self.moving_time_seconds)
         GPIO.output(self.retract_pin, False)
 
         self.is_extended = False

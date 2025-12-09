@@ -4,19 +4,23 @@ from fastapi import FastAPI
 from src.services.api.router.data import router as data_router
 from src.services.api.router.windows import router as windows_router
 
+IMPORT_SUCCESS = False
+try:
+    from src.shared.actuators import setup_window_openers
+
+    IMPORT_SUCCESS = True
+except ModuleNotFoundError:
+    # happens while dev on another machine than the pi
+    pass
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    try:
-        from src.shared.actuators import setup_window_openers
+    if IMPORT_SUCCESS:
+        app.state.actuators = await setup_window_openers()
 
-        app.state.actuators = setup_window_openers()
-    except ModuleNotFoundError:
-        # happens while dev on another machine than the pi
-        pass
-    finally:
-        yield
+    yield
 
 
 app = FastAPI(lifespan=lifespan)
