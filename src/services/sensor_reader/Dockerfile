@@ -12,11 +12,11 @@ RUN pip install --no-cache-dir "poetry==$POETRY_VERSION"
 
 WORKDIR /app
 
-COPY pyproject.toml poetry.lock* ./
+COPY ../../pyproject.toml ../../poetry.lock* ./
 
 RUN poetry install --no-interaction
 
-COPY . .
+COPY ../../ .
 
 ENV MEASURE_INTERVAL_SECONDS=60 \
     LOG_LVL=INFO \
@@ -27,4 +27,4 @@ ENV MEASURE_INTERVAL_SECONDS=60 \
     LCD_COLUMNS=16 \
     LCD_ROWS=2
 
-CMD ["poetry", "run", "python", "-m", "src.services.sensor_reader.main"]
+CMD ["poetry", "run", "python", "-m", "src.services.sensor_reader.src.sensor_reader.main"]
