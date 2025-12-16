@@ -1,12 +1,16 @@
 # 🧠🌱 Raspberry Pi Greenhouse Automations
 
-This smart home automation project represents the codebase to collect physical data inside my little garden greenhouse from multiple sensors connected to a Raspberry Pi 4 — including temperature, humidity, air pressure and soil moisture.
+This smart home automation project represents the codebase to collect physical data inside my little garden greenhouse from multiple sensors connected to a Raspberry Pi 4 — including temperature, humidity, air pressure and soil moisture. In addition, linear actuators are controllable to open and close the windows remotely via API.
 
 All sensor readings are periodically collected, logged, displayed inside a little self-made box for the raspi as well as stored inside an InfluxDB cloud instance. This allows both real time and historical data analysis on the measurements:
 
 ![InfluxDB dashboard (this one from winter time...)](images/influxdb_dashboard.png?raw=true "Sensor Monitoring")
 
-Currently, this MVP includes mainly storing & displaying sensor values to indicate if certain actions on the greenhouse are required (watering, ventilation). The idea is to build a fully automated system to minimize manual work in the greenhouse as well as implementing a full-on web application from scratch to monitor and control every sensor remotely. Adding linear actuators to automatically open & close the windows is a work in progress.
+In addition, a fastapi instance is implemented to fetch the sensor readings in a specific timeframe from the InfluxDB as well as opening and closing of the windows.
+
+![fastapi interface](images/api.png?raw=true "API")
+
+The idea is to build a fully automated system to minimize manual work by automation of ventilation and watering in the greenhouse as well as implementing a full-on web application from scratch to monitor and control every sensor remotely.
 
 ---
 
@@ -35,6 +39,13 @@ Another cool feature is the lightning in the night since different leds indicate
 <p align="center">
     <img src="images/night_greenhouse.jpg" alt="Greenhouse at night" width="300"/>
 </p>
+
+The windows are opened and closed by 12V linear actuators which are connected to 2-channel-relays that are controlled by the pi and via the API.
+
+<p align="center">
+    <img src="images/window_open.jpg" alt="Opened window by actuator" width="300"/>
+</p>
+
 
 ---
 
