@@ -40,13 +40,15 @@ Another cool feature is the lightning in the night since different leds indicate
     <img src="images/night_greenhouse.jpg" alt="Greenhouse at night" width="300"/>
 </p>
 
-The windows are opened and closed by 12V linear actuators which are connected to 2-channel-relays that are controlled by the pi and via the API.
+The windows are opened and closed by 12V linear actuators which are connected to 2-channel-relays that are controlled by the pi and via the API or via scripts.
 
 <p align="center">
     <img src="images/window_open.jpg" alt="Opened window by actuator" width="300"/>
 </p>
 
-
+<p align="center">
+    <img src="images/actuator_wiring.jpg" alt="Actuators connected to raspi house" width="300"/>
+</p>
 ---
 
 ## 🎛️ Sensor Setup & GPIO wiring
