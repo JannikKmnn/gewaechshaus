@@ -7,3 +7,27 @@ venv/
 
 **/__pycache__/
 notebooks/
+
+# frontend
+
+# dependencies
+frontend/gewaechshaus/node_modules
+frontend/gewaechshaus/.pnp
+frontend/gewaechshaus/.pnp.js
+
+# testing
+frontend/gewaechshaus/coverage
+
+# production
+frontend/gewaechshaus/build
+
+# misc
+frontend/gewaechshaus/.DS_Store
+frontend/gewaechshaus/.env.local
+frontend/gewaechshaus/.env.development.local
+frontend/gewaechshaus/.env.test.local
+frontend/gewaechshaus/.env.production.local
+
+frontend/gewaechshaus/npm-debug.log*
+frontend/gewaechshaus/yarn-debug.log*
+frontend/gewaechshaus/yarn-error.log*
