@@ -56,7 +56,11 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-logging.basicConfig(level=settings.log_lvl)
+logging.basicConfig(
+    format="%(asctime)s %(levelname)-8s %(message)s",
+    level=settings.log_lvl,
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
 logger = logging.getLogger(__name__)
 
 
