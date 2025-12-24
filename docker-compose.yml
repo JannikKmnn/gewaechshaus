@@ -2,7 +2,9 @@ version: "3.8"
 
 services:
   gewaechshaus-sensor-reader:
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile.sensor_reader
     container_name: gewaechshaus-sensor-reader
     restart: always
     healthcheck:
@@ -14,13 +16,17 @@ services:
       - "/dev/i2c-1:/dev/i2c-1"
     env_file:
       - .env
-    environment:
-      - MEASURE_INTERVAL_SECONDS=60
-      - LOG_LVL=INFO
-      - TEMPERATURE_OUTSIDE_SENSOR_ID=000000b47976
-      - TEMPERATURE_INSIDE_SENSOR_ID=000000b998e3
-      - SOIL_MOISTURE_SENSOR_CHANNEL_BACK=23
-      - SOIL_MOISTURE_SENSOR_CHANNEL_FRONT=24
-      - LCD_COLUMNS=16
-      - LCD_ROWS=2
-    command: poetry run python -m src.services.sensor_reader.main
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: gewaechshaus-api
+    restart: always
+    privileged: true
+    devices:
+      - "/dev/gpiomem:/dev/gpiomem"
+    env_file:
+      - .env
+    ports:
+      - "8001:8001"
