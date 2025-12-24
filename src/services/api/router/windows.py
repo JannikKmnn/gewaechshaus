@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import APIRouter, Request, HTTPException
 
 try:
@@ -6,6 +8,24 @@ except ModuleNotFoundError:
     pass
 
 router = APIRouter()
+
+
+@router.post("/open", tags=["actuators"])
+async def open_windows(request: Request):
+    window_openers = request.app.state.actuators
+
+    _ = await asyncio.gather(
+        *[windows.open_window(actuator=act) for act in window_openers]
+    )
+
+
+@router.post("/close", tags=["actuators"])
+async def close_windows(request: Request):
+    window_openers = request.app.state.actuators
+
+    _ = await asyncio.gather(
+        *[windows.close_window(actuator=act) for act in window_openers]
+    )
 
 
 @router.post("/open/{window_position}", tags=["actuators"])
