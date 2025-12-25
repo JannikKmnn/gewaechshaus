@@ -121,7 +121,7 @@ async def main():
 
     ### 2. Setup influxdb client ###
 
-    influxdb_asnyc_client = setup_influxdb(
+    influxdb_async_client = setup_influxdb(
         host=settings.influxdb_host,
         org=settings.influxdb_org,
         token=settings.influxdb_token,
@@ -129,11 +129,9 @@ async def main():
         logger=logger,
     )
 
-    async with influxdb_asnyc_client:
+    async with influxdb_async_client:
 
         while True:
-
-            # TODO add cron scheduler
 
             results = await asyncio.gather(*[sensor.measure() for sensor in sensors])
 
@@ -156,7 +154,7 @@ async def main():
             ### 3. Save influxdb record and display measurements ###
             influxdb_response, _ = await asyncio.gather(
                 write_to_influxdb(
-                    client=influxdb_asnyc_client,
+                    client=influxdb_async_client,
                     bucket=settings.influxdb_bucket,
                     measurement_results=measurement_results,
                     logger=logger,
