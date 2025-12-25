@@ -20,6 +20,8 @@ services:
       context: .
       dockerfile: Dockerfile.api
     container_name: gewaechshaus-api
+    volumes:
+      - ./data/sqlite:/data
     restart: always
     privileged: true
     devices:

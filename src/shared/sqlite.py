@@ -16,3 +16,6 @@ async def setup_db(
     """
 
     cur.execute(sql_stmt)
+
+    con.commit()
+    con.close()
