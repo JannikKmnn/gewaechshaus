@@ -4,3 +4,7 @@ class TooManyTries(Exception):
 
 class StateAlreadyReached(Exception):
     pass
+
+
+class EventRecordFailed(Exception):
+    pass
