@@ -1,5 +1,6 @@
-import sqlite3
+import aiosqlite
 
+from aiosqlite import Connection
 from datetime import datetime
 
 
@@ -9,34 +10,32 @@ async def setup_db(
 ):
 
     # creates DB if not exists already
-    con = sqlite3.connect(database=db_name)
-    cur = con.cursor()
+    sqlite_client = aiosqlite.connect(database=db_name)
 
-    # creates table for actuator events
-    sql_stmt = f"""CREATE TABLE IF NOT EXISTS
-    {actuator_events_table}(identifier TEXT, timestamp DATETIME, status TINYINT)
-    """
+    async with sqlite_client:
 
-    cur.execute(sql_stmt)
+        # creates table for actuator events
+        sql_stmt = f"""CREATE TABLE IF NOT EXISTS
+        {actuator_events_table}(identifier TEXT, timestamp DATETIME, status TINYINT)
+        """
 
-    con.commit()
-    con.close()
+        await sqlite_client.execute(sql_stmt)
+
+        await sqlite_client.commit()
+        await sqlite_client.close()
 
 
 async def write_window_status_to_db(
-    db_name: str,
+    sqlite_client: Connection,
     actuator_events_table: str,
     identifier: str,
     timestamp: datetime,
     opened: int,
 ):
 
-    con = sqlite3.connect(database=db_name)
-    cur = con.cursor()
-
     insert_stmt = f"INSERT INTO {actuator_events_table} VALUES (?, ?, ?)"
 
-    cur.execute(insert_stmt, (identifier, timestamp.isoformat(), opened))
-
-    con.commit()
-    con.close()
+    await sqlite_client.execute(
+        insert_stmt, (identifier, timestamp.isoformat(), opened)
+    )
+    await sqlite_client.commit()

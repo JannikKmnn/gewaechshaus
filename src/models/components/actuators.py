@@ -1,4 +1,5 @@
 import asyncio
+import aiosqlite
 
 from datetime import datetime, timezone
 
@@ -47,16 +48,18 @@ class LinearActuator(Component):
         self.last_extension = timestamp
 
         try:
-            _ = await write_window_status_to_db(
-                db_name=self.sqlite_db_name,
-                actuator_events_table=self.sqlite_events_table,
-                identifier=self.identifier,
-                timestamp=timestamp,
-                opened=1,
-            )
-        except Exception:
+            async with aiosqlite.connect(database=self.sqlite_db_name) as db:
+                _ = await write_window_status_to_db(
+                    sqlite_client=db,
+                    actuator_events_table=self.sqlite_events_table,
+                    identifier=self.identifier,
+                    timestamp=timestamp,
+                    opened=1,
+                )
+                await db.close()
+        except Exception as err:
             raise EventRecordFailed(
-                f"Storing extension event in DB failed for window {self.position.value}"
+                f"Storing extension event in DB failed for window {self.position.value} due to {err}"
             )
 
     async def retract(self) -> None:
@@ -75,14 +78,16 @@ class LinearActuator(Component):
         self.last_retraction = timestamp
 
         try:
-            _ = await write_window_status_to_db(
-                db_name=self.sqlite_db_name,
-                actuator_events_table=self.sqlite_events_table,
-                identifier=self.identifier,
-                timestamp=timestamp,
-                opened=0,
-            )
-        except Exception:
+            async with aiosqlite.connect(database=self.sqlite_db_name) as db:
+                _ = await write_window_status_to_db(
+                    sqlite_client=db,
+                    actuator_events_table=self.sqlite_events_table,
+                    identifier=self.identifier,
+                    timestamp=timestamp,
+                    opened=0,
+                )
+                await db.close()
+        except Exception as err:
             raise EventRecordFailed(
-                f"Storing retraction event in DB failed for window {self.position.value}"
+                f"Storing retraction event in DB failed for window {self.position.value} due to {err}"
             )
