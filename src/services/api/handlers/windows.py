@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 
 from src.models.components.actuators import LinearActuator
-from src.models.exceptions import StateAlreadyReached
+from src.models.exceptions import StateAlreadyReached, EventRecordFailed
 
 
 async def open_window(actuator: LinearActuator):
@@ -12,6 +12,11 @@ async def open_window(actuator: LinearActuator):
             status_code=409,
             detail=f"{actuator.position.value} actuator is already opened.",
         )
+    except EventRecordFailed as err:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Storing event into sqlite DB failed for window {actuator.position.value} due to {err}",
+        )
 
 
 async def close_window(actuator: LinearActuator):
@@ -21,6 +26,11 @@ async def close_window(actuator: LinearActuator):
         raise HTTPException(
             status_code=409,
             detail=f"{actuator.position.value} actuator is already closed.",
+        )
+    except EventRecordFailed as err:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Storing event into sqlite DB failed for window {actuator.position.value} due to {err}",
         )
 
 
