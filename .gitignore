@@ -8,6 +8,8 @@ venv/
 **/__pycache__/
 notebooks/
 
+data/
+
 # frontend
 
 # dependencies

@@ -1,9 +1,11 @@
 import asyncio
+import aiosqlite
 
 from datetime import datetime, timezone
 
 from src.models.components.base import Component
-from src.models.exceptions import StateAlreadyReached
+from src.models.exceptions import StateAlreadyReached, EventRecordFailed
+from src.shared.sqlite import write_window_status_to_db
 
 import RPi.GPIO as GPIO  # type: ignore
 
@@ -18,6 +20,10 @@ class LinearActuator(Component):
     last_retraction: datetime = datetime(2025, 12, 2, tzinfo=timezone.utc)
 
     is_extended: bool = False
+
+    # sqlite properties for event storing
+    sqlite_db_name: str
+    sqlite_events_table: str
 
     def setup(self) -> None:
         GPIO.setmode(GPIO.BCM)
@@ -37,7 +43,24 @@ class LinearActuator(Component):
         GPIO.output(self.extend_pin, False)
 
         self.is_extended = True
-        self.last_extension = datetime.now(tz=timezone.utc)
+
+        timestamp = datetime.now(tz=timezone.utc).replace(microsecond=0)
+        self.last_extension = timestamp
+
+        try:
+            async with aiosqlite.connect(database=self.sqlite_db_name) as db:
+                _ = await write_window_status_to_db(
+                    sqlite_client=db,
+                    actuator_events_table=self.sqlite_events_table,
+                    identifier=self.identifier,
+                    timestamp=timestamp,
+                    opened=1,
+                )
+                await db.close()
+        except Exception as err:
+            raise EventRecordFailed(
+                f"Storing extension event in DB failed for window {self.position.value} due to {err}"
+            )
 
     async def retract(self) -> None:
 
@@ -50,4 +73,21 @@ class LinearActuator(Component):
         GPIO.output(self.retract_pin, False)
 
         self.is_extended = False
-        self.last_retraction = datetime.now(tz=timezone.utc)
+
+        timestamp = datetime.now(tz=timezone.utc).replace(microsecond=0)
+        self.last_retraction = timestamp
+
+        try:
+            async with aiosqlite.connect(database=self.sqlite_db_name) as db:
+                _ = await write_window_status_to_db(
+                    sqlite_client=db,
+                    actuator_events_table=self.sqlite_events_table,
+                    identifier=self.identifier,
+                    timestamp=timestamp,
+                    opened=0,
+                )
+                await db.close()
+        except Exception as err:
+            raise EventRecordFailed(
+                f"Storing retraction event in DB failed for window {self.position.value} due to {err}"
+            )

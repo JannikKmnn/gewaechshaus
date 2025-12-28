@@ -15,7 +15,8 @@ async def open_windows(request: Request):
     window_openers = request.app.state.actuators
 
     _ = await asyncio.gather(
-        *[windows.open_window(actuator=act) for act in window_openers]
+        *[windows.open_window(actuator=act) for act in window_openers],
+        return_exceptions=True,
     )
 
 
@@ -24,7 +25,8 @@ async def close_windows(request: Request):
     window_openers = request.app.state.actuators
 
     _ = await asyncio.gather(
-        *[windows.close_window(actuator=act) for act in window_openers]
+        *[windows.close_window(actuator=act) for act in window_openers],
+        return_exceptions=True,
     )
 
 
