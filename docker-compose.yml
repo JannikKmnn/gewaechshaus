@@ -32,17 +32,19 @@ services:
       - "8001:8001"
 
   sqlite_web:
-    image: coleifer/sqlite-web
+    image: python:3.13-slim
     container_name: sqlite-web
-    platform: linux/amd64
     restart: unless-stopped
-    privileged: true
     ports:
       - "8080:8080"
     volumes:
       - ./data/sqlite:/data
-    command: >
-      /data/sqlite/greenhouse.db
-      --host=0.0.0.0
-      --port=8080
-      --read-only
+    command:
+      - sh
+      - -c
+      - |
+        pip install sqlite-web && \
+        python -m sqlite_web /data/greenhouse.db \
+          --host=0.0.0.0 \
+          --port=8080 \
+          --read-only
