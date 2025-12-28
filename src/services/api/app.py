@@ -22,8 +22,8 @@ except ModuleNotFoundError:
 class Settings(BaseSettings):
 
     # sqlite setup
-    sqlite_db_name = Field(default="/data/greenhouse.db")
-    sqlite_actuator_events_table = Field(default="window_status")
+    sqlite_db_name: str = Field(default="/data/greenhouse.db")
+    sqlite_actuator_events_table: str = Field(default="window_status")
 
 
 settings = Settings()

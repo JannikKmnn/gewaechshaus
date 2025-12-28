@@ -34,9 +34,15 @@ services:
   sqlite_web:
     image: coleifer/sqlite-web
     container_name: sqlite-web
-    restart: always
+    platform: linux/amd64
+    restart: unless-stopped
+    privileged: true
     ports:
       - "8080:8080"
     volumes:
       - ./data/sqlite:/data
-    command: ["greenhouse.db", "--host=0.0.0.0"]
+    command: >
+      /data/greenhouse.db
+      --host=0.0.0.0
+      --port=8080
+      --read-only
