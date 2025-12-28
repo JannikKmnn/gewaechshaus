@@ -42,7 +42,7 @@ services:
     volumes:
       - ./data/sqlite:/data
     command: >
-      /data/greenhouse.db
+      /data/sqlite/greenhouse.db
       --host=0.0.0.0
       --port=8080
       --read-only
