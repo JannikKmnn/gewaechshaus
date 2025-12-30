@@ -2,6 +2,7 @@ import aiosqlite
 
 from aiosqlite import Connection
 from datetime import datetime
+from typing import Optional
 
 
 async def setup_db(
@@ -39,3 +40,31 @@ async def write_window_status_to_db(
         insert_stmt, (identifier, timestamp.isoformat(), opened)
     )
     await sqlite_client.commit()
+
+
+async def get_window_events(
+    sqlite_client: Connection,
+    actuator_events_table: str,
+    identifier: Optional[str] = None,
+    start_time: Optional[datetime] = None,
+    end_time: Optional[datetime] = None,
+):
+    
+    get_stmt = f"SELECT * FROM {actuator_events_table}"
+    multiple_conditions = False
+
+    if identifier:
+        get_stmt += f" WHERE identifier={identifier}"
+        multiple_conditions = True
+
+    if start_time:
+        get_stmt += f" {"WHERE" if not multiple_conditions else "AND"} timestamp >= {start_time.isoformat()}"
+        multiple_conditions = True
+    if end_time:
+        get_stmt += f" {"WHERE" if not multiple_conditions else "AND"} timestamp <= {end_time.isoformat()}"
+        multiple_conditions = True
+
+    cursor = await sqlite_client.execute(get_stmt)
+    rows = cursor.fetchall()
+
+    return rows
