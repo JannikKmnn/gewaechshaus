@@ -2,6 +2,8 @@ from fastapi import HTTPException
 
 from src.models.components.actuators import LinearActuator
 from src.models.exceptions import StateAlreadyReached, EventRecordFailed
+from src.services.api.models.data import WindowEventsRequestProperties
+from src.services.api.db.windows import get_window_events as get_db_window_events
 
 
 async def open_window(actuator: LinearActuator):
@@ -47,3 +49,24 @@ async def get_window_status(actuator: LinearActuator):
         return_dict["status"] = "closed"
 
     return return_dict
+
+
+async def get_window_events(
+    actuator_events_table: str, req_properties: WindowEventsRequestProperties
+):
+
+    if (req_properties.end_time and req_properties.start_time) and (
+        req_properties.end_time <= req_properties.start_time
+    ):
+        raise HTTPException(
+            status_code=400, detail="Query end time must be after start time."
+        )
+
+    results = await get_db_window_events(
+        actuator_events_table=actuator_events_table,
+        identifier=req_properties.window_identifier,
+        start_time=req_properties.start_time,
+        end_time=req_properties.end_time,
+    )
+
+    return results

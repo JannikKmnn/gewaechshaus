@@ -10,7 +10,7 @@ async def get_measurements(
     req_properties: DataRequestProperties, sensor_identifier: Optional[str] = None
 ) -> list[dict]:
 
-    if req_properties.end_time <= req_properties.start_time:
+    if req_properties.end_time and req_properties.end_time <= req_properties.start_time:
         raise HTTPException(
             status_code=400, detail="Query end time must be after start time."
         )
