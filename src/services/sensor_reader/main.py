@@ -16,6 +16,7 @@ from src.services.sensor_reader.setup import (
 )
 
 from src.models.data import Measurement
+from src.models.enums import MeasureUnit
 from src.models.components.sensor import (
     Sensor,
     BarometricSensor,
@@ -138,6 +139,16 @@ async def main():
             measurement_results: list[Measurement] = []
             for res in results:
                 measurement_results.extend(res)
+
+            if any(
+                mr.value < 0
+                for mr in measurement_results
+                if mr.unit == MeasureUnit.CELSIUS
+            ):
+                logger.warning(
+                    f"""Measured negative temperature. 
+                    Consider protecting your eletronics and don't operate on actuators/relays."""
+                )
 
             display_dict = {
                 mr.display_name: f"{mr.value} {mr.unit.value if mr.unit else ''}"
