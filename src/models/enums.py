@@ -28,6 +28,7 @@ class Position(str, Enum):
     DOWN = "Down"
     OUTSIDE = "Outside"
     INSIDE = "Inside"
+    PICPU = "Pi CPU"
 
 
 class InfluxDBResponse(str, Enum):

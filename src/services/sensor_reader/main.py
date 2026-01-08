@@ -13,6 +13,7 @@ from src.services.sensor_reader.setup import (
     setup_barometric_sensor,
     setup_soil_moisture_sensors,
     setup_temperature_sensors,
+    setup_cpu_temp_sensor,
 )
 
 from src.models.data import Measurement
@@ -20,6 +21,7 @@ from src.models.enums import MeasureUnit
 from src.models.components.sensor import (
     Sensor,
     BarometricSensor,
+    CPUTemperature,
     TemperatureSensor,
     SoilMoistureSensor,
 )
@@ -43,6 +45,8 @@ class Settings(BaseSettings):
     lcd_i2c_address: int = Field(default=0x27)  # try 0x3F if not works
     lcd_columns: int = Field(default=16)
     lcd_rows: int = Field(default=2)
+
+    cpu_temp_path: str = Field(default="/sys/class/thermal/thermal_zone0/temp")
 
     # InfluxDB settings
 
@@ -87,7 +91,15 @@ def init_sensor_group() -> list[Sensor]:
 
     sensors.extend(temperature_sensors)
 
-    ### 1.3 Setup soil moisture sensors ###
+    ### 1.3 Setup CPU temperature sensor ###
+
+    cpu_temperature_sensor: list[CPUTemperature] = setup_cpu_temp_sensor(
+        cpu_temp_path=settings.cpu_temp_path
+    )
+
+    sensors.extend(cpu_temperature_sensor)
+
+    ### 1.4 Setup soil moisture sensors ###
     soil_moisture_sensors: list[SoilMoistureSensor] = setup_soil_moisture_sensors(
         pin_back=settings.soil_moisture_sensor_channel_back,
         pin_front=settings.soil_moisture_sensor_channel_front,
@@ -163,7 +175,7 @@ async def main():
 
             logger.debug(
                 f"""
-                Measurements {datetime.now()}:
+                Measurements {now}:
                 {display_dict}
                 """
             )
