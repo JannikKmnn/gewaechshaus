@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from datetime import datetime
+from datetime import datetime, timezone
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
@@ -140,11 +140,17 @@ async def main():
             for res in results:
                 measurement_results.extend(res)
 
-            if any(
-                mr.value < 0
-                for mr in measurement_results
-                if mr.unit == MeasureUnit.CELSIUS
-            ):
+            now = datetime.now(tz=timezone.utc)
+
+            if (
+                any(
+                    mr.value < 0
+                    for mr in measurement_results
+                    if mr.unit == MeasureUnit.CELSIUS
+                )
+                and now.minute >= 0
+                and now.minute < 2
+            ):  # log only every hour
                 logger.warning(
                     f"""Measured negative temperature. 
                     Consider protecting your eletronics and don't operate on actuators/relays."""
