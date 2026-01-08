@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from datetime import datetime
+from datetime import datetime, timezone
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
@@ -16,6 +16,7 @@ from src.services.sensor_reader.setup import (
 )
 
 from src.models.data import Measurement
+from src.models.enums import MeasureUnit
 from src.models.components.sensor import (
     Sensor,
     BarometricSensor,
@@ -138,6 +139,22 @@ async def main():
             measurement_results: list[Measurement] = []
             for res in results:
                 measurement_results.extend(res)
+
+            now = datetime.now(tz=timezone.utc)
+
+            if (
+                any(
+                    mr.value < 0
+                    for mr in measurement_results
+                    if mr.unit == MeasureUnit.CELSIUS
+                )
+                and now.minute >= 0
+                and now.minute < 2
+            ):  # log only every hour
+                logger.warning(
+                    f"""Measured negative temperature. 
+                    Consider protecting your eletronics and don't operate on actuators/relays."""
+                )
 
             display_dict = {
                 mr.display_name: f"{mr.value} {mr.unit.value if mr.unit else ''}"
