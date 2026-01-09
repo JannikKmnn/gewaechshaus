@@ -8,7 +8,7 @@ services:
     healthcheck:
       disable: true
     privileged: true
-    volumnes:
+    volumes:
       - /sys/class/thermal:/sys/class/thermal:ro
     devices:
       - "/dev/gpiomem:/dev/gpiomem"
