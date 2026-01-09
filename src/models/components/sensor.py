@@ -120,3 +120,24 @@ class SoilMoistureSensor(Sensor):
                 unit=None,
             )
         ]
+
+
+class CPUTemperature(Sensor):
+
+    cpu_temp_path: str
+
+    async def measure(self) -> list[Measurement]:
+
+        path = self.cpu_temp_path
+        with open(path, "r") as f:
+            value = int(f.read()) / 1000.0
+
+        return [
+            Measurement(
+                identifier=self.identifier,
+                value=value,
+                unit=MeasureUnit.CELSIUS,
+                type=self.type,
+                display_name=self.display_name,
+            ),
+        ]

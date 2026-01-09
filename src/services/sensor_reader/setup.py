@@ -12,6 +12,7 @@ from src.models.enums import Position, SensorType, MeasureUnit
 from src.models.influxdb import InfluxDBProperties
 from src.models.components.sensor import (
     BarometricSensor,
+    CPUTemperature,
     TemperatureSensor,
     SoilMoistureSensor,
 )
@@ -155,3 +156,17 @@ def setup_temperature_sensors(
     temperature_sensors_return.append(inside_sensor)
 
     return temperature_sensors_return
+
+
+def setup_cpu_temp_sensor(cpu_temp_path: str) -> list[CPUTemperature]:
+
+    return [
+        CPUTemperature(
+            identifier="temperature_cpu",
+            display_name="cpu temperature",
+            type=SensorType.TEMPERATURE,
+            unit=MeasureUnit.CELSIUS,
+            position=Position.PICPU,
+            cpu_temp_path=cpu_temp_path,
+        )
+    ]
