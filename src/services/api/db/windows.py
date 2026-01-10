@@ -13,23 +13,28 @@ async def get_window_events(
 
     sqlite_client = await setup_client()
 
-    get_stmt = f"SELECT * FROM {actuator_events_table}"
-    multiple_conditions = False
+    sql = f"SELECT * FROM {actuator_events_table}"
+    conditions = []
+    params = []
 
     if identifier:
-        get_stmt += f" WHERE identifier={identifier}"
-        multiple_conditions = True
+        conditions.append("identifier = ?")
+        params.append(identifier)
 
     if start_time:
-        get_stmt += f" {"WHERE" if not multiple_conditions else "AND"} timestamp >= {start_time.isoformat()}"
-        multiple_conditions = True
+        conditions.append("timestamp >= ?")
+        params.append(start_time.isoformat())
+
     if end_time:
-        get_stmt += f" {"WHERE" if not multiple_conditions else "AND"} timestamp <= {end_time.isoformat()}"
-        multiple_conditions = True
+        conditions.append("timestamp <= ?")
+        params.append(end_time.isoformat())
+
+    if conditions:
+        sql += " WHERE " + " AND ".join(conditions)
 
     async with sqlite_client:
-        cursor = await sqlite_client.execute(get_stmt)
-        rows = cursor.fetchall()
+        cursor = await sqlite_client.execute(sql, params)
+        rows = await cursor.fetchall()
 
         await sqlite_client.commit()
         await sqlite_client.close()
