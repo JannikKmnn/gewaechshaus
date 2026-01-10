@@ -4,7 +4,7 @@ from src.models.components.actuators import LinearActuator
 from src.models.enums import Position
 
 
-def setup_linear_actuators(
+async def setup_linear_actuators(
     left_extend_pin: int,
     left_retract_pin: int,
     right_extend_pin: int,
@@ -24,7 +24,7 @@ def setup_linear_actuators(
         sqlite_events_table=sqlite_events_table,
     )
 
-    actuator_left.setup()
+    await actuator_left.setup()
 
     actuator_right = LinearActuator(
         identifier="linear_actuator_right",
@@ -36,14 +36,14 @@ def setup_linear_actuators(
         sqlite_events_table=sqlite_events_table,
     )
 
-    actuator_right.setup()
+    await actuator_right.setup()
 
     return [actuator_left, actuator_right]
 
 
 async def setup_window_openers() -> list[LinearActuator]:
 
-    window_actuators = setup_linear_actuators(
+    window_actuators = await setup_linear_actuators(
         left_extend_pin=int(os.getenv("WINDOW_ACTUATOR_LEFT_EXTEND_PIN")),
         left_retract_pin=int(os.getenv("WINDOW_ACTUATOR_LEFT_RETRACT_PIN")),
         right_extend_pin=int(os.getenv("WINDOW_ACTUATOR_RIGHT_EXTEND_PIN")),

@@ -4,8 +4,12 @@ import aiosqlite
 from datetime import datetime, timezone
 
 from src.models.components.base import Component
-from src.models.exceptions import StateAlreadyReached, EventRecordFailed
-from src.shared.sqlite import write_window_status_to_db, fetch_window_status
+from src.models.exceptions import (
+    StateAlreadyReached,
+    EventRecordFailed,
+    StateFetchingFailed,
+)
+from src.shared.sqlite import write_window_status_to_db, fetch_latest_window_events
 
 import RPi.GPIO as GPIO  # type: ignore
 
@@ -25,12 +29,41 @@ class LinearActuator(Component):
     sqlite_db_name: str
     sqlite_events_table: str
 
-    def setup(self) -> None:
+    async def setup(self):
+
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.extend_pin, GPIO.OUT)
         GPIO.setup(self.retract_pin, GPIO.OUT)
         GPIO.output(self.extend_pin, False)
         GPIO.output(self.retract_pin, False)
+
+        # fetch sqlite latest states (SSOT)
+
+        try:
+            latest_window_events = await fetch_latest_window_events(
+                sqlite_db_name=self.sqlite_db_name,
+                actuator_events_table=self.sqlite_events_table,
+                identifier=self.identifier,
+            )
+        except Exception as err:
+            raise StateFetchingFailed(
+                f"Fetching window events from DB failed for window {self.position.value} due to {err}"
+            )
+
+        last_open_row: datetime = next(ev for ev in latest_window_events if ev[2] == 1)
+        last_closing_row: datetime = next(
+            ev for ev in latest_window_events if ev[2] == 0
+        )
+
+        self.last_extension: datetime = datetime.fromisoformat(
+            last_open_row[1]
+        ).replace(tzinfo=timezone.utc)
+        self.last_retraction: datetime = datetime.fromisoformat(
+            last_closing_row[1]
+        ).replace(tzinfo=timezone.utc)
+
+        if self.last_retraction < self.last_extension:
+            self.is_extended = True
 
     async def extend(self) -> None:
 

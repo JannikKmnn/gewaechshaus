@@ -50,9 +50,23 @@ async def write_window_status_to_db(
     await sqlite_client.commit()
 
 
-async def fetch_window_status(
-    sqlite_client: Connection,
+async def fetch_latest_window_events(
+    sqlite_db_name: str,
     actuator_events_table: str,
     identifier: str,
 ):
-    pass
+
+    fetch_stmt = f"""
+        SELECT * FROM {actuator_events_table}
+        WHERE identifier = ?
+        ORDER BY timestamp DESC LIMIT 2
+    """
+
+    async with aiosqlite.connect(database=sqlite_db_name) as db:
+        cursor = await db.execute(fetch_stmt, (identifier,))
+        rows = await cursor.fetchall()
+
+        await db.commit()
+        await db.close()
+
+    return rows
