@@ -1,10 +1,14 @@
 import asyncio
 
+import os
+
 from fastapi import APIRouter, Request, HTTPException
+from src.services.api.models.data import WindowEventsRequestProperties
 
 try:
     from src.services.api.handlers import windows
 except ModuleNotFoundError:
+    # happens on local dev
     pass
 
 router = APIRouter()
@@ -70,6 +74,17 @@ async def close_window(window_position: str, request: Request):
         )
 
     _ = await windows.close_window(actuator=window_to_close)
+
+
+@router.post("/events", tags=["actuators"])
+async def get_window_events(req_properties: WindowEventsRequestProperties):
+
+    results = await windows.get_window_events(
+        actuator_events_table=str(os.getenv("SQLITE_ACTUATOR_EVENTS_TABLE")),
+        req_properties=req_properties,
+    )
+
+    return results
 
 
 @router.get("/status/{window_position}", tags=["actuators"])

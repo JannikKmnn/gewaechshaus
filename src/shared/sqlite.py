@@ -1,7 +1,16 @@
+import os
+
 import aiosqlite
 
 from aiosqlite import Connection
 from datetime import datetime
+
+
+async def setup_client() -> Connection | None:
+
+    conn = aiosqlite.connect(database=os.getenv("SQLITE_DB_NAME"))
+
+    return conn
 
 
 async def setup_db(
@@ -39,3 +48,25 @@ async def write_window_status_to_db(
         insert_stmt, (identifier, timestamp.isoformat(), opened)
     )
     await sqlite_client.commit()
+
+
+async def fetch_latest_window_events(
+    sqlite_db_name: str,
+    actuator_events_table: str,
+    identifier: str,
+):
+
+    fetch_stmt = f"""
+        SELECT * FROM {actuator_events_table}
+        WHERE identifier = ?
+        ORDER BY timestamp DESC LIMIT 2
+    """
+
+    async with aiosqlite.connect(database=sqlite_db_name) as db:
+        cursor = await db.execute(fetch_stmt, (identifier,))
+        rows = await cursor.fetchall()
+
+        await db.commit()
+        await db.close()
+
+    return rows

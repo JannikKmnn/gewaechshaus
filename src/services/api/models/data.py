@@ -8,6 +8,14 @@ import numpy as np
 
 
 @dataclass
+class WindowEventsRequestProperties:
+
+    window_identifier: Optional[str] = None
+    start_time: Optional[datetime] = None
+    end_time: Optional[datetime] = None
+
+
+@dataclass
 class DataRequestProperties:
 
     start_time: datetime
