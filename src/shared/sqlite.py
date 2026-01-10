@@ -13,13 +13,6 @@ async def setup_client() -> Connection | None:
     return conn
 
 
-async def setup_client() -> Connection | None:
-
-    conn = aiosqlite.connect(database=os.getenv("SQLITE_DB_NAME"))
-
-    return conn
-
-
 async def setup_db(
     db_name: str,
     actuator_events_table: str,
