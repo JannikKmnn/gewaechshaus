@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 
 from src.models.components.base import Component
 from src.models.exceptions import StateAlreadyReached, EventRecordFailed
-from src.shared.sqlite import write_window_status_to_db
+from src.shared.sqlite import write_window_status_to_db, fetch_window_status
 
 import RPi.GPIO as GPIO  # type: ignore
 

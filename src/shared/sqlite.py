@@ -48,3 +48,11 @@ async def write_window_status_to_db(
         insert_stmt, (identifier, timestamp.isoformat(), opened)
     )
     await sqlite_client.commit()
+
+
+async def fetch_window_status(
+    sqlite_client: Connection,
+    actuator_events_table: str,
+    identifier: str,
+):
+    pass
