@@ -1,3 +1,3 @@
 export default function ControlCenter() {
-  return <h1>🪟 Window Control Center</h1>;
+  return <h1>Control Center</h1>;
 }
