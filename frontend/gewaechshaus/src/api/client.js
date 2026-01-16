@@ -6,7 +6,7 @@ const defaultHeaders = {
 };
 
 const api = axios.create({
-  baseURL: "http://100.82.182.52:8002",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 10000,
   headers: defaultHeaders, 
 });

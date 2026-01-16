@@ -18,6 +18,9 @@ frontend/gewaechshaus/node_modules
 frontend/gewaechshaus/.pnp
 frontend/gewaechshaus/.pnp.js
 
+# env
+frontend/gewaechshaus/.env
+
 # testing
 frontend/gewaechshaus/coverage
 
