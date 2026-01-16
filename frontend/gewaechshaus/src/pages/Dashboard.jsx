@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import SingleValueWidget from "../components/SingleValueWidget";
 import { getData } from "../api/data";
+import { temperatureToColor } from "../utils/color";
 
 export default function Dashboard() {
   const [outsideTemp, setOutsideTemp] = useState(null);
@@ -67,7 +68,7 @@ export default function Dashboard() {
             label="Outside"
             value={outsideTemp}
             unit="°C"
-            color="#7aa2ff"
+            color={temperatureToColor(outsideTemp)}
           />
         </div>
         
@@ -80,7 +81,7 @@ export default function Dashboard() {
             label="Inside Up"
             value={upTemp}
             unit="°C"
-            color="#ff7ab6"
+            color={temperatureToColor(upTemp)}
           />
         </div>
       </div>
@@ -102,7 +103,7 @@ export default function Dashboard() {
             label="Inside"
             value={insideTemp}
             unit="°C"
-            color="#f47aff"
+            color={temperatureToColor(insideTemp)}
           />
         </div>
       </div>
