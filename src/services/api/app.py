@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from src.services.api.router.data import router as data_router
 from src.services.api.router.windows import router as windows_router
@@ -25,6 +26,8 @@ class Settings(BaseSettings):
     sqlite_db_name: str = Field(default="/data/greenhouse.db")
     sqlite_actuator_events_table: str = Field(default="window_status")
 
+    frontend_url: str = Field(default="http://localhost:5173")
+
 
 settings = Settings()
 
@@ -46,6 +49,14 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[settings.frontend_url],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(data_router, prefix="/data", tags=["measurements"])
 app.include_router(windows_router, prefix="/window", tags=["actuators"])

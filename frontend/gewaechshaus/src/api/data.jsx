@@ -1,6 +1,6 @@
-import axios from "axios";
+import api from "./client";
 
-async function getData({
+export async function getData({
     sensor_identifier,
     measurement,
     start_time,
@@ -12,7 +12,7 @@ async function getData({
         end_time
     }
 
-    const result = await axios.post(`/data/${sensor_identifier}`, data)
+    const result = await api.post(`/data/${sensor_identifier}`, data)
 
-    return result || null;
+    return result?.data ?? null;
 }
