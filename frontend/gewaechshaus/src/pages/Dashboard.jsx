@@ -53,27 +53,58 @@ export default function Dashboard() {
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          gap: "20px"
+          gap: "20px",
+          marginBottom: "10px"
         }}
       >
-        <SingleValueWidget
-          label="Outside"
-          value={outsideTemp}
-          unit="°C"
-          color="#7aa2ff"
-        />
-        <SingleValueWidget
-          label="Inside"
-          value={insideTemp}
-          unit="°C"
-          color="#f47aff"
-        />
-        <SingleValueWidget
-          label="Up"
-          value={upTemp}
-          unit="°C"
-          color="#ff7ab6"
-        />
+
+        <div
+          style={{
+            width: "80px"
+          }}
+        >
+          <SingleValueWidget
+            label="Outside"
+            value={outsideTemp}
+            unit="°C"
+            color="#7aa2ff"
+          />
+        </div>
+        
+        <div
+          style={{
+            justifySelf: "end"
+          }}
+        >
+          <SingleValueWidget
+            label="Inside Up"
+            value={upTemp}
+            unit="°C"
+            color="#ff7ab6"
+          />
+        </div>
+      </div>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+          gap: "20px",
+          marginBottom: "10px"
+        }}
+      >
+        <div
+          style={{
+            justifySelf: "end",
+          }}
+        >
+          <SingleValueWidget
+            label="Inside"
+            value={insideTemp}
+            unit="°C"
+            color="#f47aff"
+          />
+        </div>
       </div>
     </div>
   );

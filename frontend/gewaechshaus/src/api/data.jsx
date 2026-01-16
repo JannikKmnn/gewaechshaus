@@ -12,7 +12,7 @@ export async function getData({
         end_time
     }
 
-    const route = `/data`
+    let route = `/data`
 
     if (sensor_identifier !== null) {
         route = `/data/${sensor_identifier}`
