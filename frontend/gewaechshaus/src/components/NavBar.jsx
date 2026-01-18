@@ -47,7 +47,11 @@ export default function NavBar() {
         flexDirection: "column",
         transition: "width 0.25s ease",
         overflow: "hidden",
-        boxShadow: "2px 0 10px rgba(0,0,0,0.15)"
+        boxShadow: "2px 0 10px rgba(0,0,0,0.15)",
+        position: "fixed",
+        left: 0,
+        top: 0,
+        zIndex: 1000
       }}
     >
       <Link to="/" style={itemStyle("/")}>
