@@ -7,6 +7,8 @@ export default function Dashboard() {
   const [outsideTemp, setOutsideTemp] = useState(null);
   const [insideTemp, setInsideTemp] = useState(null);
   const [upTemp, setUpTemp] = useState(null);
+  const [upHumidity, setUpHumidity] = useState(null);
+  const [airPressure, setAirPressure] = useState(null);
 
   const endTime = new Date().toISOString();
   const startTimeSingle = new Date(Date.now() - 2 * 60 * 1000).toISOString();
@@ -14,18 +16,31 @@ export default function Dashboard() {
   const roundToTwo = (num) => Math.round(num * 100) / 100;
 
   useEffect(() => {
-    async function fetchTemp() {
-      const result = await getData({
-        measurement: "Temperature",
-        start_time: startTimeSingle,
-        end_time: endTime,
-      });
+    async function fetchMeasurements() {
+      const results = await Promise.all([
+        getData({
+          measurement: "Temperature",
+          start_time: startTimeSingle,
+          end_time: endTime,
+        }),
+        getData({
+          measurement: "Humidity",
+          start_time: startTimeSingle,
+          end_time: endTime,
+        }),
+        getData({
+          measurement: "AirPressure",
+          start_time: startTimeSingle,
+          end_time: endTime,
+        }),
+    ])
 
-      const outside_temps = result.filter((measurement) => measurement.field === "temperature_outside")
-      const inside_temps = result.filter((measurement) => measurement.field === "temperature_inside")
-      const up_temps = result.filter((measurement) => measurement.field === "temperature_up")
+      // Temperature Measurements
+      if (Array.isArray(results[0]) && results[0].length > 0) {
 
-      if (Array.isArray(result) && result.length > 0) {
+        const outside_temps = results[0].filter((measurement) => measurement.field === "temperature_outside")
+        const inside_temps = results[0].filter((measurement) => measurement.field === "temperature_inside")
+        const up_temps = results[0].filter((measurement) => measurement.field === "temperature_up")
 
         const latest_outside = outside_temps[outside_temps.length - 1];
         setOutsideTemp(roundToTwo(latest_outside.value));
@@ -41,9 +56,29 @@ export default function Dashboard() {
         setInsideTemp(null);
         setUpTemp(null);
       }
+
+      // Humidity Measurements
+      if (Array.isArray(results[1]) && results[1].length > 0) {
+
+        const latest_humidity = results[1][results[1].length - 1];
+        setUpHumidity(roundToTwo(latest_humidity.value));
+
+      } else {
+        setUpHumidity(null);
+      }
+
+      // Air Pressure Measurements
+      if (Array.isArray(results[2]) && results[2].length > 0) {
+
+        const latest_air_pressure = results[2][results[2].length - 1];
+        setAirPressure(roundToTwo(latest_air_pressure.value));
+
+      } else {
+        setAirPressure(null);
+      }
     }
 
-    fetchTemp();
+    fetchMeasurements();
   }, []);
 
   return (
@@ -94,6 +129,20 @@ export default function Dashboard() {
           marginBottom: "10px"
         }}
       >
+
+        <div
+          style={{
+            width: "80px"
+          }}
+        >
+          <SingleValueWidget
+            label="Humidity"
+            value={upHumidity}
+            unit="%"
+            color="rgba(85, 88, 193, 0.92)"
+          />
+        </div>
+
         <div
           style={{
             justifySelf: "end",
@@ -104,6 +153,29 @@ export default function Dashboard() {
             value={insideTemp}
             unit="°C"
             color={temperatureToColor(insideTemp)}
+          />
+        </div>
+      </div>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+          gap: "20px",
+          marginBottom: "10px"
+        }}
+      >
+
+        <div
+          style={{
+            width: "80px",
+          }}
+        >
+          <SingleValueWidget
+            label="AirPressure"
+            value={airPressure}
+            unit="hPa"
+            color="rgba(212, 44, 10, 0.95)"
           />
         </div>
       </div>
