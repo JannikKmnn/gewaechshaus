@@ -71,7 +71,7 @@ export default function Dashboard() {
       if (Array.isArray(results[2]) && results[2].length > 0) {
 
         const latest_air_pressure = results[2][results[2].length - 1];
-        setAirPressure(roundToTwo(latest_air_pressure.value));
+        setAirPressure(Math.round(latest_air_pressure.value));
 
       } else {
         setAirPressure(null);
