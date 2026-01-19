@@ -11,6 +11,7 @@ export default function SingleValueWidget({
         borderRadius: "12px",
         padding: "20px",
         minWidth: "220px",
+        minHeight: "150px",
         boxShadow: "0 4px 20px rgba(0,0,0,0.25)"
       }}
     >
