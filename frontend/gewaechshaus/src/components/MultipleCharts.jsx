@@ -79,7 +79,8 @@ export default function MultipleTimeseriesChart({
               type="monotone" 
               dataKey="value" 
               stroke={color} 
-              fill={color}
+              dot={false}
+              strokeWidth={2}
             />
         </LineChart>
       </ResponsiveContainer>

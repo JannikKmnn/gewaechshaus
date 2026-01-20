@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import MultipleTimeseriesChart from "../components/MultipleCharts";
 import TimeseriesChart from "../components/TimeseriesChart";
 import SingleValueWidget from "../components/SingleValueWidget";
 import { getData } from "../api/data";
@@ -11,6 +12,7 @@ export default function Dashboard() {
   const [upHumidity, setUpHumidity] = useState(null);
   const [airPressure, setAirPressure] = useState(null);
 
+  const [temperatureArray, setTemperatureArray] = useState([]);
   const [upHumidityArray, setUpHumidityArray] = useState([]);
   const [airPressureArray, setAirPressureArray] = useState([]);
 
@@ -42,9 +44,11 @@ export default function Dashboard() {
       // Temperature Measurements
       if (Array.isArray(results[0]) && results[0].length > 0) {
 
-        const outside_temps = results[0].filter((measurement) => measurement.field === "temperature_outside")
-        const inside_temps = results[0].filter((measurement) => measurement.field === "temperature_inside")
-        const up_temps = results[0].filter((measurement) => measurement.field === "temperature_up")
+        const temperatureMeasurements = results[0]
+
+        const outside_temps = temperatureMeasurements.filter((measurement) => measurement.field === "temperature_outside")
+        const inside_temps = temperatureMeasurements.filter((measurement) => measurement.field === "temperature_inside")
+        const up_temps = temperatureMeasurements.filter((measurement) => measurement.field === "temperature_up")
 
         const latest_outside = outside_temps[outside_temps.length - 1];
         setOutsideTemp(roundToTwo(latest_outside.value));
@@ -54,6 +58,8 @@ export default function Dashboard() {
 
         const latest_up = up_temps[up_temps.length - 1];
         setUpTemp(roundToTwo(latest_up.value));
+
+        setTemperatureArray(temperatureMeasurements);
 
       } else {
         setOutsideTemp(null);
@@ -98,7 +104,7 @@ export default function Dashboard() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+          gridTemplateColumns: "220px 1fr 220px",
           gap: "20px",
           marginBottom: "10px"
         }}
@@ -114,6 +120,20 @@ export default function Dashboard() {
             value={outsideTemp}
             unit="°C"
             color={temperatureToColor(outsideTemp)}
+          />
+        </div>
+
+        <div
+          style={{
+            width: "100%"
+          }}
+        >
+          <MultipleTimeseriesChart
+            data={upHumidityArray}
+            label="Temperature"
+            unit="°C"
+            yAxisLabel="Temperature"
+            color="rgba(85, 88, 193, 0.92)"
           />
         </div>
         
