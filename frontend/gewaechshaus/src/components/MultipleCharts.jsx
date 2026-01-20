@@ -1,6 +1,6 @@
 import {
-  Area,
-  AreaChart,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   Tooltip,
@@ -8,7 +8,7 @@ import {
 } from "recharts";
 import { formatTime } from "../utils/time";
 
-export default function TimeseriesChart({
+export default function MultipleTimeseriesChart({
   data,
   label,
   unit,
@@ -29,7 +29,7 @@ export default function TimeseriesChart({
       }}
     >
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data}>
+        <LineChart data={data}>
             <XAxis
                 dataKey="timestamp"
                 tickFormatter={formatTime}
@@ -75,15 +75,13 @@ export default function TimeseriesChart({
               itemStyle={{ color }}
               labelStyle={{ color: "#9ca3af" }}
             />
-            <Area 
+            <Line 
               type="monotone" 
               dataKey="value" 
               stroke={color} 
-              fill={color} 
-              isAnimationActive={true} 
-              opacity="50%"
+              fill={color}
             />
-        </AreaChart>
+        </LineChart>
       </ResponsiveContainer>
     </div>
   );

@@ -12,6 +12,7 @@ export default function Dashboard() {
   const [airPressure, setAirPressure] = useState(null);
 
   const [upHumidityArray, setUpHumidityArray] = useState([]);
+  const [airPressureArray, setAirPressureArray] = useState([]);
 
   const endTime = new Date().toISOString();
   const startTimeSingle = new Date(Date.now() - 60 * 60 * 1000).toISOString();
@@ -63,8 +64,8 @@ export default function Dashboard() {
       // Humidity Measurements
       if (Array.isArray(results[1]) && results[1].length > 0) {
 
-        const humidityMeasurements = results[1]
-        setUpHumidityArray(humidityMeasurements)
+        const humidityMeasurements = results[1];
+        setUpHumidityArray(humidityMeasurements);
 
         const latest_humidity = humidityMeasurements[humidityMeasurements.length - 1];
         setUpHumidity(roundToTwo(latest_humidity.value));
@@ -76,7 +77,10 @@ export default function Dashboard() {
       // Air Pressure Measurements
       if (Array.isArray(results[2]) && results[2].length > 0) {
 
-        const latest_air_pressure = results[2][results[2].length - 1];
+        const airPressureMeasurements = results[2]
+        setAirPressureArray(airPressureMeasurements);
+
+        const latest_air_pressure = airPressureMeasurements[airPressureMeasurements.length - 1];
         setAirPressure(Math.round(latest_air_pressure.value));
 
       } else {
@@ -180,7 +184,7 @@ export default function Dashboard() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+          gridTemplateColumns: "220px 1fr",
           gap: "20px",
           marginBottom: "10px"
         }}
@@ -196,6 +200,20 @@ export default function Dashboard() {
             value={airPressure}
             unit="hPa"
             color="rgba(212, 44, 10, 0.95)"
+          />
+        </div>
+
+        <div
+          style={{
+            width: "100%",
+          }}
+        >
+          <TimeseriesChart
+            data={airPressureArray}
+            label="Air Pressure"
+            unit="hPa"
+            yAxisLabel="Air Pressure"
+            color="rgba(186, 84, 40, 0.92)"
           />
         </div>
       </div>
