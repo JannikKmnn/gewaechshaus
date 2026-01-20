@@ -32,11 +32,15 @@ export default function TimeseriesChart({
                 dataKey="timestamp"
                 tickFormatter={formatTime}
                 tick={{ fill: "#9ca3af", fontSize: 12 }}
-                axisLine={false}
-                tickLine={false}
             />
             <YAxis
-                label={{ value: yAxisLabel, angle: -90, position: "Left" }}
+                label={{ 
+                  value: yAxisLabel, 
+                  angle: -90, 
+                  position: "Left",
+                  offset: 32,
+                  dx: -30
+                }}
                 unit={unit}
             />
             <Tooltip />
