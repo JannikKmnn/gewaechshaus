@@ -17,7 +17,7 @@ export default function Dashboard() {
   const [airPressureArray, setAirPressureArray] = useState([]);
 
   const endTime = new Date().toISOString();
-  const startTimeSingle = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const startTimeSingle = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
   const roundToTwo = (num) => Math.round(num * 100) / 100;
 
@@ -129,7 +129,8 @@ export default function Dashboard() {
           }}
         >
           <MultipleTimeseriesChart
-            data={upHumidityArray}
+            data={temperatureArray}
+            exclude="temperature_cpu"
             label="Temperature"
             unit="°C"
             yAxisLabel="Temperature"

@@ -6,10 +6,14 @@ import {
   Tooltip,
   ResponsiveContainer
 } from "recharts";
+import CustomTooltip from "./ChartTooltip";
+import { temperatureToColor } from "../utils/color";
+import { reshapeTimeseries } from "../utils/data";
 import { formatTime } from "../utils/time";
 
 export default function MultipleTimeseriesChart({
   data,
+  exclude,
   label,
   unit,
   yAxisLabel,
@@ -17,6 +21,14 @@ export default function MultipleTimeseriesChart({
   yAxisMax,
   yAxisMin,
 }) {
+
+  const wideData = reshapeTimeseries(data, exclude);
+
+  const seriesKeys = Array.from(
+    new Set(data.map(d => d.field))
+  );
+  const filteredKeys = seriesKeys.filter(val => val !== exclude);
+
   return (
     <div
       style={{
@@ -29,7 +41,7 @@ export default function MultipleTimeseriesChart({
       }}
     >
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data}>
+        <LineChart data={wideData}>
             <XAxis
                 dataKey="timestamp"
                 tickFormatter={formatTime}
@@ -55,33 +67,21 @@ export default function MultipleTimeseriesChart({
                 }}
                 domain={[yAxisMin, yAxisMax]}
             />
-            <Tooltip 
-              labelFormatter={(label) =>
-                new Date(label).toLocaleString([], {
-                  day: "2-digit",
-                  month: "2-digit",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })
-              }
-              formatter={(value) => [`${value} ${unit}`, label]}
-              contentStyle={{
-                backgroundColor: "#0b1220",
-                border: "none",
-                borderRadius: "8px",
-                color: "#e5e7eb",
-                boxShadow: "0 4px 20px rgba(0,0,0,0.35)"
-              }}
-              itemStyle={{ color }}
-              labelStyle={{ color: "#9ca3af" }}
+            <Tooltip
+              content={<CustomTooltip unit={unit} />}
             />
-            <Line 
-              type="monotone" 
-              dataKey="value" 
-              stroke={color} 
-              dot={false}
-              strokeWidth={2}
-            />
+            {
+              filteredKeys.map((key) => (
+                <Line 
+                  key={key}
+                  type="monotone" 
+                  dataKey={key}
+                  stroke={color} 
+                  dot={false}
+                  strokeWidth={2}
+                />
+              ))
+            }
         </LineChart>
       </ResponsiveContainer>
     </div>
