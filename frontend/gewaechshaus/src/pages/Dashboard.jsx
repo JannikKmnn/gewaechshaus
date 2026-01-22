@@ -205,7 +205,7 @@ export default function Dashboard() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "220px 1fr",
+          gridTemplateColumns: "220px 1fr 220px",
           gap: "20px",
           marginBottom: "10px"
         }}
@@ -236,6 +236,40 @@ export default function Dashboard() {
             yAxisLabel="Air Pressure"
             color="rgba(186, 84, 40, 0.92)"
           />
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr / 1fr",
+            gap: "10px",
+            marginBottom: "10px"
+          }}
+        >
+            <div style={{
+              width: "100%",
+              height: "50%"
+            }}>
+              <SingleValueWidget
+                label="AirPressure"
+                value={airPressure}
+                unit="hPa"
+                color="rgba(212, 44, 10, 0.95)"
+              />
+            </div>
+
+            <div style={{
+              width: "100%",
+              height: "50%"
+            }}>
+
+              <SingleValueWidget
+                label="AirPressure"
+                value={airPressure}
+                unit="hPa"
+                color="rgba(212, 44, 10, 0.95)"
+              />
+            </div>
         </div>
       </div>
     </div>
