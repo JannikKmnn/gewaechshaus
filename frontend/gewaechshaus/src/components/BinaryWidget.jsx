@@ -1,8 +1,9 @@
-export default function SingleValueWidget({
+export default function BinaryWidget({
   label,
   value,
-  unit,
-  color,
+  binary_value,
+  color_true = "#269e24",
+  color_false = "#cc923a",
   height,
   fontsize,
   fontsizelabel
@@ -10,7 +11,7 @@ export default function SingleValueWidget({
   return (
     <div
       style={{
-        background: "#0b1220",
+        background: binary_value? color_true : color_false,
         borderRadius: "12px",
         padding: "20px",
         minWidth: "220px",
@@ -22,7 +23,6 @@ export default function SingleValueWidget({
         style={{
           fontSize: fontsizelabel || "14px",
           opacity: 0.7,
-          marginBottom: "10px"
         }}
       >
         {label}
@@ -32,13 +32,10 @@ export default function SingleValueWidget({
         style={{
           fontSize: fontsize || "42px",
           fontWeight: 500,
-          color
+          textAlign: "center",
         }}
       >
         {value !== null ? value : "—"}
-        <span style={{ fontSize: fontsize || "20px", marginLeft: "4px" }}>
-          {unit}
-        </span>
       </div>
     </div>
   );
