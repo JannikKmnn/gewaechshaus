@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import BinaryWidget from "../components/BinaryWidget";
 import MultipleTimeseriesChart from "../components/MultipleCharts";
 import TimeseriesChart from "../components/TimeseriesChart";
 import SingleValueWidget from "../components/SingleValueWidget";
@@ -11,6 +12,8 @@ export default function Dashboard() {
   const [upTemp, setUpTemp] = useState(null);
   const [upHumidity, setUpHumidity] = useState(null);
   const [airPressure, setAirPressure] = useState(null);
+  const [soilMoistureFront, setSoilMoistureFront] = useState(null);
+  const [soilMoistureBack, setSoilMoistureBack] = useState(null);
 
   const [temperatureArray, setTemperatureArray] = useState([]);
   const [upHumidityArray, setUpHumidityArray] = useState([]);
@@ -36,6 +39,11 @@ export default function Dashboard() {
         }),
         getData({
           measurement: "AirPressure",
+          start_time: startTimeSingle,
+          end_time: endTime,
+        }),
+        getData({
+          measurement: "SoilMoisture",
           start_time: startTimeSingle,
           end_time: endTime,
         }),
@@ -91,6 +99,25 @@ export default function Dashboard() {
 
       } else {
         setAirPressure(null);
+      }
+
+      // Soil Moisture Measurements
+      if (Array.isArray(results[3]) && results[3].length > 0) {
+
+        const soilMoistureMeasurements = results[3]
+
+        const back_sm = soilMoistureMeasurements.filter((measurement) => measurement.field === "soil_moisture_back")
+        const front_sm = soilMoistureMeasurements.filter((measurement) => measurement.field === "soil_moisture_front")
+
+        const latest_back = back_sm[back_sm.length - 1]
+        setSoilMoistureBack(latest_back.value)
+
+        const latest_front = front_sm[front_sm.length - 1]
+        setSoilMoistureFront(latest_front.value)
+
+      } else {
+        setSoilMoistureBack(null);
+        setSoilMoistureFront(null);
       }
     }
 
@@ -217,7 +244,7 @@ export default function Dashboard() {
           }}
         >
           <SingleValueWidget
-            label="AirPressure"
+            label="Air Pressure"
             value={airPressure}
             unit="hPa"
             color="rgba(212, 44, 10, 0.95)"
@@ -250,11 +277,13 @@ export default function Dashboard() {
               width: "100%",
               height: "50%"
             }}>
-              <SingleValueWidget
-                label="AirPressure"
-                value={airPressure}
-                unit="hPa"
-                color="rgba(212, 44, 10, 0.95)"
+              <BinaryWidget
+                label="Soil Moisture Back"
+                value={soilMoistureBack}
+                binary_value={soilMoistureBack == "wet" ? 1 : 0}
+                height="70px"
+                fontsize="15px"
+                fontsizelabel="12px"
               />
             </div>
 
@@ -263,11 +292,13 @@ export default function Dashboard() {
               height: "50%"
             }}>
 
-              <SingleValueWidget
-                label="AirPressure"
-                value={airPressure}
-                unit="hPa"
-                color="rgba(212, 44, 10, 0.95)"
+              <BinaryWidget
+                label="Soil Moisture Front"
+                value={soilMoistureFront}
+                binary_value={soilMoistureFront == "wet" ? 1 : 0}
+                height="70px"
+                fontsize="15px"
+                fontsizelabel="12px"
               />
             </div>
         </div>
