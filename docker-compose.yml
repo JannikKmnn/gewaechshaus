@@ -50,3 +50,12 @@ services:
           --host=0.0.0.0 \
           --port=8080 \
           --read-only
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: gewaechshaus-frontend
+    restart: always
+    ports:
+      - "5174:5174"
