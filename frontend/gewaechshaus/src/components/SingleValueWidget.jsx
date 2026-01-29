@@ -10,12 +10,12 @@ export default function SingleValueWidget({
   return (
     <div
       style={{
-        background: "#1b2a24",
+        background: "#3a3f3c",
         borderRadius: "12px",
         padding: "20px",
         minWidth: "220px",
         minHeight: height || "150px",
-        boxShadow: "0 4px 20px #1b2a24"
+        boxShadow: "0 4px 20px #3a3f3c"
       }}
     >
       <div
