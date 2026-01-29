@@ -20,12 +20,12 @@ export default function TimeseriesChart({
   return (
     <div
       style={{
-        background: "#0b1220",
+        background: "#1b2a24",
         borderRadius: "12px",
         padding: "20px",
         width: "100%",
         height: "100%",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.25)"
+        boxShadow: "0 4px 20px #1b2a24"
       }}
     >
       <ResponsiveContainer width="100%" height="100%">

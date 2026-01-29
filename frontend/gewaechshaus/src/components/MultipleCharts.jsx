@@ -32,12 +32,12 @@ export default function MultipleTimeseriesChart({
   return (
     <div
       style={{
-        background: "#0b1220",
+        background: "#243a32",
         borderRadius: "12px",
         padding: "20px",
         width: "100%",
         height: "100%",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.25)"
+        boxShadow: "0 4px 20px #243a32"
       }}
     >
       <ResponsiveContainer width="100%" height="100%">
