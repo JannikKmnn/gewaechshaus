@@ -44,6 +44,7 @@ export default function ControlCenter() {
           label="Window Left"
           value={windowStatusLeft}
           binary_value={windowStatusLeft == "closed" ? 1 : 0}
+          color_false = "#3737d3"
           height="70px"
           fontsize="15px"
           fontsizelabel="12px"
@@ -53,6 +54,7 @@ export default function ControlCenter() {
           label="Window Right"
           value={windowStatusRight}
           binary_value={windowStatusRight == "closed" ? 1 : 0}
+          color_false = "#3737d3"
           height="70px"
           fontsize="15px"
           fontsizelabel="12px"
