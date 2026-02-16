@@ -1,7 +1,9 @@
-export default function SingleValueWidget({
+export default function DoubleValueWidget({
   label,
-  value,
-  unit,
+  value1,
+  value2,
+  unit1,
+  unit2,
   color,
   height,
   fontsize,
@@ -36,9 +38,22 @@ export default function SingleValueWidget({
           color
         }}
       >
-        {value !== null ? value : "—"}
+        {value1 !== null ? value1 : "—"}
         <span style={{ fontSize: fontsize || "20px", marginLeft: "4px" }}>
-          {unit}
+          {unit1}
+        </span>
+      </div>
+
+      <div
+        style={{
+          fontSize: fontsize || "42px",
+          fontWeight: 500,
+          color
+        }}
+      >
+        {value2 !== null ? value2 : "—"}
+        <span style={{ fontSize: fontsize || "20px", marginLeft: "4px" }}>
+          {unit2}
         </span>
       </div>
     </div>
