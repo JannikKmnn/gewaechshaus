@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import BinaryWidget from "../components/BinaryWidget";
+import DoubleValueWidget from "../components/DoubleValueWidget";
 import { getWindowStatus } from "../api/windows";
-import { formatDateTime } from "../utils/time";
+import { formatDateTime, windowOpenTime } from "../utils/time";
 
 export default function ControlCenter() {
   const [windowStatusLeft, setWindowStatusLeft] = useState(null);
@@ -76,7 +77,7 @@ export default function ControlCenter() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 1fr",
+          gridTemplateColumns: "1fr 1fr 1fr 1fr",
           gap: "20px",
           marginBottom: "10px"
         }}
@@ -87,10 +88,40 @@ export default function ControlCenter() {
           <div>Last Closing: {formatDateTime(windowClosingLeft)}</div>
         </div>
 
+        <DoubleValueWidget
+          label={windowStatusLeft == "closed" ? "Last open time" : "Open for"}
+          value1={windowOpenTime(windowOpeningLeft, windowClosingLeft)[Object.keys(windowOpenTime(windowOpeningLeft, windowClosingLeft))[0]]}
+          value2={windowOpenTime(windowOpeningLeft, windowClosingLeft)[Object.keys(windowOpenTime(windowOpeningLeft, windowClosingLeft))[1]]}
+          unit1={Object.keys(windowOpenTime(windowOpeningLeft, windowClosingLeft))[0] == "diffDays" ? "Days" 
+            : Object.keys(windowOpenTime(windowOpeningLeft, windowClosingLeft))[0] == "diffHours" ? "Hours"
+            : "Minutes"
+          }
+          unit2={Object.keys(windowOpenTime(windowOpeningLeft, windowClosingLeft))[1] == "diffHours" ? "Hours" 
+            : Object.keys(windowOpenTime(windowOpeningLeft, windowClosingLeft))[1] == "diffMinutes" ? "Minutes"
+            : "Seconds"
+          }
+          color="rgba(212, 44, 10, 0.95)"
+        />
+
         <div>
           <div>Last Opening: {formatDateTime(windowOpeningRight)}</div>
           <div>Last Closing: {formatDateTime(windowClosingRight)}</div>
         </div>
+
+        <DoubleValueWidget
+          label={windowStatusRight == "closed" ? "Last open time" : "Open for"}
+          value1={windowOpenTime(windowOpeningRight, windowClosingRight)[Object.keys(windowOpenTime(windowOpeningRight, windowClosingRight))[0]]}
+          value2={windowOpenTime(windowOpeningRight, windowClosingRight)[Object.keys(windowOpenTime(windowOpeningRight, windowClosingRight))[1]]}
+          unit1={Object.keys(windowOpenTime(windowOpeningRight, windowClosingRight))[0] == "diffDays" ? "Days" 
+            : Object.keys(windowOpenTime(windowOpeningRight, windowClosingRight))[0] == "diffHours" ? "Hours"
+            : "Minutes"
+          }
+          unit2={Object.keys(windowOpenTime(windowOpeningRight, windowClosingRight))[1] == "diffHours" ? "Hours" 
+            : Object.keys(windowOpenTime(windowOpeningRight, windowClosingRight))[1] == "diffMinutes" ? "Minutes"
+            : "Seconds"
+          }
+          color="rgba(212, 44, 10, 0.95)"
+        />
       </div>
     
     </div>

@@ -24,3 +24,40 @@ export function formatDateTime(isoString) {
     })
     .replace(",", "");
 }
+
+export function windowOpenTime(lastOpening, lastClosing) {
+
+  const lastOpeningDate = new Date(lastOpening);
+  let lastClosingDate = new Date(lastClosing);
+
+  if (lastOpeningDate > lastClosingDate) {
+    // window is still open
+    lastClosingDate = Date.now();
+  }
+
+  const timeDiff = Math.abs(lastClosingDate - lastOpeningDate);
+
+  const diffDays = Math.floor((timeDiff / (1000 * 60 * 60 * 24))); 
+  const diffHours = Math.floor((timeDiff / (1000 * 60 * 60) % 24)); 
+  const diffMinutes = Math.floor(timeDiff / (1000 * 60));
+  const diffSeconds = Math.floor((timeDiff / 1000) % 60);
+
+  if (diffDays > 0) {
+    return {
+      "diffDays": diffDays,
+      "diffHours": diffHours,
+    }
+  }
+  else if (diffHours > 0) {
+    return {
+      "diffHours": diffHours,
+      "diffMinutes": diffMinutes,
+    }
+  }
+  else {
+    return {
+      "diffMinutes": diffMinutes,
+      "diffSeconds": diffSeconds,
+    }
+  }
+}
