@@ -5,6 +5,8 @@ import TimeseriesChart from "../components/TimeseriesChart";
 import SingleValueWidget from "../components/SingleValueWidget";
 import { getData } from "../api/data";
 import { temperatureToColor } from "../utils/color";
+import { isoAgo } from "../utils/time";
+import { isAxiosError } from "axios";
 
 export default function Dashboard() {
   const [outsideTemp, setOutsideTemp] = useState(null);
@@ -20,14 +22,17 @@ export default function Dashboard() {
   const [airPressureArray, setAirPressureArray] = useState([]);
 
   const endTimeSingle = new Date().toISOString();
-  const startTimeSingle = new Date(Date.now() - 2 * 60 * 1000).toISOString();
+  const startTimeSingle = isoAgo("2m")
 
-  const endTimeSeries =new Date().toISOString();
-  const startTimeSeries = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const [timeSeriesDiff, setTimeSeriesDiff] = useState("1d")
+
+  const endTimeSeries = new Date().toISOString();
 
   const roundToTwo = (num) => Math.round(num * 100) / 100;
 
   useEffect(() => {
+    const startTimeSeries = isoAgo(timeSeriesDiff);
+
     async function fetchMeasurementsSingle() {
       const results = await Promise.all([
         getData({
@@ -159,11 +164,49 @@ export default function Dashboard() {
 
     fetchMeasurementsSingle();
     fetchMeasurementsSeries();
-  }, []);
+  }, [timeSeriesDiff]);
 
   return (
     <div>
-      <h1 style={{ marginBottom: "20px" }}>Sensor Measurements</h1>
+      <h1>Sensor Measurements</h1>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "80% 20%",
+          gap: "20px",
+          marginBottom: "10px"
+        }}
+      >
+
+        <div></div>
+
+        <label>
+          <select name="timeRange"
+          style={{
+            backgroundColor: "rgba(141, 141, 160, 0.92)",
+            width: "80%",
+            height: "30px",
+            fontSize: "20px",
+            color: "white",
+            boxShadow: "0 4px 20px #3a3f3c",
+            borderRadius: "5px"
+          }}
+          value={timeSeriesDiff}
+          onChange={e => setTimeSeriesDiff(e.target.value)}
+          >
+            <option value="5m">Past 5 minutes</option>
+            <option value="30m">Past 30 minutes</option>
+            <option value="1h">Past 1 hour</option>
+            <option value="3h">Past 3 hours</option>
+            <option value="12h">Past 12 hours</option>
+            <option value="1d">Past 1 day</option>
+            <option value="3d">Past 3 days</option>
+            <option value="7d">Past 1 week</option>
+          </select>
+        </label>
+
+      </div>
 
       <div
         style={{
