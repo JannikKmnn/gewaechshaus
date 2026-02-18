@@ -83,11 +83,6 @@ export default function ControlCenter() {
         }}
       >
 
-        <div>
-          <div>Last Opening: {formatDateTime(windowOpeningLeft)}</div>
-          <div>Last Closing: {formatDateTime(windowClosingLeft)}</div>
-        </div>
-
         <DoubleValueWidget
           label={windowStatusLeft == "closed" ? "Last open time" : "Open for"}
           value1={windowOpenTime(windowOpeningLeft, windowClosingLeft)[Object.keys(windowOpenTime(windowOpeningLeft, windowClosingLeft))[0]]}
@@ -104,8 +99,8 @@ export default function ControlCenter() {
         />
 
         <div>
-          <div>Last Opening: {formatDateTime(windowOpeningRight)}</div>
-          <div>Last Closing: {formatDateTime(windowClosingRight)}</div>
+          <div>Last Opening: {formatDateTime(windowOpeningLeft)}</div>
+          <div>Last Closing: {formatDateTime(windowClosingLeft)}</div>
         </div>
 
         <DoubleValueWidget
@@ -122,6 +117,12 @@ export default function ControlCenter() {
           }
           color="rgba(212, 44, 10, 0.95)"
         />
+
+        <div>
+          <div>Last Opening: {formatDateTime(windowOpeningRight)}</div>
+          <div>Last Closing: {formatDateTime(windowClosingRight)}</div>
+        </div>
+
       </div>
     
     </div>
