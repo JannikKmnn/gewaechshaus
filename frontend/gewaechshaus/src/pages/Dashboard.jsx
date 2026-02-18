@@ -5,7 +5,7 @@ import TimeseriesChart from "../components/TimeseriesChart";
 import SingleValueWidget from "../components/SingleValueWidget";
 import { getData } from "../api/data";
 import { temperatureToColor } from "../utils/color";
-import { formatDateTime, isoAgo } from "../utils/time";
+import { formatDateTime, isoAgo, isoWayOff } from "../utils/time";
 
 export default function Dashboard() {
   const [outsideTemp, setOutsideTemp] = useState(null);
@@ -26,12 +26,22 @@ export default function Dashboard() {
   const [timeSeriesDiff, setTimeSeriesDiff] = useState("1d");
 
   const [displayStartTimeSeries, setDisplayStartTimeSeries] = useState(isoAgo(timeSeriesDiff));
-  const endTimeSeries = new Date().toISOString();
+  const [endTimeSeries, setEndTimeSeries] = useState(new Date().toISOString());
 
   const roundToTwo = (num) => Math.round(num * 100) / 100;
 
+  async function moveTimeWindow(direction) {
+    if (direction == "back") {
+      setDisplayStartTimeSeries(isoAgo(timeSeriesDiff, displayStartTimeSeries));
+      setEndTimeSeries(isoAgo(timeSeriesDiff, endTimeSeries));
+    } else if (direction == "front") {
+      setEndTimeSeries(isoWayOff(timeSeriesDiff, endTimeSeries));
+      setDisplayStartTimeSeries(isoWayOff(timeSeriesDiff, displayStartTimeSeries));
+    };
+  };
+
   useEffect(() => {
-    const startTimeSeries = isoAgo(timeSeriesDiff);
+    const startTimeSeries = isoAgo(timeSeriesDiff, endTimeSeries);
 
     async function fetchMeasurementsSingle() {
       const results = await Promise.all([
@@ -188,7 +198,8 @@ export default function Dashboard() {
           boxShadow: "0 4px 20px #3a3f3c",
           borderRadius: "5px",
           alignItems: "center"
-        }}>
+        }}
+        onClick={() => moveTimeWindow("back")}>
           {"<"}
         </button>
 
@@ -217,7 +228,8 @@ export default function Dashboard() {
           boxShadow: "0 4px 20px #3a3f3c",
           borderRadius: "5px",
           alignItems: "center"
-        }}>
+        }}
+        onClick={() => moveTimeWindow("front")}>
           {">"}
         </button>
 
@@ -233,7 +245,9 @@ export default function Dashboard() {
             borderRadius: "5px"
           }}
           value={timeSeriesDiff}
-          onChange={e => (setTimeSeriesDiff(e.target.value), setDisplayStartTimeSeries(isoAgo(e.target.value)))}
+          onChange={e => (
+            setTimeSeriesDiff(e.target.value), 
+            setDisplayStartTimeSeries(isoAgo(e.target.value, endTimeSeries)))}
           >
             <option value="5m">5 minutes</option>
             <option value="30m">30 minutes</option>
