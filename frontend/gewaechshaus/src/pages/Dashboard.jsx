@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, Button } from "react";
 import BinaryWidget from "../components/BinaryWidget";
 import MultipleTimeseriesChart from "../components/MultipleCharts";
 import TimeseriesChart from "../components/TimeseriesChart";
 import SingleValueWidget from "../components/SingleValueWidget";
 import { getData } from "../api/data";
 import { temperatureToColor } from "../utils/color";
-import { isoAgo } from "../utils/time";
-import { isAxiosError } from "axios";
+import { formatDateTime, isoAgo } from "../utils/time";
 
 export default function Dashboard() {
   const [outsideTemp, setOutsideTemp] = useState(null);
@@ -22,10 +21,11 @@ export default function Dashboard() {
   const [airPressureArray, setAirPressureArray] = useState([]);
 
   const endTimeSingle = new Date().toISOString();
-  const startTimeSingle = isoAgo("2m")
+  const startTimeSingle = isoAgo("2m");
 
-  const [timeSeriesDiff, setTimeSeriesDiff] = useState("1d")
+  const [timeSeriesDiff, setTimeSeriesDiff] = useState("1d");
 
+  const [displayStartTimeSeries, setDisplayStartTimeSeries] = useState(isoAgo(timeSeriesDiff));
   const endTimeSeries = new Date().toISOString();
 
   const roundToTwo = (num) => Math.round(num * 100) / 100;
@@ -164,7 +164,7 @@ export default function Dashboard() {
 
     fetchMeasurementsSingle();
     fetchMeasurementsSeries();
-  }, [timeSeriesDiff]);
+  }, [timeSeriesDiff, displayStartTimeSeries]);
 
   return (
     <div>
@@ -173,13 +173,53 @@ export default function Dashboard() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "80% 20%",
-          gap: "20px",
-          marginBottom: "10px"
+          gridTemplateColumns: "36% 2% 40% 2% 20%",
+          gap: "10px",
+          marginBottom: "15px"
         }}
       >
 
         <div></div>
+
+        <button style={{
+          backgroundColor: "rgba(141, 141, 160, 0.92)",
+          fontSize: "18px",
+          color: "white",
+          boxShadow: "0 4px 20px #3a3f3c",
+          borderRadius: "5px",
+          alignItems: "center"
+        }}>
+          {"<"}
+        </button>
+
+        <div style={{
+            display: "grid",
+            gridTemplateColumns: "48% 4% 48%",
+            backgroundColor: "rgba(141, 141, 160, 0.92)",
+            width: "100%",
+            height: "30px",
+            fontSize: "18px",
+            color: "white",
+            boxShadow: "0 4px 20px #3a3f3c",
+            borderRadius: "5px",
+            alignItems: "center"
+          }}
+        >
+          <div style={{ textAlign: "center" }}>{formatDateTime(displayStartTimeSeries)}</div>
+          <div>-</div>
+          <div style={{ textAlign: "center" }}>{formatDateTime(endTimeSeries)}</div>
+        </div>
+
+        <button style={{
+          backgroundColor: "rgba(141, 141, 160, 0.92)",
+          fontSize: "18px",
+          color: "white",
+          boxShadow: "0 4px 20px #3a3f3c",
+          borderRadius: "5px",
+          alignItems: "center"
+        }}>
+          {">"}
+        </button>
 
         <label>
           <select name="timeRange"
@@ -193,16 +233,17 @@ export default function Dashboard() {
             borderRadius: "5px"
           }}
           value={timeSeriesDiff}
-          onChange={e => setTimeSeriesDiff(e.target.value)}
+          onChange={e => (setTimeSeriesDiff(e.target.value), setDisplayStartTimeSeries(isoAgo(e.target.value)))}
           >
-            <option value="5m">Past 5 minutes</option>
-            <option value="30m">Past 30 minutes</option>
-            <option value="1h">Past 1 hour</option>
-            <option value="3h">Past 3 hours</option>
-            <option value="12h">Past 12 hours</option>
-            <option value="1d">Past 1 day</option>
-            <option value="3d">Past 3 days</option>
-            <option value="7d">Past 1 week</option>
+            <option value="5m">5 minutes</option>
+            <option value="30m">30 minutes</option>
+            <option value="1h">1 hour</option>
+            <option value="3h">3 hours</option>
+            <option value="6h">6 hours</option>
+            <option value="12h">12 hours</option>
+            <option value="1d">1 day</option>
+            <option value="3d">3 days</option>
+            <option value="7d">1 week</option>
           </select>
         </label>
 
@@ -223,7 +264,7 @@ export default function Dashboard() {
           }}
         >
           <SingleValueWidget
-            label="Outside"
+            label="Outside (Current)"
             value={outsideTemp}
             unit="°C"
             color={temperatureToColor(outsideTemp)}
@@ -251,7 +292,7 @@ export default function Dashboard() {
           }}
         >
           <SingleValueWidget
-            label="Inside Up"
+            label="Inside Up (Current)"
             value={upTemp}
             unit="°C"
             color={temperatureToColor(upTemp)}
@@ -274,7 +315,7 @@ export default function Dashboard() {
           }}
         >
           <SingleValueWidget
-            label="Humidity"
+            label="Humidity (Current)"
             value={upHumidity}
             unit="%"
             color="rgba(85, 88, 193, 0.92)"
@@ -301,7 +342,7 @@ export default function Dashboard() {
           }}
         >
           <SingleValueWidget
-            label="Inside"
+            label="Inside (Current)"
             value={insideTemp}
             unit="°C"
             color={temperatureToColor(insideTemp)}
@@ -324,7 +365,7 @@ export default function Dashboard() {
           }}
         >
           <SingleValueWidget
-            label="Air Pressure"
+            label="Air Pressure (Current)"
             value={airPressure}
             unit="hPa"
             color="rgba(212, 44, 10, 0.95)"
@@ -358,7 +399,7 @@ export default function Dashboard() {
               height: "50%"
             }}>
               <BinaryWidget
-                label="Soil Moisture Back"
+                label="Soil Moisture Back (Current)"
                 value={soilMoistureBack}
                 binary_value={soilMoistureBack == "wet" ? 1 : 0}
                 height="70px"
@@ -373,7 +414,7 @@ export default function Dashboard() {
             }}>
 
               <BinaryWidget
-                label="Soil Moisture Front"
+                label="Soil Moisture Front (Current)"
                 value={soilMoistureFront}
                 binary_value={soilMoistureFront == "wet" ? 1 : 0}
                 height="70px"
