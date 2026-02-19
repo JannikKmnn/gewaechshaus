@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import BinaryWidget from "../components/BinaryWidget";
 import DoubleValueWidget from "../components/DoubleValueWidget";
-import { getWindowStatus } from "../api/windows";
+import { getWindowStatus, callWindowActuators } from "../api/windows";
 import { formatDateTime, windowOpenTime } from "../utils/time";
 
 export default function ControlCenter() {
@@ -13,6 +13,24 @@ export default function ControlCenter() {
 
   const [windowClosingLeft, setWindowClosingLeft] = useState(null);
   const [windowClosingRight, setWindowClosingRight] = useState(null);
+
+  async function actOnWindows(movement, position=null) {
+    const results = await callWindowActuators({
+      operation: movement,
+      window_position: position
+    });
+    if (position == "left") {
+      setWindowStatusLeft(movement == "open" ? "open" : "close")
+    }
+    else if (position == "right") {
+      setWindowStatusRight(movement == "open" ? "open" : "close")
+    }
+    else {
+      setWindowStatusLeft(movement == "open" ? "open" : "close")
+      setWindowStatusRight(movement == "open" ? "open" : "close")
+    }
+    return results
+  };
 
   useEffect(() => {
     async function getWindowsStatus() {
@@ -37,7 +55,7 @@ export default function ControlCenter() {
     }
 
     getWindowsStatus();
-  }, []);
+  }, [windowStatusLeft, windowStatusRight]);
 
   return (
     <div>
@@ -98,9 +116,34 @@ export default function ControlCenter() {
           color="rgba(212, 44, 10, 0.95)"
         />
 
-        <div>
-          <div>Last Opening: {formatDateTime(windowOpeningLeft)}</div>
-          <div>Last Closing: {formatDateTime(windowClosingLeft)}</div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr / 1fr",
+            gap: "20px",
+            marginBottom: "10px"
+          }}
+        >
+
+          <div>
+            <div>Last Opening: {formatDateTime(windowOpeningLeft)}</div>
+            <div>Last Closing: {formatDateTime(windowClosingLeft)}</div>
+          </div>
+
+          <button style={{
+            backgroundColor: "rgba(146, 204, 159, 0.92)",
+            fontSize: "18px",
+            color: "white",
+            boxShadow: "0 4px 20px #3a3f3c",
+            borderRadius: "5px",
+            alignItems: "center"
+          }}
+          onClick={() => {windowStatusLeft == "closed" ? actOnWindows("open", "left")
+            : actOnWindows("close", "left")
+          }}>
+            {windowStatusLeft == "closed" ? "Open Window" : "Close Window"}
+          </button>
+
         </div>
 
         <DoubleValueWidget
@@ -118,9 +161,34 @@ export default function ControlCenter() {
           color="rgba(212, 44, 10, 0.95)"
         />
 
-        <div>
-          <div>Last Opening: {formatDateTime(windowOpeningRight)}</div>
-          <div>Last Closing: {formatDateTime(windowClosingRight)}</div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr / 1fr",
+            gap: "20px",
+            marginBottom: "10px"
+          }}
+        >
+
+          <div>
+            <div>Last Opening: {formatDateTime(windowOpeningRight)}</div>
+            <div>Last Closing: {formatDateTime(windowClosingRight)}</div>
+          </div>
+
+          <button style={{
+            backgroundColor: "rgba(146, 204, 159, 0.92)",
+            fontSize: "18px",
+            color: "white",
+            boxShadow: "0 4px 20px #3a3f3c",
+            borderRadius: "5px",
+            alignItems: "center"
+          }}
+          onClick={() => {windowStatusRight == "closed" ? actOnWindows("open", "right")
+            : actOnWindows("close", "right")
+          }}>
+            {windowStatusRight == "closed" ? "Open Window" : "Close Window"}
+          </button>
+
         </div>
 
       </div>

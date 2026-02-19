@@ -198,7 +198,7 @@ export default function Dashboard() {
         <div></div>
 
         <button style={{
-          backgroundColor: "rgba(141, 141, 160, 0.92)",
+          backgroundColor: "rgba(146, 204, 159, 0.92)",
           fontSize: "18px",
           color: "white",
           boxShadow: "0 4px 20px #3a3f3c",
@@ -212,7 +212,7 @@ export default function Dashboard() {
         <div style={{
             display: "grid",
             gridTemplateColumns: "48% 4% 48%",
-            backgroundColor: "rgba(141, 141, 160, 0.92)",
+            backgroundColor: "rgba(146, 204, 159, 0.92)",
             width: "100%",
             height: "30px",
             fontSize: "18px",
@@ -228,7 +228,7 @@ export default function Dashboard() {
         </div>
 
         <button style={{
-          backgroundColor: "rgba(141, 141, 160, 0.92)",
+          backgroundColor: "rgba(146, 204, 159, 0.92)",
           fontSize: "18px",
           color: "white",
           boxShadow: "0 4px 20px #3a3f3c",
@@ -242,7 +242,7 @@ export default function Dashboard() {
         <label>
           <select name="timeRange"
           style={{
-            backgroundColor: "rgba(141, 141, 160, 0.92)",
+            backgroundColor: "rgba(146, 204, 159, 0.92)",
             width: "80%",
             height: "30px",
             fontSize: "20px",
