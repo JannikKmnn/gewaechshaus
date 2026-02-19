@@ -262,6 +262,9 @@ export default function Dashboard() {
             <option value="1d">1 day</option>
             <option value="3d">3 days</option>
             <option value="7d">1 week</option>
+            <option value="14d">2 weeks</option>
+            <option value="30d">30 days</option>
+            <option value="60d">60 days</option>
           </select>
         </label>
 
