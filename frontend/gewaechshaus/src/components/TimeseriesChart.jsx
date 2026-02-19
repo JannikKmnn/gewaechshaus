@@ -28,7 +28,7 @@ export default function TimeseriesChart({
         boxShadow: "0 4px 20px #3a3f3c"
       }}
     >
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height={110}>
         <AreaChart data={data}>
             <XAxis
                 dataKey="timestamp"
