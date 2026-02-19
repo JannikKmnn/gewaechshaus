@@ -10,6 +10,7 @@ async def get_measurements(
     measurement: Optional[SensorType] = None,
     end_time: Optional[list[str]] = None,
     field_identifier: Optional[list[str]] = None,
+    aggregation: Optional[str] = None,
 ) -> list[list]:
 
     influxdb_client = await setup_client()
@@ -32,6 +33,9 @@ async def get_measurements(
             [f'r["_field"] == "{ident}"' for ident in field_identifier]
         )
         query += f"""    |> filter(fn: (r) => {filters})"""
+
+    if aggregation:
+        query += f"""    |> aggregateWindow(every: {aggregation}, fn: mean)"""
 
     async with influxdb_client:
         table = await influxdb_client.query_api().query(query=query)
