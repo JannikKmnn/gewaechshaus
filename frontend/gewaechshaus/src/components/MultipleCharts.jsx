@@ -40,7 +40,7 @@ export default function MultipleTimeseriesChart({
         boxShadow: "0 4px 20px #3a3f3c"
       }}
     >
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height={110}>
         <LineChart data={wideData}>
             <XAxis
                 dataKey="timestamp"

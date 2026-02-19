@@ -64,7 +64,7 @@ export function windowOpenTime(lastOpening, lastClosing) {
 
 export function isoAgo(
   str,
-  end_date = Date.now(),
+  base = Date.now(),
 ) {
   const value = parseInt(str);
   const unit = str.replace(value, "");
@@ -75,12 +75,14 @@ export function isoAgo(
     d: 24 * 60 * 60 * 1000,
   };
 
-  return new Date(new Date(end_date) - value * multipliers[unit]).toISOString();
+  const baseMs = Math.floor(new Date(base).getTime() / 1000) * 1000;
+
+  return new Date(baseMs - value * multipliers[unit]).toISOString();
 }
 
 export function isoWayOff(
   str,
-  start_date,
+  base,
 ) {
   const value = parseInt(str);
   const unit = str.replace(value, "");
@@ -91,5 +93,7 @@ export function isoWayOff(
     d: 24 * 60 * 60 * 1000,
   };
 
-  return new Date(new Date(start_date) + value * multipliers[unit]).toISOString();
+  const baseMs = Math.floor(new Date(base).getTime() / 1000) * 1000;
+
+  return new Date(baseMs + value * multipliers[unit]).toISOString();
 }

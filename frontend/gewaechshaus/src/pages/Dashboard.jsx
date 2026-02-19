@@ -1,4 +1,4 @@
-import { useEffect, useState, Button } from "react";
+import { useEffect, useState } from "react";
 import BinaryWidget from "../components/BinaryWidget";
 import MultipleTimeseriesChart from "../components/MultipleCharts";
 import TimeseriesChart from "../components/TimeseriesChart";
@@ -25,18 +25,24 @@ export default function Dashboard() {
 
   const [timeSeriesDiff, setTimeSeriesDiff] = useState("1d");
 
-  const [displayStartTimeSeries, setDisplayStartTimeSeries] = useState(isoAgo(timeSeriesDiff));
   const [endTimeSeries, setEndTimeSeries] = useState(new Date().toISOString());
+  const displayStartTimeSeries = isoAgo(timeSeriesDiff, endTimeSeries);
 
   const roundToTwo = (num) => Math.round(num * 100) / 100;
 
   async function moveTimeWindow(direction) {
     if (direction == "back") {
-      setDisplayStartTimeSeries(isoAgo(timeSeriesDiff, displayStartTimeSeries));
-      setEndTimeSeries(isoAgo(timeSeriesDiff, endTimeSeries));
+      setEndTimeSeries(prev => isoAgo(timeSeriesDiff, prev));
     } else if (direction == "front") {
-      setEndTimeSeries(isoWayOff(timeSeriesDiff, endTimeSeries));
-      setDisplayStartTimeSeries(isoWayOff(timeSeriesDiff, displayStartTimeSeries));
+      setEndTimeSeries(prev => {
+        const now = new Date().toISOString();
+        const next = isoWayOff(timeSeriesDiff, prev);
+
+        if (new Date(next) > new Date(now)) {
+          return prev
+        }
+        return next;
+    });
     };
   };
 
@@ -174,7 +180,7 @@ export default function Dashboard() {
 
     fetchMeasurementsSingle();
     fetchMeasurementsSeries();
-  }, [timeSeriesDiff, displayStartTimeSeries]);
+  }, [timeSeriesDiff, endTimeSeries]);
 
   return (
     <div>
@@ -245,9 +251,7 @@ export default function Dashboard() {
             borderRadius: "5px"
           }}
           value={timeSeriesDiff}
-          onChange={e => (
-            setTimeSeriesDiff(e.target.value), 
-            setDisplayStartTimeSeries(isoAgo(e.target.value, endTimeSeries)))}
+          onChange={e => setTimeSeriesDiff(e.target.value)}
           >
             <option value="5m">5 minutes</option>
             <option value="30m">30 minutes</option>
