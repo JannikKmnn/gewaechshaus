@@ -14,48 +14,48 @@ export default function ControlCenter() {
   const [windowClosingLeft, setWindowClosingLeft] = useState(null);
   const [windowClosingRight, setWindowClosingRight] = useState(null);
 
+  const [loadingLeft, setLoadingLeft] = useState(false);
+  const [loadingRight, setLoadingRight] = useState(false);
+
   async function actOnWindows(movement, position=null) {
-    const results = await callWindowActuators({
+    if (position === "left") setLoadingLeft(true);
+    if (position === "right") setLoadingRight(true);
+
+    await callWindowActuators({
       operation: movement,
-      window_position: position
+      window_position: position,
     });
-    if (position == "left") {
-      setWindowStatusLeft(movement == "open" ? "open" : "close")
-    }
-    else if (position == "right") {
-      setWindowStatusRight(movement == "open" ? "open" : "close")
-    }
-    else {
-      setWindowStatusLeft(movement == "open" ? "open" : "close")
-      setWindowStatusRight(movement == "open" ? "open" : "close")
-    }
-    return results
+
+    await getWindowsStatus();
+
+    setLoadingLeft(false);
+    setLoadingRight(false);
   };
 
-  useEffect(() => {
-    async function getWindowsStatus() {
-      const results = await Promise.all([
-        getWindowStatus({
-          window_position: "left",
-        }),
-        getWindowStatus({
-          window_position: "right",
-        }),
-      ])
+  async function getWindowsStatus() {
+    const results = await Promise.all([
+      getWindowStatus({
+        window_position: "left",
+      }),
+      getWindowStatus({
+        window_position: "right",
+      }),
+    ])
 
-      if (results.length === 2) {
-        setWindowStatusLeft(results[0].status);
-        setWindowStatusRight(results[1].status);
-        setWindowOpeningLeft(results[0].last_opening);
-        setWindowOpeningRight(results[1].last_opening);
-        setWindowClosingLeft(results[0].last_closing);
-        setWindowClosingRight(results[1].last_closing);
-      }
-      
+    if (results.length === 2) {
+      setWindowStatusLeft(results[0].status);
+      setWindowStatusRight(results[1].status);
+      setWindowOpeningLeft(results[0].last_opening);
+      setWindowOpeningRight(results[1].last_opening);
+      setWindowClosingLeft(results[0].last_closing);
+      setWindowClosingRight(results[1].last_closing);
     }
+    
+  }
 
+  useEffect(() => {
     getWindowsStatus();
-  }, [windowStatusLeft, windowStatusRight]);
+  }, []);
 
   return (
     <div>
@@ -136,12 +136,14 @@ export default function ControlCenter() {
             color: "white",
             boxShadow: "0 4px 20px #3a3f3c",
             borderRadius: "5px",
-            alignItems: "center"
+            alignItems: "center",
+            opacity: loadingLeft ? 0.6 : 1,
           }}
           onClick={() => {windowStatusLeft == "closed" ? actOnWindows("open", "left")
             : actOnWindows("close", "left")
-          }}>
-            {windowStatusLeft == "closed" ? "Open Window" : "Close Window"}
+          }}
+          disabled={loadingLeft}>
+            {loadingLeft ? "Moving..." : windowStatusLeft == "closed" ? "Open Window" : "Close Window"}
           </button>
 
         </div>
@@ -181,12 +183,14 @@ export default function ControlCenter() {
             color: "white",
             boxShadow: "0 4px 20px #3a3f3c",
             borderRadius: "5px",
-            alignItems: "center"
+            alignItems: "center",
+            opacity: loadingRight ? 0.6 : 1,
           }}
           onClick={() => {windowStatusRight == "closed" ? actOnWindows("open", "right")
             : actOnWindows("close", "right")
-          }}>
-            {windowStatusRight == "closed" ? "Open Window" : "Close Window"}
+          }}
+          disabled={loadingRight}>
+            {loadingRight ? "Moving..." : windowStatusRight === "closed" ? "Open Window" : "Close Window"}
           </button>
 
         </div>
