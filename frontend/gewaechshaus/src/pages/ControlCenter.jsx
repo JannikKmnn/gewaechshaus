@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import BinaryWidget from "../components/BinaryWidget";
 import DoubleValueWidget from "../components/DoubleValueWidget";
-import { getWindowStatus } from "../api/windows";
+import { getWindowStatus, callWindowActuators } from "../api/windows";
 import { formatDateTime, windowOpenTime } from "../utils/time";
 
 export default function ControlCenter() {
@@ -14,28 +14,46 @@ export default function ControlCenter() {
   const [windowClosingLeft, setWindowClosingLeft] = useState(null);
   const [windowClosingRight, setWindowClosingRight] = useState(null);
 
-  useEffect(() => {
-    async function getWindowsStatus() {
-      const results = await Promise.all([
-        getWindowStatus({
-          window_position: "left",
-        }),
-        getWindowStatus({
-          window_position: "right",
-        }),
-      ])
+  const [loadingLeft, setLoadingLeft] = useState(false);
+  const [loadingRight, setLoadingRight] = useState(false);
 
-      if (results.length === 2) {
-        setWindowStatusLeft(results[0].status);
-        setWindowStatusRight(results[1].status);
-        setWindowOpeningLeft(results[0].last_opening);
-        setWindowOpeningRight(results[1].last_opening);
-        setWindowClosingLeft(results[0].last_closing);
-        setWindowClosingRight(results[1].last_closing);
-      }
-      
+  async function actOnWindows(movement, position=null) {
+    if (position === "left") setLoadingLeft(true);
+    if (position === "right") setLoadingRight(true);
+
+    await callWindowActuators({
+      operation: movement,
+      window_position: position,
+    });
+
+    await getWindowsStatus();
+
+    setLoadingLeft(false);
+    setLoadingRight(false);
+  };
+
+  async function getWindowsStatus() {
+    const results = await Promise.all([
+      getWindowStatus({
+        window_position: "left",
+      }),
+      getWindowStatus({
+        window_position: "right",
+      }),
+    ])
+
+    if (results.length === 2) {
+      setWindowStatusLeft(results[0].status);
+      setWindowStatusRight(results[1].status);
+      setWindowOpeningLeft(results[0].last_opening);
+      setWindowOpeningRight(results[1].last_opening);
+      setWindowClosingLeft(results[0].last_closing);
+      setWindowClosingRight(results[1].last_closing);
     }
+    
+  }
 
+  useEffect(() => {
     getWindowsStatus();
   }, []);
 
@@ -98,9 +116,36 @@ export default function ControlCenter() {
           color="rgba(212, 44, 10, 0.95)"
         />
 
-        <div>
-          <div>Last Opening: {formatDateTime(windowOpeningLeft)}</div>
-          <div>Last Closing: {formatDateTime(windowClosingLeft)}</div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr / 1fr",
+            gap: "20px",
+            marginBottom: "10px"
+          }}
+        >
+
+          <div>
+            <div>Last Opening: {formatDateTime(windowOpeningLeft)}</div>
+            <div>Last Closing: {formatDateTime(windowClosingLeft)}</div>
+          </div>
+
+          <button style={{
+            backgroundColor: "rgba(146, 204, 159, 0.92)",
+            fontSize: "18px",
+            color: "white",
+            boxShadow: "0 4px 20px #3a3f3c",
+            borderRadius: "5px",
+            alignItems: "center",
+            opacity: loadingLeft ? 0.6 : 1,
+          }}
+          onClick={() => {windowStatusLeft == "closed" ? actOnWindows("open", "left")
+            : actOnWindows("close", "left")
+          }}
+          disabled={loadingLeft}>
+            {loadingLeft ? "Moving..." : windowStatusLeft == "closed" ? "Open Window" : "Close Window"}
+          </button>
+
         </div>
 
         <DoubleValueWidget
@@ -118,9 +163,36 @@ export default function ControlCenter() {
           color="rgba(212, 44, 10, 0.95)"
         />
 
-        <div>
-          <div>Last Opening: {formatDateTime(windowOpeningRight)}</div>
-          <div>Last Closing: {formatDateTime(windowClosingRight)}</div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr / 1fr",
+            gap: "20px",
+            marginBottom: "10px"
+          }}
+        >
+
+          <div>
+            <div>Last Opening: {formatDateTime(windowOpeningRight)}</div>
+            <div>Last Closing: {formatDateTime(windowClosingRight)}</div>
+          </div>
+
+          <button style={{
+            backgroundColor: "rgba(146, 204, 159, 0.92)",
+            fontSize: "18px",
+            color: "white",
+            boxShadow: "0 4px 20px #3a3f3c",
+            borderRadius: "5px",
+            alignItems: "center",
+            opacity: loadingRight ? 0.6 : 1,
+          }}
+          onClick={() => {windowStatusRight == "closed" ? actOnWindows("open", "right")
+            : actOnWindows("close", "right")
+          }}
+          disabled={loadingRight}>
+            {loadingRight ? "Moving..." : windowStatusRight === "closed" ? "Open Window" : "Close Window"}
+          </button>
+
         </div>
 
       </div>
