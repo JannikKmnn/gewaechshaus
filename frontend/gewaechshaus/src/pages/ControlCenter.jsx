@@ -202,12 +202,13 @@ export default function ControlCenter() {
 
       </div>
 
-      <div
-        style={{
-          alignContent: "center",
-          alignItems: "center"
-        }}
-      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
 
         <button style={{
           backgroundColor: "rgba(146, 204, 159, 0.92)",
@@ -216,17 +217,22 @@ export default function ControlCenter() {
           boxShadow: "0 4px 20px #3a3f3c",
           borderRadius: "5px",
           alignItems: "center",
+          minWidth: "220px",
+          minHeight: "90px",
           opacity: loadingRight && loadingLeft ? 0.6 : 1,
         }}
         onClick={() => {windowStatusRight == "closed" && windowStatusLeft == "closed" ? actOnWindows("open")
-          : actOnWindows("close")
+          : windowStatusRight == "open" && windowStatusLeft == "open" ? actOnWindows("close")
+          : null
         }}
-        disabled={loadingRight && loadingLeft}>
-          {loadingRight && loadingLeft ? "Moving..." : windowStatusRight === "closed" && windowStatusLeft == "closed" ? "Open both Windows" : "Close both Window"}
+        disabled={loadingRight || loadingLeft}>
+          {loadingRight && loadingLeft ? "Moving..." 
+          : windowStatusRight === "closed" && windowStatusLeft == "closed" ? "Open Both Windows" 
+          : windowStatusRight === "open" && windowStatusLeft == "open" ? "Close Both Windows"
+          : "Both windows not in the same state"
+          }
         </button>
-
       </div>
-    
     </div>
   )
 }
