@@ -21,6 +21,11 @@ export default function ControlCenter() {
     if (position === "left") setLoadingLeft(true);
     if (position === "right") setLoadingRight(true);
 
+    if (position == null) {
+      setLoadingLeft(true);
+      setLoadingRight(true);
+    }
+
     await callWindowActuators({
       operation: movement,
       window_position: position,
@@ -194,6 +199,31 @@ export default function ControlCenter() {
           </button>
 
         </div>
+
+      </div>
+
+      <div
+        style={{
+          alignContent: "center",
+          alignItems: "center"
+        }}
+      >
+
+        <button style={{
+          backgroundColor: "rgba(146, 204, 159, 0.92)",
+          fontSize: "18px",
+          color: "white",
+          boxShadow: "0 4px 20px #3a3f3c",
+          borderRadius: "5px",
+          alignItems: "center",
+          opacity: loadingRight && loadingLeft ? 0.6 : 1,
+        }}
+        onClick={() => {windowStatusRight == "closed" && windowStatusLeft == "closed" ? actOnWindows("open")
+          : actOnWindows("close")
+        }}
+        disabled={loadingRight && loadingLeft}>
+          {loadingRight && loadingLeft ? "Moving..." : windowStatusRight === "closed" && windowStatusLeft == "closed" ? "Open both Windows" : "Close both Window"}
+        </button>
 
       </div>
     
