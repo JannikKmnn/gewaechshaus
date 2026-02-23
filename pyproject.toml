@@ -20,7 +20,9 @@ dependencies = [
     "influxdb-client[async] (>=1.49.0,<2.0.0)",
     "fastapi (>=0.121.2,<1.0.0)",
     "uvicorn (>=0.38.0,<1.0.0)",
-    "numpy (>=2.3.5,<3.0.0)"
+    "numpy (>=2.3.5,<3.0.0)",
+    "httpx (>=0.28.1,<0.29.0)",
+    "apscheduler (>=3.11.2,<4.0.0)"
 ]
 
 [tool.poetry]
