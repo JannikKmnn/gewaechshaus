@@ -65,13 +65,12 @@ async def fetch_temp_measurements(client: httpx.AsyncClient) -> httpx.Response |
                 "end_time": req_end.isoformat(),
             },
         )
+        logger.info(
+            f"Received temperature data with response {temperature_data.status_code}"
+        )
     except httpx.HTTPError as err:
         logger.error(f"Requesting temperature data failed due to {err}")
         temperature_data = None
-
-    logger.info(
-        f"Received temperature data with response {temperature_data.status_code}"
-    )
 
     return temperature_data
 
@@ -95,11 +94,10 @@ async def fetch_window_status(
         status = await client.get(
             url=f"{settings.vite_api_base_url}/window/status/{window_position}",
         )
+        logger.info(f"Received window status with response {status.status_code}")
     except httpx.HTTPError as err:
         logger.error(f"Requesting {window_position} window status failed due to {err}")
         status = None
-
-    logger.info(f"Received window status with response {status.status_code}")
 
     return status
 
@@ -219,7 +217,8 @@ async def run_program():
             return_exceptions=True,
         )
 
-    if any(res is None for res in response):
+    if any(isinstance(res, Exception) or res is None for res in response):
+        logger.error("One or more API calls failed.")
         return
 
     await check_and_perform_operations(response=response)
