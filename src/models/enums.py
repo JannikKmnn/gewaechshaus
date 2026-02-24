@@ -45,3 +45,19 @@ class DynamicDataAggregation(str, Enum):
     DAYS_7 = "30m"
     DAYS_14 = "1h"
     DAYS_60 = "2h"
+
+
+class ProgramInstruction(Enum):
+    NO_OPERATION = ("noop", None)
+    OPEN_BOTH = ("open", None)
+    CLOSE_BOTH = ("close", None)
+    OPEN_LEFT = ("open", "left")
+    CLOSE_LEFT = ("close", "left")
+    OPEN_RIGHT = ("open", "right")
+    CLOSE_RIGHT = ("close", "right")
+
+    def movement(self):
+        return self.value[0]
+
+    def position(self):
+        return self.value[1]

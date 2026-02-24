@@ -11,6 +11,9 @@ from pydantic import Field
 from pydantic_settings import BaseSettings
 from typing import Literal, Optional
 
+from src.models.enums import ProgramInstruction
+from src.services.program_operator.condition_handling import get_instructions
+
 
 class Settings(BaseSettings):
 
@@ -21,7 +24,7 @@ class Settings(BaseSettings):
     night_mode_on: bool = Field(default=False)
 
     # cron scheduling time also for dataset request size
-    cron_schedule_minutes: int = Field(default=5)
+    cron_schedule_minutes: int = Field(default=15)
 
     # for API calls
     vite_api_base_url: str = Field(...)
@@ -85,6 +88,7 @@ async def fetch_window_status(
 
     Args:
         client (httpx.AsyncClient): http client to interact with API.
+        window_position (left | right): which window is requested
 
     Returns:
         temperature_data (httpx.Response | None): Window status from API
@@ -105,7 +109,18 @@ async def fetch_window_status(
 async def act_on_windows(
     movement: Literal["open", "close"],
     window_position: Optional[Literal["left", "right"]] = None,
-):
+) -> httpx.Response | None:
+    """
+    Calls API endpoint to perform operations on windows.
+
+    Args:
+        movement (open | close): wether window(s) should be opened or closed
+        window_position (left | right | None): which window is supposed to be
+            operated on. If None, both windows are called.
+
+    Returns:
+        response (httpx.Response | None): API response or None if http call failed.
+    """
 
     client_timeout = httpx.Timeout(30.0)
 
@@ -131,6 +146,10 @@ async def check_and_perform_operations(
 ):
     """
     Performs opening/closing on windows if certain conditions are met.
+
+    Args:
+        response (list[httpx.Response]): list of responses to initial API calls,
+            containing measurements and left/right window status.
     """
     measurements = [rec["value"] for rec in response[0].json()]
 
@@ -138,7 +157,7 @@ async def check_and_perform_operations(
     close_windows_condition = any(
         meas < settings.left_window_temp_thres for meas in measurements
     )
-    both_window_condition = all(
+    both_windows_condition = all(
         meas > settings.both_window_temp_thres for meas in measurements
     )
 
@@ -147,53 +166,49 @@ async def check_and_perform_operations(
         response[2].json()["status"],
     )
 
-    if close_windows_condition:
-        # Close both windows (too cold inside)
-        if left_window_status == right_window_status == "closed":
-            logger.info("All good, too cold and windows closed.")
-            return
+    logger.info(
+        f"""
+        Received measurements: {measurements}
+        Left window status: {left_window_status}
+        Right window status: {right_window_status}
+    """
+    )
 
-        if left_window_status == right_window_status == "open":
-            logger.info("Too cold and both windows open, closing...")
-            return
+    instructions: list[ProgramInstruction] = get_instructions(
+        close_windows_condition=close_windows_condition,
+        both_windows_condition=both_windows_condition,
+        left_window_status=left_window_status,
+        right_window_status=right_window_status,
+        logger=logger,
+    )
 
-        if left_window_status == "open":
-            # only left open
-            logger.info("Too cold and left window open, closing...")
-            return
+    operations = []
+    for ins in instructions:
+        if ins == ProgramInstruction.NO_OPERATION:
+            continue
 
-        logger.info("Too cold and right window open, closing...")
-    elif both_window_condition:
-        # Open both windows (too hot inside)
-        if left_window_status == right_window_status == "open":
-            logger.info("All good, Too hot and both windows open.")
-            return
+        movement = ins.movement()
+        position = ins.position()
 
-        if left_window_status == right_window_status == "closed":
-            logger.info("Too hot and windows closed, opening...")
-            return
+        logger.info(
+        f"""
+            Calling window API with movement {movement}
+            and position {position}
+        """
+        )
 
-        if right_window_status == "closed":
-            # only right closed
-            logger.info("Too hot and right window closed, opening...")
-            return
+        operations.append(
+            act_on_windows(
+                movement=movement,
+                window_position=position,
+            )
+        )
 
-        logger.info("Too hot and left window closed, opening...")
-    else:
-        # Open only left window
-        if left_window_status == right_window_status == "open":
-            logger.info("Close right window...")
-            return
+    if len(operations) > 0:
+        responses = await asyncio.gather(*operations)
+        return responses
 
-        if left_window_status == right_window_status == "closed":
-            logger.info("Open left window...")
-            return
-
-        if left_window_status == "closed" and right_window_status == "open":
-            logger.info("Open left window and close right...")
-            return
-
-        logger.info("All good.")
+    return
 
 
 async def run_program():
