@@ -39,7 +39,7 @@ export function windowOpenTime(lastOpening, lastClosing) {
 
   const diffDays = Math.floor((timeDiff / (1000 * 60 * 60 * 24))); 
   const diffHours = Math.floor((timeDiff / (1000 * 60 * 60) % 24)); 
-  const diffMinutes = Math.floor(timeDiff / (1000 * 60));
+  const diffMinutes = Math.floor((timeDiff / (1000 * 60)) % 60);
   const diffSeconds = Math.floor((timeDiff / 1000) % 60);
 
   if (diffDays > 0) {
