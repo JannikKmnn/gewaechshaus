@@ -12,7 +12,6 @@ RUN pip install --no-cache-dir "poetry==$POETRY_VERSION"
 
 WORKDIR /app
 
-ENV POETRY_VIRTUALENVS_CREATE=false
 COPY pyproject.toml poetry.lock* ./
 RUN poetry install --no-interaction --no-root --with api
 
