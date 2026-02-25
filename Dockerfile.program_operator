@@ -1,0 +1,21 @@
+FROM python:3.13-slim
+
+ENV POETRY_VERSION=2.2.1
+RUN pip install --no-cache-dir "poetry==$POETRY_VERSION"
+
+WORKDIR /app
+
+COPY pyproject.toml poetry.lock* ./
+
+ENV POETRY_VIRTUALENVS_CREATE=false
+RUN poetry install --no-interaction --no-root --only main
+
+COPY . .
+
+ENV LEFT_WINDOW_TEMP_THRES=25 \
+    BOTH_WINDOW_TEMP_THRES=28 \
+    TEMPERATURE_SENSOR=temperature_inside \
+    CRON_SCHEDULE_MINUTES=15 \
+    LOG_LVL=INFO
+
+CMD ["poetry", "run", "python", "-m", "src.services.program_operator.main"]
