@@ -1,10 +1,16 @@
 # 🧠🌱 Raspberry Pi Greenhouse Automations
 
-This smart home automation project represents the codebase to collect physical data inside my little garden greenhouse from multiple sensors connected to a Raspberry Pi 4 — including temperature, humidity, air pressure and soil moisture. In addition, linear actuators are controllable to open and close the windows remotely via API.
+This smart home automation project represents the codebase to collect physical data inside my little garden greenhouse from multiple sensors connected to a Raspberry Pi 4 — including temperature, humidity, air pressure and soil moisture. In addition, linear actuators are controllable to open and close the windows remotely via API or my custom web dashboard.
 
-All sensor readings are periodically collected, logged, displayed inside a little self-made box for the raspi as well as stored inside an InfluxDB cloud instance. This allows both real time and historical data analysis on the measurements:
+All sensor readings are periodically collected, logged, displayed inside a little self-made box for the raspi as well as stored inside an InfluxDB cloud instance. This allows both real time and historical data analysis on the measurements inside the frontend:
 
-![InfluxDB dashboard (this one from winter time...)](images/influxdb_dashboard.png?raw=true "Sensor Monitoring")
+![Frontend dashboard (this one from winter time...)](images/frontend_dashboard.png?raw=true "Sensor Monitoring")
+
+![InfluxDB dashboard](images/influxdb_dashboard.png?raw=true "Influx Monitoring")
+
+The window events (opening/closing) are monitor- and controllable in the "Control Center" section in the frontend. I'm also collecting the timestamps of the window calls to reproduce the last openings times. The window calls are done either manually via the dashboard or the program operator service which is responsible for automatically open/close events based on pre defined thresholds for the inside temperature.
+
+![Control Center dashboard](images/frontend_control_center.png?raw=true "Control Center")
 
 In addition, a fastapi instance is implemented to fetch the sensor readings in a specific timeframe from the InfluxDB as well as opening and closing of the windows.
 
@@ -40,7 +46,7 @@ Another cool feature is the lightning in the night since different leds indicate
     <img src="images/night_greenhouse.jpg" alt="Greenhouse at night" width="300"/>
 </p>
 
-The windows are opened and closed by 12V linear actuators which are connected to 2-channel-relays that are controlled by the pi and via the API or via scripts.
+The windows are opened and closed by 12V linear actuators which are connected with a H-Bridge to 2-channel-relays that are controlled by the pi and via the API or via scripts.
 
 <p align="center">
     <img src="images/window_open.jpg" alt="Opened window by actuator" width="300"/>
@@ -95,6 +101,14 @@ The windows are opened and closed by 12V linear actuators which are connected to
 The pi runs on ubuntu 25.10 lts (desktop version) and Python 3.13. Other ubuntu version should also work, just select one that suites best from the [Raspberry Pi Imager](https://www.raspberrypi.com/software/). The OS setup for the sensors (i2cdetect, config.txt lines, modules etc.) are readable in the specific documentations.
 
 The repository contains poetry for dependency management and docker/docker-compose to run the application inside a container on the pi. The models and settings are wrapped by pydantic models and the envrionment variables are set either inside the docker files or (for sensitive informations like the influxdb connection details) inside an .env file. For local development, I use vscode and a virtual environment managed with poetry.
+
+The data pipeline starts at the sensors, whereas the sensor_reader container is responsible for reading the data from the hardware, writing them into the InfluxDB and displaying the values frequently on the display inside the greenhouse. In addition, a lightweight SQLite DB is running on the pi to log the opening/closing events of the windows. The API is then structured to query the databases and provides endpoints to call on the windows or fetch data series, while big requests (>1 day, minute interval) are aggregated to ensure smooth and fast returns.
+
+sensors -> sensor_reader ->     API     <-> program_operator
+                            ^ ^     |    
+                            | |     ------> Frontend    
+                            | |
+window_actuators ------------ --> SQLite/InfluxDB
 
 ## 🔛 (Virtual) environment setup
 
