@@ -104,11 +104,9 @@ The repository contains poetry for dependency management and docker/docker-compo
 
 The data pipeline starts at the sensors, whereas the sensor_reader container is responsible for reading the data from the hardware, writing them into the InfluxDB and displaying the values frequently on the display inside the greenhouse. In addition, a lightweight SQLite DB is running on the pi to log the opening/closing events of the windows. The API is then structured to query the databases and provides endpoints to call on the windows or fetch data series, while big requests (>1 day, minute interval) are aggregated to ensure smooth and fast returns.
 
-sensors -> sensor_reader ->     API     <-> program_operator
-                            ^ ^     |    
-                            | |     ------> Frontend    
-                            | |
-window_actuators ------------ --> SQLite/InfluxDB
+<p align="center">
+    <img src="images/service_interactions.png" alt="Interaction of the services" width="300"/>
+</p>
 
 ## 🔛 (Virtual) environment setup
 
