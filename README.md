@@ -129,18 +129,33 @@ This will install all dependencies necessary for this project into your venv.
 To secretly store your influxDB properties as well as the environment variables for the actuator pins, create an .env file in your root folder containing following environment variables (insert your values from InfluxDB cloud):
 
 ```
+LCD_COLUMNS=16
+
 INFLUXDB_HOST=<YOUR_HOST>
 INFLUXDB_ORG=<YOUR_ORGANISATION_NAME>
 INFLUXDB_BUCKET=<YOUR_BUCKET_NAME>
 INFLUXDB_TOKEN=<YOUR_TOKEN>
+
+SQLITE_DB_NAME=<LOCAL_SQLITE_DB_PATH>
+SQLITE_ACTUATOR_EVENTS_TABLE=window_status
 
 WINDOW_ACTUATOR_LEFT_EXTEND_PIN=<GPIO_PIN_LEFT_EXTEND>
 WINDOW_ACTUATOR_LEFT_RETRACT_PIN=<GPIO_PIN_LEFT_RETRACT>
 WINDOW_ACTUATOR_RIGHT_EXTEND_PIN=<GPIO_PIN_RIGHT_EXTEND>
 WINDOW_ACTUATOR_RIGHT_RETRACT_PIN=<GPIO_PIN_RIGHT_RETRACT>
 WINDOW_MOVING_TIME=<HOW_LONG_ACTUATOR_TAKES>
+
+CPU_TEMP_PATH=/sys/class/thermal/thermal_zone0/temp
+
+FRONTEND_URL=<YOUR_LOCAL_FRONTEND_URL>
+VITE_API_BASE_URL=<BASE_API_FOR_FRONTEND>
 ```
 
-The docker-compose will load these environment variables while building the image.
+The docker-compose will load these environment variables while building the image. To start it, navigate to the repo root and run ```docker compose up -d --build```. Docker will create 6 images and start their corresponding containers:
 
-
+- ```gewaechshaus-program-operator```: The cron worker that fetches the temperature from inside the greenhouse in a given interval (15 minutes) and operates on windows if certain thresholds are crossed. Source code in ```src/services/program_operator```.
+- ```gewaechshaus-api```: The uvicorn fastapi instance with endpoints to fetch data and call windows. Source code in ```src/services/api```.
+- ```gewaechshaus-sensor-reader```: The sensor reader to read GPIO singals from sensors, writes measurement into InfluxDB and displays values on lcd display. Source code in ```src/services/sensor_reader```.
+- ```gewaechshaus-frontend```: React frontend for web dashboard. Source code in ```frontend/gewaechshaus```.
+- ```netdata```: To monitor pi resources, such as memory & cpu load, disk I/O, network and container resources.
+- ```sqlite-web```: UI for lightweight SQLite database on the pi.
