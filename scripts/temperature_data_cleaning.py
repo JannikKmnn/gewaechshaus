@@ -79,10 +79,10 @@ async def write_to_influxdb(
     client: InfluxDBClientAsync,
 ):
     try:
-        _ = await client.write_api().write(
-            bucket=settings.influxdb_bucket,
-            record=points,
-        )
+        # _ = await client.write_api().write(
+        #     bucket=settings.influxdb_bucket,
+        #     record=points,
+        # )
         logger.info(f"Writing Data: {points} in client {client}")
     except Exception as err:
         logger.error(f"Inserting DB data failed due to: {err}")
@@ -113,6 +113,8 @@ def get_new_inside_measurements(
         logger.debug(new_inside_value)
 
         inside["value"] = float(new_inside_value)
+        inside["temperature_up"] = up["value"]
+        inside["temperature_outside"] = outside["value"]
 
         logger.debug(inside)
 
@@ -133,7 +135,7 @@ async def main():
 
     data = await fetch_temperature_data(
         start=DATA_OFFSET_START_TIME,
-        end=DATA_OFFSET_START_TIME + timedelta(minutes=15),
+        end=DATA_OFFSET_START_TIME + timedelta(minutes=10),
     )
 
     vals = data.json()
@@ -142,7 +144,11 @@ async def main():
     logger.info(f"New values: {new_inside_values}")
     upload_values = [
         Point(value["measurement"])
+        .tag("position", None)
+        .field("temperature_cpu", None)
         .field(value["field"], value["value"])
+        .field("temperature_up", value["temperature_up"])
+        .field("temperature_outside", value["temperature_outside"])
         .time(datetime.fromisoformat(value["timestamp"]))
         for value in new_inside_values
     ]
