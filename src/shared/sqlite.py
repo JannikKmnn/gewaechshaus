@@ -1,5 +1,7 @@
 import os
 
+from pathlib import Path
+import os
 import aiosqlite
 
 from aiosqlite import Connection
@@ -8,9 +10,10 @@ from datetime import datetime
 
 async def setup_client() -> Connection | None:
 
-    conn = aiosqlite.connect(database=os.getenv("SQLITE_DB_NAME"))
+    db_path = Path(os.getenv("SQLITE_DB_NAME")).resolve()
+    db_path.parent.mkdir(parents=True, exist_ok=True)
 
-    return conn
+    return await aiosqlite.connect(db_path)
 
 
 async def setup_db(
