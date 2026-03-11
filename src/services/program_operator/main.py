@@ -18,8 +18,8 @@ from src.services.program_operator.condition_handling import get_instructions
 class Settings(BaseSettings):
 
     # program variables
-    left_window_temp_thres: int = Field(default=25)
-    both_window_temp_thres: int = Field(default=28)
+    left_window_temp_thres: int = Field(default=20)
+    both_window_temp_thres: int = Field(default=22)
     temperature_sensor: str = Field(default="temperature_inside")
     night_mode_on: bool = Field(default=False)
 
@@ -191,7 +191,7 @@ async def check_and_perform_operations(
         position = ins.position()
 
         logger.info(
-        f"""
+            f"""
             Calling window API with movement {movement}
             and position {position}
         """
@@ -240,6 +240,15 @@ async def run_program():
 
 
 async def main():
+
+    logger.warning(
+        f"""
+            INFO: starting program operator with configurations
+                - left window temperature threshold: {settings.left_window_temp_thres} °C
+                - left window temperature threshold: {settings.both_window_temp_thres} °C
+                - based on sensor: {settings.temperature_sensor}
+        """
+    )
     scheduler = AsyncIOScheduler()
 
     scheduler.add_job(
