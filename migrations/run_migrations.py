@@ -1,4 +1,5 @@
-"""Run migration scripts upgrades by navigating to root and run python -m migrations.run_migrations"""
+"""Run migration scripts upgrades by navigating to root and run python -m migrations.run_migrations.
+If db is read-only, run sudo chown -R $USER:$USER data/sqlite."""
 
 import asyncio
 import importlib

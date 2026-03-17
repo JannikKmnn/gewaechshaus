@@ -1,5 +1,6 @@
 from src.shared.sqlite import setup_client
 
+
 async def upgrade() -> None:
 
     sqlite_client = await setup_client()
@@ -22,12 +23,8 @@ async def upgrade() -> None:
         await sqlite_client.execute(create_stmt)
 
         # 2. Add data points
-        await sqlite_client.execute(
-            insert_stmt, ("linear_actuator_left", 20)
-        )
-        await sqlite_client.execute(
-            insert_stmt, ("linear_actuator_right", 22)
-        )
+        await sqlite_client.execute(insert_stmt, ("linear_actuator_left", 20))
+        await sqlite_client.execute(insert_stmt, ("linear_actuator_right", 22))
         await sqlite_client.commit()
 
 
