@@ -53,9 +53,9 @@ async def get_window_configurations(
 
     async with sqlite_client:
         cursor = await sqlite_client.execute(sql, [identifier])
-        rows = await cursor.fetchall()
+        row = await cursor.fetchone()
 
         await sqlite_client.commit()
         await sqlite_client.close()
 
-    return rows
+    return row

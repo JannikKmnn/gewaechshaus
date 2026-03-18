@@ -2,7 +2,10 @@ from fastapi import HTTPException
 
 from src.models.components.actuators import LinearActuator
 from src.models.exceptions import StateAlreadyReached, EventRecordFailed
-from src.services.api.models.data import WindowEventsRequestProperties
+from src.services.api.models.data import (
+    WindowEventsRequestProperties,
+    WindowConfigurationResponseProperties,
+)
 from src.services.api.db.windows import (
     get_window_events as get_db_window_events,
     get_window_configurations as get_db_window_configurations,
@@ -81,4 +84,6 @@ async def get_window_configurations(window_entity_table: str, window_identifier:
         window_entity_table=window_entity_table,
     )
 
-    return result
+    return WindowConfigurationResponseProperties(
+        window_identifier=result[0], inside_temperature_opening_threshold=result[1]
+    )
