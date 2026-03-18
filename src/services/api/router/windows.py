@@ -3,6 +3,7 @@ import asyncio
 import os
 
 from fastapi import APIRouter, Request, HTTPException
+from src.models.components.actuators import LinearActuator
 from src.services.api.models.data import WindowEventsRequestProperties
 
 try:
@@ -94,7 +95,7 @@ async def get_window_status(window_position: str, request: Request):
     requested_position = window_position.lower()
 
     try:
-        window_to_close = next(
+        requested_window: LinearActuator = next(
             win
             for win in window_actuators
             if win.position.value.lower() == requested_position
@@ -105,15 +106,28 @@ async def get_window_status(window_position: str, request: Request):
             detail=f"Window on position {window_position} not initialized.",
         )
 
-    return await windows.get_window_status(actuator=window_to_close)
+    return await windows.get_window_status(actuator=requested_window)
 
 
 @router.get("/config/{window_position}", tags=["actuators"])
-async def get_window_configuration(window_position: str):
+async def get_window_configuration(window_position: str, request: Request):
+    window_actuators = request.app.state.actuators
 
-    results = await windows.get_window_configurations(
+    requested_position = window_position.lower()
+
+    try:
+        requested_window: LinearActuator = next(
+            win
+            for win in window_actuators
+            if win.position.value.lower() == requested_position
+        )
+    except StopIteration:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Window on position {window_position} not initialized.",
+        )
+
+    return await windows.get_window_configurations(
         window_entity_table=str(os.getenv("SQLITE_WINDOW_ENTITY_TABLE")),
-        window_identifier=window_position,
+        window_identifier=requested_window.identifier,
     )
-
-    return results
