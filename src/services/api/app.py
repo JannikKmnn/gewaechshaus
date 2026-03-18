@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     # sqlite setup
     sqlite_db_name: str = Field(default="/data/greenhouse.db")
     sqlite_actuator_events_table: str = Field(default="window_status")
+    sqlite_window_entity_table: str = Field(default="window")
 
     frontend_url: str = Field(default="http://localhost:5173")
     frontend_url_prd: str = Field(default="http://localhost:5174")

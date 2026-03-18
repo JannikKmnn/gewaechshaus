@@ -106,3 +106,14 @@ async def get_window_status(window_position: str, request: Request):
         )
 
     return await windows.get_window_status(actuator=window_to_close)
+
+
+@router.get("/config/{window_position}", tags=["actuators"])
+async def get_window_configuration(window_position: str):
+
+    results = await windows.get_window_configurations(
+        window_entity_table=str(os.getenv("SQLITE_WINDOW_ENTITY_TABLE")),
+        window_identifier=window_position,
+    )
+
+    return results

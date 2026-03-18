@@ -40,3 +40,22 @@ async def get_window_events(
         await sqlite_client.close()
 
     return rows
+
+
+async def get_window_configurations(
+    identifier: str,
+    window_entity_table: str,
+):
+
+    sqlite_client = await setup_client()
+
+    sql = f"SELECT * FROM {window_entity_table} WHERE identifier = ?"
+
+    async with sqlite_client:
+        cursor = await sqlite_client.execute(sql, [identifier])
+        rows = await cursor.fetchall()
+
+        await sqlite_client.commit()
+        await sqlite_client.close()
+
+    return rows

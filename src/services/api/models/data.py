@@ -16,6 +16,13 @@ class WindowEventsRequestProperties:
 
 
 @dataclass
+class WindowConfigurationResponseProperties:
+
+    window_identifier: str
+    inside_temperature_opening_threshold: float
+
+
+@dataclass
 class DataRequestProperties:
 
     start_time: datetime
