@@ -2,7 +2,7 @@ from fastapi import HTTPException
 
 from src.models.components.actuators import LinearActuator
 from src.models.exceptions import StateAlreadyReached, EventRecordFailed
-from src.services.api.models.data import (
+from src.services.api.models.windows import (
     WindowEventsRequestProperties,
     WindowConfigurationResponseProperties,
 )

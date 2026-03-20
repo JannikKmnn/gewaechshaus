@@ -4,7 +4,10 @@ import os
 
 from fastapi import APIRouter, Request, HTTPException
 from src.models.components.actuators import LinearActuator
-from src.services.api.models.data import WindowEventsRequestProperties
+from src.services.api.models.windows import (
+    WindowEventsRequestProperties,
+    WindowConfigurationUpdateProperties,
+)
 
 try:
     from src.services.api.handlers import windows
@@ -131,3 +134,26 @@ async def get_window_configuration(window_position: str, request: Request):
         window_entity_table=str(os.getenv("SQLITE_WINDOW_ENTITY_TABLE")),
         window_identifier=requested_window.identifier,
     )
+
+
+@router.post("/config/{window_position}", tags=["actuators"])
+async def update_window_configuration(
+    update_properties: WindowConfigurationUpdateProperties, request: Request
+):
+    window_actuators = request.app.state.actuators
+
+    requested_position = update_properties.window_position.lower()
+
+    try:
+        requested_window: LinearActuator = next(
+            win
+            for win in window_actuators
+            if win.position.value.lower() == requested_position
+        )
+    except StopIteration:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Window on position {update_properties.window_position} not initialized.",
+        )
+
+    # TODO implement update function in handlers/db

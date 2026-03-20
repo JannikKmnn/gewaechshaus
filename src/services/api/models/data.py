@@ -8,21 +8,6 @@ import numpy as np
 
 
 @dataclass
-class WindowEventsRequestProperties:
-
-    window_identifier: Optional[str] = None
-    start_time: Optional[datetime] = None
-    end_time: Optional[datetime] = None
-
-
-@dataclass
-class WindowConfigurationResponseProperties:
-
-    window_identifier: str
-    inside_temperature_opening_threshold: float
-
-
-@dataclass
 class DataRequestProperties:
 
     start_time: datetime
