@@ -156,4 +156,8 @@ async def update_window_configuration(
             detail=f"Window on position {update_properties.window_position} not initialized.",
         )
 
-    # TODO implement update function in handlers/db
+    return await windows.update_window_configurations(
+        window_entity_table=str(os.getenv("SQLITE_WINDOW_ENTITY_TABLE")),
+        window_identifier=requested_window.identifier,
+        update_properties=update_properties,
+    )

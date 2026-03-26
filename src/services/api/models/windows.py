@@ -1,5 +1,5 @@
 from datetime import datetime
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from typing import Optional
 
 
@@ -23,3 +23,6 @@ class WindowConfigurationUpdateProperties:
 
     window_position: str
     inside_temperature_opening_threshold: float
+
+    def dict(self):
+        return {k: str(v) for k, v in asdict(self).items()}
