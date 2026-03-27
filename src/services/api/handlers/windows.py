@@ -2,8 +2,16 @@ from fastapi import HTTPException
 
 from src.models.components.actuators import LinearActuator
 from src.models.exceptions import StateAlreadyReached, EventRecordFailed
-from src.services.api.models.data import WindowEventsRequestProperties
-from src.services.api.db.windows import get_window_events as get_db_window_events
+from src.services.api.models.windows import (
+    WindowEventsRequestProperties,
+    WindowConfigurationResponseProperties,
+    WindowConfigurationUpdateProperties,
+)
+from src.services.api.db.windows import (
+    get_window_events as get_db_window_events,
+    get_window_configurations as get_db_window_configurations,
+    update_window_configurations as update_db_window_configurations,
+)
 
 
 async def open_window(actuator: LinearActuator):
@@ -70,3 +78,34 @@ async def get_window_events(
     )
 
     return results
+
+
+async def get_window_configurations(window_entity_table: str, window_identifier: str):
+    result = await get_db_window_configurations(
+        identifier=window_identifier,
+        window_entity_table=window_entity_table,
+    )
+
+    return WindowConfigurationResponseProperties(
+        window_identifier=result[0], inside_temperature_opening_threshold=result[1]
+    )
+
+
+async def update_window_configurations(
+    window_entity_table: str,
+    window_identifier: str,
+    update_properties: WindowConfigurationUpdateProperties,
+):
+    try:
+        _ = await update_db_window_configurations(
+            identifier=window_identifier,
+            window_entity_table=window_entity_table,
+            updates=update_properties,
+        )
+    except Exception as err:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Updating config of {window_identifier} failed due to: {err}",
+        )
+
+    return update_properties.dict()

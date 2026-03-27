@@ -9,6 +9,15 @@ export async function getWindowStatus({
     return result?.data ?? null;
 }
 
+export async function getWindowConfigs({
+    window_position,
+}) {
+    const route = `window/config/${window_position}`;
+    const result = await api.get(route);
+
+    return result?.data ?? null;
+}
+
 export async function callWindowActuators({
     operation,
     window_position = null,

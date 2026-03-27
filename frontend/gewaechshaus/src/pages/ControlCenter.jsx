@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import BinaryWidget from "../components/BinaryWidget";
 import DoubleValueWidget from "../components/DoubleValueWidget";
-import { getWindowStatus, callWindowActuators } from "../api/windows";
+import { getWindowConfigs, getWindowStatus, callWindowActuators } from "../api/windows";
 import { formatDateTime, windowOpenTime } from "../utils/time";
 
 export default function ControlCenter() {
@@ -13,6 +13,9 @@ export default function ControlCenter() {
 
   const [windowClosingLeft, setWindowClosingLeft] = useState(null);
   const [windowClosingRight, setWindowClosingRight] = useState(null);
+
+  const [windowTempThresholdLeft, setWindowTempThresholdLeft] = useState(null);
+  const [windowTempThresholdRight, setWindowTempThresholdRight] = useState(null);
 
   const [loadingLeft, setLoadingLeft] = useState(false);
   const [loadingRight, setLoadingRight] = useState(false);
@@ -58,8 +61,26 @@ export default function ControlCenter() {
     
   }
 
+  async function getWindowsConfig() {
+    const results = await Promise.all([
+      getWindowConfigs({
+        window_position: "left",
+      }),
+      getWindowConfigs({
+        window_position: "right",
+      }),
+    ])
+
+    if (results.length === 2) {
+      setWindowTempThresholdLeft(results[0].inside_temperature_opening_threshold);
+      setWindowTempThresholdRight(results[1].inside_temperature_opening_threshold);
+    }
+    
+  }
+
   useEffect(() => {
     getWindowsStatus();
+    getWindowsConfig();
   }, []);
 
   return (
@@ -124,7 +145,7 @@ export default function ControlCenter() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr / 1fr",
+            gridTemplateColumns: "1fr / 1fr / 1fr",
             gap: "20px",
             marginBottom: "10px"
           }}
@@ -133,6 +154,10 @@ export default function ControlCenter() {
           <div>
             <div>Last Opening: {formatDateTime(windowOpeningLeft)}</div>
             <div>Last Closing: {formatDateTime(windowClosingLeft)}</div>
+          </div>
+
+          <div>
+            <div>Opens when temperature inside exceeds <p><font color={"yellow"}>{windowTempThresholdLeft}°C</font></p> for 15 minutes.</div>
           </div>
 
           <button style={{
@@ -180,6 +205,10 @@ export default function ControlCenter() {
           <div>
             <div>Last Opening: {formatDateTime(windowOpeningRight)}</div>
             <div>Last Closing: {formatDateTime(windowClosingRight)}</div>
+          </div>
+
+          <div>
+            <div>Opens when temperature inside exceeds <p><font color={"yellow"}>{windowTempThresholdRight}°C</font></p> for 15 minutes.</div>
           </div>
 
           <button style={{
