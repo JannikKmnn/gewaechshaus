@@ -280,13 +280,9 @@ async def run_program():
 async def main():
 
     logger.warning(
-        f"""
-            INFO: starting program operator with configurations
-                - left window temperature threshold: {settings.left_window_temp_thres} °C
-                - left window temperature threshold: {settings.both_window_temp_thres} °C
-                - based on sensor: {settings.temperature_sensor}
-        """
+        f"INFO: starting program operator based on sensor {settings.temperature_sensor}"
     )
+
     scheduler = AsyncIOScheduler()
 
     scheduler.add_job(
