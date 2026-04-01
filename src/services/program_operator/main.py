@@ -17,9 +17,6 @@ from src.services.program_operator.condition_handling import get_instructions
 
 class Settings(BaseSettings):
 
-    # program variables
-    left_window_temp_thres: int = Field(default=20)
-    both_window_temp_thres: int = Field(default=22)
     temperature_sensor: str = Field(default="temperature_inside")
     night_mode_on: bool = Field(default=False)
 
@@ -106,6 +103,36 @@ async def fetch_window_status(
     return status
 
 
+async def fetch_window_configurations(
+    client: httpx.AsyncClient,
+    window_position: Literal["left", "right"],
+) -> httpx.Response | None:
+    """
+    Fetches window configs from the DB via API calls.
+    Allows dynamically setting thresholds for window events.
+
+    Args:
+        client (httpx.AsyncClient): http client to interact with API.
+        window_position (left | right): which window is requested
+
+    Returns:
+        configurations (httpx.Response | None): Window configs from API
+            as httpx.Response object. If None, error has been raised.
+    """
+    try:
+        configurations = await client.get(
+            url=f"{settings.vite_api_base_url}/window/config/{window_position}",
+        )
+        logger.info(
+            f"Received window configs with response {configurations.status_code}"
+        )
+    except httpx.HTTPError as err:
+        logger.error(f"Requesting {window_position} window config failed due to {err}")
+        configurations = None
+
+    return configurations
+
+
 async def act_on_windows(
     movement: Literal["open", "close"],
     window_position: Optional[Literal["left", "right"]] = None,
@@ -151,26 +178,29 @@ async def check_and_perform_operations(
         response (list[httpx.Response]): list of responses to initial API calls,
             containing measurements and left/right window status.
     """
+    left_window_threshold, right_window_threshold = (
+        response[3].json()["inside_temperature_opening_threshold"],
+        response[4].json()["inside_temperature_opening_threshold"],
+    )
+
     measurements = [rec["value"] for rec in response[0].json()]
 
     # define opening/closing conditions
-    close_windows_condition = any(
-        meas < settings.left_window_temp_thres for meas in measurements
-    )
-    both_windows_condition = all(
-        meas > settings.both_window_temp_thres for meas in measurements
-    )
+    close_windows_condition = any(meas < left_window_threshold for meas in measurements)
+    both_windows_condition = all(meas > right_window_threshold for meas in measurements)
 
     left_window_status, right_window_status = (
         response[1].json()["status"],
         response[2].json()["status"],
     )
 
-    logger.info(
+    logger.warning(
         f"""
         Received measurements: {measurements}
         Left window status: {left_window_status}
         Right window status: {right_window_status}
+        Left window threshold: {left_window_threshold}
+        Right window threshold: {right_window_threshold}
     """
     )
 
@@ -228,6 +258,14 @@ async def run_program():
                     client=client,
                     window_position="right",
                 ),
+                fetch_window_configurations(
+                    client=client,
+                    window_position="left",
+                ),
+                fetch_window_configurations(
+                    client=client,
+                    window_position="right",
+                ),
             ],
             return_exceptions=True,
         )
@@ -242,13 +280,9 @@ async def run_program():
 async def main():
 
     logger.warning(
-        f"""
-            INFO: starting program operator with configurations
-                - left window temperature threshold: {settings.left_window_temp_thres} °C
-                - left window temperature threshold: {settings.both_window_temp_thres} °C
-                - based on sensor: {settings.temperature_sensor}
-        """
+        f"INFO: starting program operator based on sensor {settings.temperature_sensor}"
     )
+
     scheduler = AsyncIOScheduler()
 
     scheduler.add_job(
