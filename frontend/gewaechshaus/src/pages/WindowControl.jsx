@@ -272,7 +272,17 @@ export default function WindowControl() {
 
           <div>
             <div>Opens when temperature inside exceeds 
-              <p><font color={"yellow"}>{windowTempThresholdRight}°C</font></p> 
+              <p>
+                <font color={"yellow"}>{windowTempThresholdRight}°C</font>
+                <button style={{
+                  backgroundColor: "rgba(146, 204, 159, 0.92)",
+                  fontSize: "18px",
+                  color: "white",
+                  alignItems: "center"
+                }}>
+                  {">"}
+                </button>
+              </p> 
             for 15 minutes.</div>
           </div>
 
