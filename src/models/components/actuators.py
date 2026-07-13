@@ -124,3 +124,26 @@ class LinearActuator(Component):
             raise EventRecordFailed(
                 f"Storing retraction event in DB failed for window {self.position.value} due to {err}"
             )
+
+
+class WaterPump(Component):
+
+    pin: int
+    watering_time_seconds: float
+
+    async def setup(self):
+
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(self.pin, GPIO.OUT)
+
+        # However, the GPIO pin for the pump relay needs to be set to HIGH
+        # to ensure the pump is off initially
+        GPIO.output(self.pin, True)
+
+    async def run_watering(self) -> None:
+
+        GPIO.output(self.pin, False)
+        await asyncio.sleep(delay=self.watering_time_seconds)
+        GPIO.output(self.pin, True)
+
+    
