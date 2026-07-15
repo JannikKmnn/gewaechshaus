@@ -131,6 +131,8 @@ class WaterPump(Component):
     pin: int
     watering_time_seconds: float
 
+    last_watering: datetime = datetime(2026, 7, 15, tzinfo=timezone.utc)
+
     async def setup(self):
 
         GPIO.setmode(GPIO.BCM)
@@ -145,5 +147,8 @@ class WaterPump(Component):
         GPIO.output(self.pin, False)
         await asyncio.sleep(delay=self.watering_time_seconds)
         GPIO.output(self.pin, True)
+
+        timestamp = datetime.now(tz=timezone.utc).replace(microsecond=0)
+        self.last_watering = timestamp
 
     
