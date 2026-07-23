@@ -1,6 +1,6 @@
 import os
 
-from src.models.components.actuators import LinearActuator
+from src.models.components.actuators import LinearActuator, WaterPump
 from src.models.enums import Position
 
 
@@ -54,3 +54,16 @@ async def setup_window_openers() -> list[LinearActuator]:
     )
 
     return window_actuators
+
+
+async def setup_watering_system() -> WaterPump:
+    
+    water_pump = WaterPump(
+        identifier="watering_pump",
+        pin=int(os.getenv("WATERING_PUMP_PIN")),
+        watering_time_seconds=float(os.getenv("WATERING_TIME_SECONDS")),
+    )
+
+    await water_pump.setup()
+
+    return water_pump
