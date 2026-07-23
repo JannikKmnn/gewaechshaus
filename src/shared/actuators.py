@@ -64,4 +64,6 @@ async def setup_watering_system() -> WaterPump:
         watering_time_seconds=float(os.getenv("WATERING_TIME_SECONDS")),
     )
 
+    await water_pump.setup()
+
     return water_pump

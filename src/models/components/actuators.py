@@ -151,4 +151,8 @@ class WaterPump(Component):
         timestamp = datetime.now(tz=timezone.utc).replace(microsecond=0)
         self.last_watering = timestamp
 
+    async def cleanup(self) -> None:
+        GPIO.output(self.pin, True)
+        GPIO.cleanup(self.pin)
+
     
