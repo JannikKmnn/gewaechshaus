@@ -154,5 +154,3 @@ class WaterPump(Component):
     async def cleanup(self) -> None:
         GPIO.output(self.pin, True)
         GPIO.cleanup(self.pin)
-
-    

@@ -57,7 +57,7 @@ async def setup_window_openers() -> list[LinearActuator]:
 
 
 async def setup_watering_system() -> WaterPump:
-    
+
     water_pump = WaterPump(
         identifier="watering_pump",
         pin=int(os.getenv("WATERING_PUMP_PIN")),
