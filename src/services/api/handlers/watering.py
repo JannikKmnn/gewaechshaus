@@ -1,9 +1,11 @@
+from typing import Optional
+
 from fastapi import HTTPException
 
 from src.models.components.actuators import WaterPump
 
 
-async def run_watering(pump: WaterPump):
+async def run_watering(pump: WaterPump, watering_duration: float | None = None) -> None:
 
     # We need to ensure that the watering system runs once
     # and the GPIO pin is cleaned up since the (default) output=False
@@ -11,7 +13,7 @@ async def run_watering(pump: WaterPump):
     # Therefore, we fully run the watering system setup and cleanup the GPIO pin in this function.
 
     try:
-        _ = await pump.setup()
+        _ = await pump.setup_watering_GPIO()
     except Exception as err:
         raise HTTPException(
             status_code=500,
@@ -19,7 +21,7 @@ async def run_watering(pump: WaterPump):
         )
 
     try:
-        _ = await pump.run_watering()
+        _ = await pump.run_watering(duration_seconds=watering_duration)
     except Exception as err:
         raise HTTPException(
             status_code=500,

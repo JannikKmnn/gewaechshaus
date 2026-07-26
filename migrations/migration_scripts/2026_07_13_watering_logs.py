@@ -8,7 +8,7 @@ async def upgrade() -> None:
     # creates table for windows
     create_stmt = """CREATE TABLE IF NOT EXISTS watering (
     timestamp DATETIME PRIMARY KEY,
-    duration INTEGER
+    duration_seconds INTEGER
     );
     """
 

@@ -1,3 +1,5 @@
+"""run this script by navigating to the root of the project, activating venv and running `sudo poetry run python -m scripts.test_watering_system`"""
+
 import asyncio
 import sys
 
@@ -33,8 +35,5 @@ async def main():
 
 if __name__ == "__main__":
 
-    print("Starting Watering System Test...")
-
     asyncio.run(main())
-
     print("Test done.")

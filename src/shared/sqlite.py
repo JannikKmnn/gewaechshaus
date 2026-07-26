@@ -13,7 +13,7 @@ async def setup_client() -> Connection | None:
     return conn
 
 
-async def setup_db(
+async def setup_windows_db(
     db_name: str,
     actuator_events_table: str,
 ):
@@ -70,3 +70,37 @@ async def fetch_latest_window_events(
         await db.close()
 
     return rows
+
+
+async def setup_watering_db(
+    db_name: str,
+    watering_events_table: str,
+):
+
+    # creates DB if not exists already
+    sqlite_client = aiosqlite.connect(database=db_name)
+
+    async with sqlite_client:
+
+        # creates table for watering events
+        sql_stmt = f"""CREATE TABLE IF NOT EXISTS
+        {watering_events_table}(timestamp DATETIME, duration_seconds INTEGER)
+        """
+
+        await sqlite_client.execute(sql_stmt)
+
+        await sqlite_client.commit()
+        await sqlite_client.close()
+
+
+async def write_watering_event_to_db(
+    sqlite_client: Connection,
+    watering_events_table: str,
+    timestamp: datetime,
+    duration_seconds: int,
+):
+
+    insert_stmt = f"INSERT INTO {watering_events_table} VALUES (?, ?)"
+
+    await sqlite_client.execute(insert_stmt, (timestamp.isoformat(), duration_seconds))
+    await sqlite_client.commit()
