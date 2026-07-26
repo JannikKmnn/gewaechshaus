@@ -57,11 +57,13 @@ async def setup_window_openers() -> list[LinearActuator]:
 
 
 async def setup_watering_system() -> WaterPump:
-    
+
     water_pump = WaterPump(
         identifier="watering_pump",
         pin=int(os.getenv("WATERING_PUMP_PIN")),
         watering_time_seconds=float(os.getenv("WATERING_TIME_SECONDS")),
+        sqlite_db_name=str(os.getenv("SQLITE_DB_NAME")),
+        sqlite_events_table=str(os.getenv("SQLITE_WATERING_EVENTS_TABLE")),
     )
 
     await water_pump.setup()

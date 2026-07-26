@@ -1,7 +1,7 @@
 import asyncio
 import aiosqlite
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from src.models.components.base import Component
 from src.models.exceptions import (
@@ -9,12 +9,23 @@ from src.models.exceptions import (
     EventRecordFailed,
     StateFetchingFailed,
 )
-from src.shared.sqlite import write_window_status_to_db, fetch_latest_window_events
+from src.shared.sqlite import (
+    write_window_status_to_db,
+    fetch_latest_window_events,
+    write_watering_event_to_db,
+)
 
 import RPi.GPIO as GPIO  # type: ignore
 
 
-class LinearActuator(Component):
+class Actuator(Component):
+
+    # sqlite properties for event storing
+    sqlite_db_name: str
+    sqlite_events_table: str
+
+
+class LinearActuator(Actuator):
 
     extend_pin: int
     retract_pin: int
@@ -24,10 +35,6 @@ class LinearActuator(Component):
     last_retraction: datetime = datetime(2025, 12, 2, tzinfo=timezone.utc)
 
     is_extended: bool = False
-
-    # sqlite properties for event storing
-    sqlite_db_name: str
-    sqlite_events_table: str
 
     async def setup(self):
 
@@ -126,14 +133,18 @@ class LinearActuator(Component):
             )
 
 
-class WaterPump(Component):
+class WaterPump(Actuator):
 
     pin: int
     watering_time_seconds: float
 
     last_watering: datetime = datetime(2026, 7, 15, tzinfo=timezone.utc)
+    last_watering_duration: timedelta = timedelta(seconds=900)
 
     async def setup(self):
+        pass
+
+    async def setup_watering_GPIO(self):
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.pin, GPIO.OUT)
@@ -142,17 +153,34 @@ class WaterPump(Component):
         # to ensure the pump is off initially
         GPIO.output(self.pin, True)
 
-    async def run_watering(self) -> None:
+    async def run_watering(self, duration_seconds: float = None) -> None:
+
+        watering_duration = (
+            duration_seconds if duration_seconds else self.watering_time_seconds
+        )
 
         GPIO.output(self.pin, False)
-        await asyncio.sleep(delay=self.watering_time_seconds)
+        await asyncio.sleep(delay=watering_duration)
         GPIO.output(self.pin, True)
 
         timestamp = datetime.now(tz=timezone.utc).replace(microsecond=0)
         self.last_watering = timestamp
+        self.last_watering_duration = timedelta(seconds=watering_duration)
+
+        try:
+            async with aiosqlite.connect(database=self.sqlite_db_name) as db:
+                _ = await write_watering_event_to_db(
+                    sqlite_client=db,
+                    watering_events_table=self.sqlite_events_table,
+                    timestamp=timestamp,
+                    duration_seconds=watering_duration,
+                )
+                await db.close()
+        except Exception as err:
+            raise EventRecordFailed(
+                f"Storing watering event in DB failed for pump {self.identifier} due to {err}"
+            )
 
     async def cleanup(self) -> None:
         GPIO.output(self.pin, True)
         GPIO.cleanup(self.pin)
-
-    
