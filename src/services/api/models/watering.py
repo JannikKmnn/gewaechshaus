@@ -1,8 +1,6 @@
-from dataclasses import dataclass
-from typing import Optional
+from pydantic import BaseModel
 
 
-@dataclass
-class WateringRequestProperties:
+class WateringRequestProperties(BaseModel):
 
-    watering_time_seconds: float = None
+    watering_time_seconds: float | None = None
