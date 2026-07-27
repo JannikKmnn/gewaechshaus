@@ -55,8 +55,8 @@ async def lifespan(app: FastAPI):
         app.state.actuators = await setup_window_openers()
         app.state.watering_system = await setup_watering_system()
 
-        logger.info(f"Using window openers: {app.state.actuators}")
-        logger.info(f"Using watering system: {app.state.watering_system}")
+        logger.debug(f"Using window openers: {app.state.actuators}")
+        logger.debug(f"Using watering system: {app.state.watering_system}")
 
     # Init sqlite DB for window status and watering events
     # Expected to create only once because of persistent DB storage

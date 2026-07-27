@@ -1,8 +1,10 @@
-from typing import Optional
-
 from fastapi import HTTPException
 
 from src.models.components.actuators import WaterPump
+from src.services.api.db.watering import (
+    get_watering_events as get_db_watering_events,
+)
+from src.services.api.models.windows import WindowEventsRequestProperties
 
 
 async def run_watering(pump: WaterPump, watering_duration: float | None = None) -> None:
@@ -38,3 +40,33 @@ async def run_watering(pump: WaterPump, watering_duration: float | None = None) 
                 Watering may still be in progress!
             """,
         )
+
+
+async def get_watering_events(
+    watering_events_table: str, req_properties: WindowEventsRequestProperties
+):
+
+    if (req_properties.end_time and req_properties.start_time) and (
+        req_properties.end_time <= req_properties.start_time
+    ):
+        raise HTTPException(
+            status_code=400, detail="Query end time must be after start time."
+        )
+
+    results = await get_db_watering_events(
+        watering_events_table=watering_events_table,
+        start_time=req_properties.start_time,
+        end_time=req_properties.end_time,
+    )
+
+    return results
+
+
+async def get_latest_watering_event(pump: WaterPump):
+
+    return_dict = {
+        "last_watering": pump.last_watering,
+        "last_watering_duration": pump.last_watering_duration,
+    }
+
+    return return_dict
