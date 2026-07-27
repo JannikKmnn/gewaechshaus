@@ -8,11 +8,13 @@ from src.models.exceptions import (
     StateAlreadyReached,
     EventRecordFailed,
     StateFetchingFailed,
+    WateringEventFetchingFailed,
 )
 from src.shared.sqlite import (
     write_window_status_to_db,
     fetch_latest_window_events,
     write_watering_event_to_db,
+    fetch_latest_watering_events,
 )
 
 import RPi.GPIO as GPIO  # type: ignore
@@ -142,7 +144,26 @@ class WaterPump(Actuator):
     last_watering_duration: timedelta = timedelta(seconds=900)
 
     async def setup(self):
-        pass
+
+        # fetch sqlite latest states (SSOT)
+
+        try:
+            latest_watering_events = await fetch_latest_watering_events(
+                sqlite_db_name=self.sqlite_db_name,
+                watering_events_table=self.sqlite_events_table,
+            )
+        except Exception as err:
+            raise WateringEventFetchingFailed(
+                f"Fetching watering events from DB failed due to {err}"
+            )
+
+        latest_event = sorted(latest_watering_events, key=lambda x: x[0], reverse=True)[
+            0
+        ]
+        self.last_watering = datetime.fromisoformat(latest_event[0]).replace(
+            tzinfo=timezone.utc
+        )
+        self.last_watering_duration = timedelta(seconds=latest_event[1])
 
     async def setup_watering_GPIO(self):
 

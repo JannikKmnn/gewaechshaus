@@ -10,5 +10,9 @@ class StateFetchingFailed(Exception):
     pass
 
 
+class WateringEventFetchingFailed(Exception):
+    pass
+
+
 class EventRecordFailed(Exception):
     pass

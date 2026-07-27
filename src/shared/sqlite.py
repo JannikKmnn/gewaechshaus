@@ -104,3 +104,23 @@ async def write_watering_event_to_db(
 
     await sqlite_client.execute(insert_stmt, (timestamp.isoformat(), duration_seconds))
     await sqlite_client.commit()
+
+
+async def fetch_latest_watering_events(
+    sqlite_db_name: str,
+    watering_events_table: str,
+):
+
+    fetch_stmt = f"""
+        SELECT * FROM {watering_events_table}
+        ORDER BY timestamp DESC LIMIT 2
+    """
+
+    async with aiosqlite.connect(database=sqlite_db_name) as db:
+        cursor = await db.execute(fetch_stmt)
+        rows = await cursor.fetchall()
+
+        await db.commit()
+        await db.close()
+
+    return rows
