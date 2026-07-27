@@ -11,6 +11,8 @@ from src.shared.sqlite import setup_windows_db, setup_watering_db
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
+import logging
+
 IMPORT_SUCCESS = False
 try:
     from src.shared.actuators import setup_window_openers, setup_watering_system
@@ -32,8 +34,18 @@ class Settings(BaseSettings):
     frontend_url: str = Field(default="http://localhost:5173")
     frontend_url_prd: str = Field(default="http://localhost:5174")
 
+    # logging
+    log_lvl: str = Field(default="INFO")
+
 
 settings = Settings()
+
+logging.basicConfig(
+    format="%(asctime)s %(levelname)-8s %(message)s",
+    level=settings.log_lvl,
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
@@ -42,6 +54,9 @@ async def lifespan(app: FastAPI):
     if IMPORT_SUCCESS:
         app.state.actuators = await setup_window_openers()
         app.state.watering_system = await setup_watering_system()
+
+        logger.debug(f"Using window openers: {app.state.actuators}")
+        logger.debug(f"Using watering system: {app.state.watering_system}")
 
     # Init sqlite DB for window status and watering events
     # Expected to create only once because of persistent DB storage
