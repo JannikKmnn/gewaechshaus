@@ -4,7 +4,7 @@ import DoubleValueWidget from "../components/DoubleValueWidget";
 import { getWindowConfigs, getWindowStatus, callWindowActuators } from "../api/windows";
 import { formatDateTime, windowOpenTime } from "../utils/time";
 
-export default function ControlCenter() {
+export default function WindowControl() {
   const [windowStatusLeft, setWindowStatusLeft] = useState(null);
   const [windowStatusRight, setWindowStatusRight] = useState(null);
 
@@ -85,7 +85,7 @@ export default function ControlCenter() {
 
   return (
     <div>
-      <h1 style={{ marginBottom: "20px" }}>Control Center</h1>
+      <h1 style={{ marginBottom: "20px" }}>Control Center Windows</h1>
 
       <div
         style={{

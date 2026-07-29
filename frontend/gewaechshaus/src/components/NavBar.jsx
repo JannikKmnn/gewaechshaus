@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
-import { LayoutDashboard, ServerCog } from "lucide-react";
+import { LayoutDashboard, Grid2x2, Droplets } from "lucide-react";
 
 export default function NavBar() {
   const [expanded, setExpanded] = useState(false);
@@ -59,9 +59,14 @@ export default function NavBar() {
         <span style={labelStyle}>Dashboard</span>
       </Link>
 
-      <Link to="/control" style={itemStyle("/control")}>
-        <ServerCog style={iconStyle} />
-        <span style={labelStyle}>Control Center</span>
+      <Link to="/control/windows" style={itemStyle("/control/windows")}>
+        <Grid2x2 style={iconStyle} />
+        <span style={labelStyle}>Windows</span>
+      </Link>
+
+      <Link to="/control/watering" style={itemStyle("/control/watering")}>
+        <Droplets style={iconStyle} />
+        <span style={labelStyle}>Watering</span>
       </Link>
     </div>
   );
