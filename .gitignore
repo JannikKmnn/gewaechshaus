@@ -23,6 +23,7 @@ frontend/gewaechshaus/.env
 
 # testing
 frontend/gewaechshaus/coverage
+terminal_commands.txt
 
 # production
 frontend/gewaechshaus/build

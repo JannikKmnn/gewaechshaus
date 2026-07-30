@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
-import ControlCenter from "./pages/ControlCenter";
+import WateringControl from "./pages/WateringControl";
+import WindowControl from "./pages/WindowControl";
 
 export default function AppRoutes() {
   return (
@@ -13,7 +14,8 @@ export default function AppRoutes() {
     }}>
       <Routes>
         <Route path="/" element={<Dashboard />} />
-        <Route path="/control" element={<ControlCenter />} />
+        <Route path="/control/windows" element={<WindowControl />} />
+        <Route path="/control/watering" element={<WateringControl />} />
       </Routes>
     </div>
   );
