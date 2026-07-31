@@ -182,7 +182,7 @@ class WaterPump(Actuator):
 
         watering_duration = (
             duration_seconds
-            if duration_seconds is not None
+            if duration_seconds
             else self.watering_time_seconds
         )
 
