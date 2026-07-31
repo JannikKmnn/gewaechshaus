@@ -7,29 +7,7 @@ from src.services.api.db.watering import (
 from src.services.api.models.windows import WindowEventsRequestProperties
 
 
-async def run_watering(pump: WaterPump, watering_duration: float | None = None) -> None:
-
-    # We need to ensure that the watering system runs once
-    # and the GPIO pin is cleaned up since the (default) output=False
-    # leads to a situation where the pump is still running after the request is completed.
-    # Therefore, we fully run the watering system setup and cleanup the GPIO pin in this function.
-
-    try:
-        _ = await pump.setup_watering_GPIO()
-    except Exception as err:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Watering system setup couldn't be executed due to {err}.",
-        )
-
-    try:
-        _ = await pump.run_watering(duration_seconds=watering_duration)
-    except Exception as err:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Watering run couldn't be executed due to {err}.",
-        )
-
+async def _gpio_cleanup(pump: WaterPump) -> None:
     try:
         _ = await pump.cleanup()
     except Exception as err:
@@ -40,6 +18,34 @@ async def run_watering(pump: WaterPump, watering_duration: float | None = None) 
                 Watering may still be in progress!
             """,
         )
+
+
+async def run_watering(pump: WaterPump, watering_duration: float | None = None) -> None:
+
+    # We need to ensure that the watering system runs once
+    # and the GPIO pin is cleaned up since the (default) output=False
+    # leads to a situation where the pump is still running after the request is completed.
+    # Therefore, we fully run the watering system setup and cleanup the GPIO pin in this function.
+
+    if pump._watering_lock.locked():
+        raise HTTPException(
+            status_code=409,
+            detail="Watering already in progress.",
+        )
+
+    async with pump._watering_lock:
+
+        try:
+            _ = await pump.setup_watering_GPIO()
+            _ = await pump.run_watering(duration_seconds=watering_duration)
+
+        except Exception as err:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Watering run couldn't be executed due to {err}.",
+            )
+        finally:
+            _ = await _gpio_cleanup(pump=pump)
 
 
 async def get_watering_events(

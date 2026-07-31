@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     frontend_url_prd: str = Field(default="http://localhost:5174")
 
     # logging
-    log_lvl: str = Field(default="INFO")
+    log_lvl: str = Field(default="WARNING")
 
 
 settings = Settings()

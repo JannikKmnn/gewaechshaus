@@ -1,3 +1,5 @@
+from pydantic import PrivateAttr
+
 import asyncio
 import aiosqlite
 
@@ -143,6 +145,8 @@ class WaterPump(Actuator):
     last_watering: datetime = datetime(2026, 7, 15, tzinfo=timezone.utc)
     last_watering_duration: timedelta = timedelta(seconds=900)
 
+    _watering_lock: asyncio.Lock = PrivateAttr(default_factory=asyncio.Lock)
+
     async def setup(self):
 
         # fetch sqlite latest states (SSOT)
@@ -177,12 +181,16 @@ class WaterPump(Actuator):
     async def run_watering(self, duration_seconds: float = None) -> None:
 
         watering_duration = (
-            duration_seconds if duration_seconds else self.watering_time_seconds
+            duration_seconds
+            if duration_seconds is not None
+            else self.watering_time_seconds
         )
 
         GPIO.output(self.pin, False)
-        await asyncio.sleep(delay=watering_duration)
-        GPIO.output(self.pin, True)
+        try:
+            await asyncio.sleep(delay=watering_duration)
+        finally:
+            GPIO.output(self.pin, True)
 
         timestamp = datetime.now(tz=timezone.utc).replace(microsecond=0)
         self.last_watering = timestamp
