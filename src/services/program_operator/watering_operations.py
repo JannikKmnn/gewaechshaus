@@ -17,7 +17,7 @@ async def run_scheduled_watering(
     base_url = f"{url}/watering/run_watering"
 
     read_timeout = (
-        max(duration.total_seconds() + 80, 30) if duration is not None else None
+        max(duration.total_seconds() + 80, 30) if duration is not None else 1000
     )
 
     timeout = httpx.Timeout(
@@ -41,4 +41,4 @@ async def run_scheduled_watering(
             return response
         except httpx.HTTPError as err:
             logger.error(f"Watering call failed due to {err}")
-            raise
+            return None

@@ -3,6 +3,7 @@
 import asyncio
 import logging
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from datetime import timedelta
 
 from pydantic import Field
 from pydantic_settings import BaseSettings
@@ -22,6 +23,7 @@ class Settings(BaseSettings):
     # watering cron hours
     watering_cron_hour_morning: int = Field(default=9)
     watering_cron_hour_evening: int = Field(default=20)
+    watering_time_seconds: int = Field(default=900)
 
     # for API calls
     vite_api_base_url: str = Field(...)
@@ -86,6 +88,7 @@ async def main():
         kwargs={
             "url": settings.vite_api_base_url,
             "logger": logger,
+            "duration": timedelta(seconds=settings.watering_time_seconds),
         },
         trigger="cron",
         hour=watering_hours,
@@ -99,6 +102,7 @@ async def main():
         f"""
     Watering program added to scheduler.
         watering hours: {watering_hours}
+        watering duration: {settings.watering_time_seconds} seconds
     """
     )
 

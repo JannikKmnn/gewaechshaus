@@ -44,6 +44,7 @@ async def fetch_temp_measurements(
                 "end_time": req_end.isoformat(),
             },
         )
+        temperature_data.raise_for_status()
         logger.info(
             f"Received temperature data with response {temperature_data.status_code}"
         )
@@ -78,6 +79,7 @@ async def fetch_window_status(
         status = await client.get(
             url=f"{url}/window/status/{window_position}",
         )
+        status.raise_for_status()
         logger.info(f"Received window status with response {status.status_code}")
     except httpx.HTTPError as err:
         logger.error(f"Requesting {window_position} window status failed due to {err}")
@@ -110,6 +112,7 @@ async def fetch_window_configurations(
         configurations = await client.get(
             url=f"{url}/window/config/{window_position}",
         )
+        configurations.raise_for_status()
         logger.info(
             f"Received window configs with response {configurations.status_code}"
         )
@@ -150,6 +153,7 @@ async def act_on_windows(
             response = await client.post(
                 url=base_url,
             )
+            response.raise_for_status()
         except httpx.HTTPError as err:
             logger.error(f"Window movement call failed due to {err}")
             response = None
