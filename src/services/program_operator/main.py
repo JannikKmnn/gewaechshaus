@@ -83,6 +83,10 @@ async def main():
     )
     scheduler.add_job(
         run_scheduled_watering,
+        kwargs={
+            "url": settings.vite_api_base_url,
+            "logger": logger,
+        },
         trigger="cron",
         hour=watering_hours,
         minute=0,
