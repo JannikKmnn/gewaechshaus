@@ -7,6 +7,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
+from src.services.program_operator.watering_operations import run_scheduled_watering
 from src.services.program_operator.window_operations import run_window_program
 
 
@@ -47,6 +48,7 @@ async def main():
 
     scheduler = AsyncIOScheduler()
 
+    # 1. Window Job
     scheduler.add_job(
         run_window_program,
         kwargs={
@@ -60,6 +62,16 @@ async def main():
         max_instances=1,
         coalesce=True,
         misfire_grace_time=60,
+    )
+
+    # 2. Watering CRON Job
+    scheduler.add_job(
+        run_scheduled_watering,
+        trigger="cron",
+        hour="6,20",
+        minute=0,
+        max_instances=1,
+        coalesce=True,
     )
 
     scheduler.start()
