@@ -176,6 +176,10 @@ async def check_and_perform_operations(
 
     measurements = [rec["value"] for rec in response[0].json()]
 
+    if not measurements:
+        logger.warning("No measurements received.")
+        return
+
     # define opening/closing conditions
     close_windows_condition = any(meas < left_window_threshold for meas in measurements)
     both_windows_condition = all(meas > right_window_threshold for meas in measurements)
@@ -185,7 +189,7 @@ async def check_and_perform_operations(
         response[2].json()["status"],
     )
 
-    logger.warning(
+    logger.info(
         f"""
         Received measurements: {measurements}
         Left window status: {left_window_status}
