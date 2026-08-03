@@ -14,6 +14,6 @@ COPY src ./src
 
 ENV TEMPERATURE_SENSOR=temperature_inside \
     CRON_SCHEDULE_MINUTES=15 \
-    LOG_LVL=WARNING
+    LOG_LVL=INFO
 
 CMD ["python", "-m", "src.services.program_operator.main"]

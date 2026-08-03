@@ -286,4 +286,4 @@ async def run_window_program(
         logger.error("One or more API calls failed.")
         return
 
-    await check_and_perform_operations(response=response)
+    await check_and_perform_operations(response=response, url=api_url, logger=logger)
