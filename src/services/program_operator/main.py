@@ -16,8 +16,12 @@ class Settings(BaseSettings):
     temperature_sensor: str = Field(default="temperature_inside")
     night_mode_on: bool = Field(default=False)
 
-    # cron scheduling time also for dataset request size
-    cron_schedule_minutes: int = Field(default=15)
+    # cron scheduling time for windows, also for dataset request size
+    window_cron_schedule_minutes: int = Field(default=15)
+
+    # watering cron hours
+    watering_cron_hour_morning: int = Field(default=6)
+    watering_cron_hour_evening: int = Field(default=20)
 
     # for API calls
     vite_api_base_url: str = Field(...)
@@ -52,23 +56,26 @@ async def main():
     scheduler.add_job(
         run_window_program,
         kwargs={
-            "interval_minutes": settings.cron_schedule_minutes,
+            "interval_minutes": settings.window_cron_schedule_minutes,
             "temperature_sensor_identifier": settings.temperature_sensor,
             "api_url": settings.vite_api_base_url,
             "logger": logger,
         },
         trigger="cron",
-        minute=f"*/{settings.cron_schedule_minutes}",
+        minute=f"*/{settings.window_cron_schedule_minutes}",
         max_instances=1,
         coalesce=True,
         misfire_grace_time=60,
     )
 
     # 2. Watering CRON Job
+    watering_hours = (
+        f"{settings.watering_cron_hour_morning},{settings.watering_cron_hour_evening}"
+    )
     scheduler.add_job(
         run_scheduled_watering,
         trigger="cron",
-        hour="6,20",
+        hour=watering_hours,
         minute=0,
         max_instances=1,
         coalesce=True,
