@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     window_cron_schedule_minutes: int = Field(default=15)
 
     # watering cron hours
-    watering_cron_hour_morning: int = Field(default=6)
+    watering_cron_hour_morning: int = Field(default=9)
     watering_cron_hour_evening: int = Field(default=20)
 
     # for API calls
@@ -53,19 +53,28 @@ async def main():
     scheduler = AsyncIOScheduler()
 
     # 1. Window Job
+    window_kwargs = {
+        "interval_minutes": settings.window_cron_schedule_minutes,
+        "temperature_sensor_identifier": settings.temperature_sensor,
+        "api_url": settings.vite_api_base_url,
+        "logger": logger,
+    }
     scheduler.add_job(
         run_window_program,
-        kwargs={
-            "interval_minutes": settings.window_cron_schedule_minutes,
-            "temperature_sensor_identifier": settings.temperature_sensor,
-            "api_url": settings.vite_api_base_url,
-            "logger": logger,
-        },
+        kwargs=window_kwargs,
         trigger="cron",
         minute=f"*/{settings.window_cron_schedule_minutes}",
         max_instances=1,
         coalesce=True,
         misfire_grace_time=60,
+    )
+
+    logger.info(
+        f"""
+    Window program added to scheduler.
+        kwargs: {window_kwargs}
+        minute: {settings.window_cron_schedule_minutes}
+    """
     )
 
     # 2. Watering CRON Job
@@ -81,7 +90,16 @@ async def main():
         coalesce=True,
     )
 
+    logger.info(
+        f"""
+    Watering program added to scheduler.
+        watering hours: {watering_hours}
+    """
+    )
+
     scheduler.start()
+
+    logger.info(f"Scheduler started.")
 
     while True:
         await asyncio.sleep(10)

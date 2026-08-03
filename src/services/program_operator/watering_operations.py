@@ -17,10 +17,11 @@ async def run_scheduled_watering(
     base_url = f"{url}/watering/run_watering"
 
     async with httpx.AsyncClient() as client:
+        logger.info(f"Starting Watering API call with duration {duration}...")
         try:
             response = await client.post(
                 url=base_url,
-                json={"duration": duration.total_seconds() if duration else None},
+                json={"duration": int(duration.total_seconds()) if duration else None},
             )
         except httpx.HTTPError as err:
             logger.error(f"Watering call failed due to {err}")
