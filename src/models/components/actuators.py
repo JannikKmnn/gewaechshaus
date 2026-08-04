@@ -181,9 +181,7 @@ class WaterPump(Actuator):
     async def run_watering(self, duration_seconds: float = None) -> None:
 
         watering_duration = (
-            duration_seconds
-            if duration_seconds
-            else self.watering_time_seconds
+            duration_seconds if duration_seconds else self.watering_time_seconds
         )
 
         GPIO.output(self.pin, False)
