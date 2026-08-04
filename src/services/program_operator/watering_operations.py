@@ -16,14 +16,14 @@ async def run_scheduled_watering(
 
     base_url = f"{url}/watering/run_watering"
 
-    read_timeout = (
+    read_write_timeout = (
         max(duration.total_seconds() + 80, 30) if duration is not None else 1000
     )
 
     timeout = httpx.Timeout(
-        connect=30.0,
-        read=read_timeout,
-        pool=30.0,
+        30.0,
+        read=read_write_timeout,
+        write=read_write_timeout,
     )
 
     async with httpx.AsyncClient(timeout=timeout) as client:

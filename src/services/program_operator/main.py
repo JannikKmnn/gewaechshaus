@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     window_cron_schedule_minutes: int = Field(default=15)
 
     # watering cron hours
-    watering_cron_hour_morning: int = Field(default=9)
+    watering_cron_hour_morning: int = Field(default=6)
     watering_cron_hour_evening: int = Field(default=20)
     watering_time_seconds: int = Field(default=900)
 
