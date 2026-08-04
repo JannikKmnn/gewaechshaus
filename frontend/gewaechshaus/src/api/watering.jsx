@@ -6,3 +6,19 @@ export async function getLastWatering() {
 
     return result?.data ?? null;
 }
+
+export async function getWateringEvents({
+    start_datetime,
+    end_datetime = null
+}) {
+    const data = {
+        start_datetime,
+        end_datetime
+    }
+
+    let route = `watering/events`;
+
+    const result = await api.post(route, data);
+    
+    return result?.data ?? null;
+}
