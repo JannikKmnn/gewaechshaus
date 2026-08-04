@@ -4,6 +4,7 @@ import asyncio
 import logging
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from datetime import timedelta
+from zoneinfo import ZoneInfo
 
 from pydantic import Field
 from pydantic_settings import BaseSettings
@@ -52,7 +53,7 @@ async def main():
         """
     )
 
-    scheduler = AsyncIOScheduler()
+    scheduler = AsyncIOScheduler(timezone=ZoneInfo("Europe/Berlin"))
 
     # 1. Window Job
     window_kwargs = {

@@ -236,7 +236,15 @@ async def check_and_perform_operations(
         )
 
     if len(operations) > 0:
-        responses = await asyncio.gather(*operations)
+        responses = await asyncio.gather(
+            *operations,
+            return_exceptions=True,
+        )
+
+        for response in responses:
+            if isinstance(response, Exception):
+                logger.error(f"Window operation failed: {response}")
+
         return responses
 
     return
