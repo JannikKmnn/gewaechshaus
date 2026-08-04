@@ -173,7 +173,7 @@ The peristaltic pump is attached in the box at the front left corner of the bott
     - GND -> GND
     - DATA SM1 -> GPIO 23 (Physical 16)
     - DATA SM2 -> GPIO 24 (Physical 18)
-- ⚙️ **2× Linear Actuators for Wiring** (+ 2 Double-Pole 5V Relays)
+- ⚙️ **2× Linear Actuators for Windows** (+ 2 Double-Pole 5V Relays)
     - Actuator - -> COM2
     - Actuator + -> COM1
     - 12V DC - -> NC1 and NC2
@@ -184,6 +184,12 @@ The peristaltic pump is attached in the box at the front left corner of the bott
     - Actuator Right Retract Pin (GPIO 20) -> Relays (R) IN2
     - Actuator Left Extend Pin (GPIO 5) -> Relays (L) IN1
     - Actuator Left Retract Pin (GPIO 6) -> Relays (L) IN2
+- 💧 **Linear Actuator for Peristaltic Pump**
+    - Watering Pin (GPIO 21) -> Relay IN
+    - 5V VCC -> Relays VCC
+    - Pi GND -> Relays GND
+    - 12V DC - -> NC and NO
+    - 12V GND -> COM
 
 
 ---
@@ -194,7 +200,7 @@ The pi runs on ubuntu 25.10 lts (desktop version) and Python 3.13. Other ubuntu 
 
 The repository contains poetry for dependency management and docker/docker-compose to run the application inside a container on the pi. The models and settings are wrapped by pydantic models and the environment variables are set either inside the docker files or (for sensitive informations like the influxdb connection details) inside an .env file. For local development, I use vscode and a virtual environment managed with poetry.
 
-The data pipeline starts at the sensors, whereas the sensor_reader container is responsible for reading the data from the hardware, writing them into the InfluxDB and displaying the values frequently on the display inside the greenhouse. In addition, a lightweight SQLite DB is running on the pi to log the opening/closing events of the windows. The API is then structured to query the databases and provides endpoints to call on the windows or fetch data series, while big requests (>1 day, minute interval) are aggregated to ensure smooth and fast returns. The API is called from the frontend or by the program operator, which runs an asynchronous worker every 15 minutes to fetch the latest temperature inside datapoints and act on the window endpoints if required (thresholds defined as environment variables).
+The data pipeline starts at the sensors, whereas the sensor_reader container is responsible for reading the data from the hardware, writing them into the InfluxDB and displaying the values frequently on the display inside the greenhouse. In addition, a lightweight SQLite DB is running on the pi to log the opening/closing events of the windows. The API is then structured to query the databases and provides endpoints to call on the windows or fetch data series, while big requests (>1 day, minute interval) are aggregated to ensure smooth and fast returns. The API is called from the frontend or by the program operator, which runs an asynchronous worker every 15 minutes to fetch the latest temperature inside datapoints and act on the window endpoints if required (thresholds defined as environment variables) or to run a watering session at scheduled times (morning and evening, also controllable via environment variables).
 
 <p align="center">
     <img src="images/service_interactions.png" alt="Service architecture and data flow" width="300"/>
@@ -205,6 +211,7 @@ The data pipeline starts at the sensors, whereas the sensor_reader container is 
 - 🌡 Real-time environmental monitoring
 - 📈 Historical telemetry & dashboards
 - 🪟 Automated window ventilation
+- 💧 Controlled irrigation system
 - 🌱 Soil moisture monitoring
 - 🌐 Remote control via web dashboard
 - 🔒 Secure remote access via Tailscale VPN
