@@ -1,23 +1,25 @@
 # 🧠🌱 Raspberry Pi Greenhouse Automations
 
 This project implements a fully automated Raspberry Pi–powered greenhouse control system.
-It collects environmental sensor data (temperature, humidity, pressure, and soil moisture), stores and visualizes telemetry, and automatically controls ventilation using linear actuators — all accessible via a custom web dashboard and API.
+It collects environmental sensor data (temperature, humidity, air pressure, and soil moisture), stores and visualizes telemetry, automatically controls ventilation using linear actuators and irrigation with peristaltic pump — all accessible via a custom web dashboard and API.
 
 All sensor readings are periodically collected, logged, displayed inside a little self-made box for the raspi as well as stored inside an InfluxDB cloud instance. This allows both real time and historical data analysis on the measurements inside the frontend:
 
-### Monitoring Dashboard
-![Frontend dashboard (this one from winter time...)](images/frontend_dashboard.png?raw=true "Sensor Monitoring")
+### Monitoring Dashboards
+![Frontend dashboard](images/frontend_dashboard.png?raw=true "Sensor Monitoring")
 
 ![InfluxDB dashboard](images/influxdb_dashboard.png?raw=true "Influx Monitoring")
 
-The window events (opening/closing) are monitor- and controllable in the "Control Center" section in the frontend. I'm also collecting the timestamps of the window calls to reproduce the last openings times. The window calls are done either manually via the dashboard or the program operator service which is responsible for automatically open/close events based on pre defined thresholds for the inside temperature.
+### Control Centers
+The window events (opening/closing) are monitor- and controllable in the "Window Control Center" section in the frontend. I'm also collecting the timestamps of the window calls to reproduce the last openings times. The window calls are done either manually via the dashboard or the program operator service which is responsible for automatically open/close events based on pre defined thresholds for the inside temperature.
+![Window Control Center dashboard](images/frontend_window_control_center.png?raw=true "Window Control Center")
 
-### Control Center
-![Control Center dashboard](images/frontend_control_center.png?raw=true "Control Center")
+Similar to the Window Control Center, the Watering Control Center provides an overview about the active peristaltic pump times that controls an automated irrigation system in the greenhouse. Calling this endpoint from the frontend as well as more insights about historic watering/window events is in progress.
+![Watering Control Center dashboard](images/frontend_watering_control_center.png?raw=true "Watering Control Center")
 
-In addition, a fastapi instance is implemented to fetch the sensor readings in a specific timeframe from the InfluxDB as well as opening and closing of the windows.
 
 ### API Interface
+In addition, a fastapi instance is implemented to fetch the sensor readings in a specific timeframe from the InfluxDB, opening and closing of the windows and starting watering processes.
 ![fastapi interface](images/api.png?raw=true "API")
 
 The idea is to build a fully automated system to minimize manual work by automation of ventilation and watering in the greenhouse as well as implementing a full-on web application from scratch to monitor and control every sensor remotely.
@@ -64,6 +66,8 @@ INFLUXDB_TOKEN=<YOUR_TOKEN>
 
 SQLITE_DB_NAME=<LOCAL_SQLITE_DB_PATH>
 SQLITE_ACTUATOR_EVENTS_TABLE=window_status
+SQLITE_WATERING_EVENTS_TABLE=watering
+SQLITE_WINDOW_ENTITY_TABLE=window
 
 WINDOW_ACTUATOR_LEFT_EXTEND_PIN=<GPIO_PIN_LEFT_EXTEND>
 WINDOW_ACTUATOR_LEFT_RETRACT_PIN=<GPIO_PIN_LEFT_RETRACT>
@@ -71,30 +75,34 @@ WINDOW_ACTUATOR_RIGHT_EXTEND_PIN=<GPIO_PIN_RIGHT_EXTEND>
 WINDOW_ACTUATOR_RIGHT_RETRACT_PIN=<GPIO_PIN_RIGHT_RETRACT>
 WINDOW_MOVING_TIME=<HOW_LONG_ACTUATOR_TAKES>
 
+WATERING_PUMP_PIN=<GPIO_PIN_PUMP>
+WATERING_TIME_SECONDS=<WATERING_DURATION>
+
 CPU_TEMP_PATH=/sys/class/thermal/thermal_zone0/temp
 
 FRONTEND_URL=<YOUR_LOCAL_FRONTEND_URL>
 VITE_API_BASE_URL=<BASE_API_FOR_FRONTEND>
 ```
 
+Additional environment variables are in the settings of each service, I'm using the default values of those that are not listed here.
+
 The docker-compose will load these environment variables while building the image. To start it, navigate to the repo root and run ```docker compose up -d --build```. Docker will create 6 images and start their corresponding containers:
 
-- ```gewaechshaus-program-operator```: The cron worker that fetches the temperature from inside the greenhouse in a given interval (15 minutes) and operates on windows if certain thresholds are crossed. Source code in ```src/services/program_operator```.
-- ```gewaechshaus-api```: The uvicorn fastapi instance with endpoints to fetch data and call windows. Source code in ```src/services/api```.
+- ```gewaechshaus-program-operator```: The cron worker that fetches the temperature from inside the greenhouse in a given interval (15 minutes) and operates on windows if certain thresholds are crossed. Another cron job is responsible to call watering every morning and evening to keep soil moist. Source code in ```src/services/program_operator```.
+- ```gewaechshaus-api```: The uvicorn fastapi instance with endpoints to fetch data and call windows/irrigation. Source code in ```src/services/api```.
 - ```gewaechshaus-sensor-reader```: The sensor reader to read GPIO singals from sensors, writes measurement into InfluxDB and displays values on lcd display. Source code in ```src/services/sensor_reader```.
 - ```gewaechshaus-frontend```: React frontend for web dashboard. Source code in ```frontend/gewaechshaus```.
-- ```netdata```: To monitor pi resources, such as memory & cpu load, disk I/O, network and container resources.
 - ```sqlite-web```: UI for lightweight SQLite database on the pi.
 
 ## 📸 Pictures & Greenhouse Information
 
-The greenhouse is made of wood and isolated with standard greenhouse foil to trap heat inside. It's 70cm x 90cm x ca. 160cm, while the bottom is directly connected to the surrounding soil and a second level is addable. This level serves also as an option either to add more plant pots...
+The greenhouse is made of wood and isolated with standard greenhouse foil to trap heat inside. 
 
 <p align="center">
     <img src="images/inside_greenhouse.jpg" alt="Inside the greenhouse" width="300"/>
 </p>
 
-...or to develop directly at a desktop inside the greenhouse! (ssh access is activated now so not required but still cool)
+It's 70cm x 90cm x ca. 160cm, while the bottom is directly connected to the surrounding soil and a second level is addable. This level serves also as an option either to add more plant pots or to develop directly at a desktop inside the greenhouse! (ssh access is activated now so not required but still cool)
 
 <p align="center">
     <img src="images/desktop_greenhouse.jpg" alt="Desktop in greenhouse" width="300"/>
@@ -121,6 +129,21 @@ The windows are opened and closed by 12V linear actuators which are connected wi
 <p align="center">
     <img src="images/actuator_wiring.jpg" alt="Actuators connected to raspi house" width="300"/>
 </p>
+
+The peristaltic pump is attached in the box at the front left corner of the bottom box and is also controlled by a 12V relay circuit. When running, it pumps water from a rain barrel outside the greenhouse into a irrigation ring to distribute the water in the soil evenly.
+
+<p align="center">
+    <img src="images/irrigation_system_pump.jpg" alt="Watering System with Pump" width="300"/>
+</p>
+
+<p align="center">
+    <img src="images/irrigation_system_soil.jpg" alt="Irrigation Ring" width="300"/>
+</p>
+
+<p align="center">
+    <img src="images/rain_barrel.jpg" alt="Rain Barrel as water tank" width="300"/>
+</p>
+
 ---
 
 ## 🎛️ Sensor Setup & GPIO wiring
