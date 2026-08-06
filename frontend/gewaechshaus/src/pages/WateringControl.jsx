@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getLastWatering, getWateringEvents } from "../api/watering";
 import DoubleValueWidget from "../components/DoubleValueWidget";
 import TimeBarChart from "../components/TimeBarChart";
-import { formatDateTime, isoAgo } from "../utils/time";
+import { formatDateTime, formatDuration, isoAgo } from "../utils/time";
 
 export default function WateringControl() {
   const [lastWateringDatetime, setlastWateringDatetime] = useState(null);
@@ -13,6 +13,7 @@ export default function WateringControl() {
   const [dateTimeDiff, setDateTimeDiff] = useState("14d");
   const [endDateTime, setEndDateTime] = useState(new Date().toISOString());
   const startDateTime = isoAgo(dateTimeDiff, endDateTime);
+  const lastWateringDuration = formatDuration(lastWateringDurationSeconds);
 
   async function getLatestWatering() {
     const result = await getLastWatering();
@@ -74,9 +75,9 @@ export default function WateringControl() {
               <DoubleValueWidget
                 label={"Last Watering"}
                 value1={formatDateTime(lastWateringDatetime)}
-                value2={lastWateringDurationSeconds}
+                value2={lastWateringDuration.minutes + " Minutes, " + lastWateringDuration.seconds + " Seconds"}
                 unit1={""}
-                unit2={"Seconds"}
+                unit2={""}
                 color="rgba(10, 138, 212, 0.95)"
               />
             </div>

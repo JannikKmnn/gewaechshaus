@@ -22,7 +22,15 @@ export default function TimeBarChart({
                 <BarChart
                     data={data}
                 >
-                    <XAxis dataKey={dataKeyxAxis} />
+                    <XAxis 
+                        dataKey={dataKeyxAxis}
+                        tickFormatter={(d) =>
+                            new Date(d).toLocaleDateString("de-DE", {
+                                day: "2-digit",
+                                month: "2-digit",
+                            })
+                        }
+                     />
                     <YAxis
                         label={{ 
                             value: yAxisLabel, 
@@ -37,7 +45,7 @@ export default function TimeBarChart({
                             fontSize: 10,
                         }}
                     />
-                    <Tooltip />
+                    <Tooltip formatter={(value) => [`${value} s`, "Watering Duration"]} />
                     <Bar dataKey={dataKeybar} fill="#8884d8" activeBar={{ fill: 'pink', stroke: 'blue' }} radius={[10, 10, 0, 0]} />
                 </BarChart>
             </ResponsiveContainer>
