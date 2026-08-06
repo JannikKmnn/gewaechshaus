@@ -12,6 +12,13 @@ class WindowEventsRequestProperties:
 
 
 @dataclass
+class WindowIntervalsRequestProperties:
+
+    start_time: datetime
+    end_time: datetime
+
+
+@dataclass
 class WindowConfigurationResponseProperties:
 
     window_identifier: str

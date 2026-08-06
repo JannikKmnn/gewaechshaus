@@ -2,8 +2,10 @@ from fastapi import HTTPException
 
 from src.models.components.actuators import LinearActuator
 from src.models.exceptions import StateAlreadyReached, EventRecordFailed
+from src.models.enums import WindowCombination
 from src.services.api.models.windows import (
     WindowEventsRequestProperties,
+    WindowIntervalsRequestProperties,
     WindowConfigurationResponseProperties,
     WindowConfigurationUpdateProperties,
 )
@@ -78,6 +80,104 @@ async def get_window_events(
     )
 
     return results
+
+
+async def get_window_intervals(
+    actuator_events_table: str, req_properties: WindowIntervalsRequestProperties
+):
+
+    if (req_properties.end_time and req_properties.start_time) and (
+        req_properties.end_time <= req_properties.start_time
+    ):
+        raise HTTPException(
+            status_code=400, detail="Query end time must be after start time."
+        )
+
+    events = await get_db_window_events(
+        actuator_events_table=actuator_events_table,
+        start_time=req_properties.start_time,
+        end_time=req_properties.end_time,
+    )
+
+    if len(events) == 0:
+        return [
+            {
+                "from": req_properties.start_time.isoformat(),
+                "to": req_properties.end_time.isoformat(),
+                "state": WindowCombination.UNKNOWN,
+            }
+        ]
+
+    first_left_position = next(
+        (res for res in events if res[0] == "linear_actuator_left"), None
+    )
+    first_right_position = next(
+        (res for res in events if res[0] == "linear_actuator_right"), None
+    )
+
+    if first_left_position is not None:
+        left = first_left_position[2] == 0
+    else:
+        left = (
+            first_right_position[2] == 1 if first_right_position is not None else False
+        )
+
+    if first_right_position is not None:
+        right = first_right_position[2] == 0
+    else:
+        right = (
+            first_left_position[2] == 1 if first_left_position is not None else False
+        )
+
+    last_timestamp = req_properties.start_time.isoformat()
+    intervals = []
+
+    for identifier, timestamp, status in events:
+
+        intervals.append(
+            {
+                "from": last_timestamp,
+                "to": timestamp,
+                "state": (
+                    WindowCombination.BOTH
+                    if left and right
+                    else (
+                        WindowCombination.LEFT
+                        if left
+                        else (
+                            WindowCombination.RIGHT
+                            if right
+                            else WindowCombination.CLOSED
+                        )
+                    )
+                ),
+            }
+        )
+
+        if identifier == "linear_actuator_left":
+            left = bool(status)
+        elif identifier == "linear_actuator_right":
+            right = bool(status)
+
+        last_timestamp = timestamp
+
+    intervals.append(
+        {
+            "from": last_timestamp,
+            "to": req_properties.end_time.isoformat(),
+            "state": (
+                WindowCombination.BOTH
+                if left and right
+                else (
+                    WindowCombination.LEFT
+                    if left
+                    else WindowCombination.RIGHT if right else WindowCombination.CLOSED
+                )
+            ),
+        }
+    )
+
+    return intervals
 
 
 async def get_window_configurations(window_entity_table: str, window_identifier: str):
