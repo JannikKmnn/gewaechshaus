@@ -97,3 +97,17 @@ export function isoWayOff(
 
   return new Date(baseMs + value * multipliers[unit]).toISOString();
 }
+
+export function formatDuration(
+  duration_seconds
+) {
+  const hours = Math.floor(duration_seconds / 3600); 
+  const minutes = Math.floor((duration_seconds % 3600 ) / 60);
+  const seconds = Math.floor(duration_seconds % 60);
+
+  return {
+    hours,
+    minutes,
+    seconds,
+  };
+}
