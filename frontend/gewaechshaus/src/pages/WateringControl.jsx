@@ -41,8 +41,6 @@ export default function WateringControl() {
       duration_seconds,
     }));
 
-    console.log(aggregated);
-
     setWateringDays(aggregated);
   }
 

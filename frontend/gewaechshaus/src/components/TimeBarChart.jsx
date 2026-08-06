@@ -1,4 +1,5 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { formatDuration } from "../utils/time";
 
 export default function TimeBarChart({
   data,
@@ -45,7 +46,7 @@ export default function TimeBarChart({
                             fontSize: 10,
                         }}
                     />
-                    <Tooltip formatter={(value) => [`${value} s`, "Watering Duration"]} />
+                    <Tooltip formatter={(value) => [`${formatDuration(value).minutes} min, ${formatDuration(value).seconds} s`, "Watering Duration"]} />
                     <Bar dataKey={dataKeybar} fill="#8884d8" activeBar={{ fill: 'pink', stroke: 'blue' }} radius={[10, 10, 0, 0]} />
                 </BarChart>
             </ResponsiveContainer>
