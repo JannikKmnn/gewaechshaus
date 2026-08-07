@@ -4,9 +4,7 @@ export default function CustomTooltip({ active, payload, label, unit }) {
   }
 
   // sort descending by value
-  const sorted = [...payload].sort(
-    (a, b) => b.value - a.value
-  );
+  const sorted = [...payload].sort((a, b) => b.value - a.value);
 
   return (
     <div

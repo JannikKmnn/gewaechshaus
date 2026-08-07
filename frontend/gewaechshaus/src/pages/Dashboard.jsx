@@ -35,19 +35,19 @@ export default function Dashboard() {
 
   async function moveTimeWindow(direction) {
     if (direction == "back") {
-      setEndTimeSeries(prev => isoAgo(timeSeriesDiff, prev));
+      setEndTimeSeries((prev) => isoAgo(timeSeriesDiff, prev));
     } else if (direction == "front") {
-      setEndTimeSeries(prev => {
+      setEndTimeSeries((prev) => {
         const now = new Date().toISOString();
         const next = isoWayOff(timeSeriesDiff, prev);
 
         if (new Date(next) > new Date(now)) {
-          return prev
+          return prev;
         }
         return next;
-    });
-    };
-  };
+      });
+    }
+  }
 
   useEffect(() => {
     const startTimeSeries = isoAgo(timeSeriesDiff, endTimeSeries);
@@ -74,16 +74,21 @@ export default function Dashboard() {
           start_time: startTimeSingle,
           end_time: endTimeSingle,
         }),
-      ])
+      ]);
 
       // Temperature Measurements
       if (Array.isArray(results[0]) && results[0].length > 0) {
+        const temperatureMeasurements = results[0];
 
-        const temperatureMeasurements = results[0]
-
-        const outside_temps = temperatureMeasurements.filter((measurement) => measurement.field === "temperature_outside")
-        const inside_temps = temperatureMeasurements.filter((measurement) => measurement.field === "temperature_inside")
-        const up_temps = temperatureMeasurements.filter((measurement) => measurement.field === "temperature_up")
+        const outside_temps = temperatureMeasurements.filter(
+          (measurement) => measurement.field === "temperature_outside",
+        );
+        const inside_temps = temperatureMeasurements.filter(
+          (measurement) => measurement.field === "temperature_inside",
+        );
+        const up_temps = temperatureMeasurements.filter(
+          (measurement) => measurement.field === "temperature_up",
+        );
 
         const latest_outside = outside_temps[outside_temps.length - 1];
         setOutsideTemp(roundToTwo(latest_outside.value));
@@ -93,7 +98,6 @@ export default function Dashboard() {
 
         const latest_up = up_temps[up_temps.length - 1];
         setUpTemp(roundToTwo(latest_up.value));
-
       } else {
         setOutsideTemp(null);
         setInsideTemp(null);
@@ -102,38 +106,36 @@ export default function Dashboard() {
 
       // Humidity Measurements
       if (Array.isArray(results[1]) && results[1].length > 0) {
-
         const latest_humidity = results[1][results[1].length - 1];
         setUpHumidity(roundToTwo(latest_humidity.value));
-
       } else {
         setUpHumidity(null);
       }
 
       // Air Pressure Measurements
       if (Array.isArray(results[2]) && results[2].length > 0) {
-
         const latest_air_pressure = results[2][results[2].length - 1];
         setAirPressure(Math.round(latest_air_pressure.value));
-
       } else {
         setAirPressure(null);
       }
 
       // Soil Moisture Measurements
       if (Array.isArray(results[3]) && results[3].length > 0) {
+        const soilMoistureMeasurements = results[3];
 
-        const soilMoistureMeasurements = results[3]
+        const back_sm = soilMoistureMeasurements.filter(
+          (measurement) => measurement.field === "soil_moisture_back",
+        );
+        const front_sm = soilMoistureMeasurements.filter(
+          (measurement) => measurement.field === "soil_moisture_front",
+        );
 
-        const back_sm = soilMoistureMeasurements.filter((measurement) => measurement.field === "soil_moisture_back")
-        const front_sm = soilMoistureMeasurements.filter((measurement) => measurement.field === "soil_moisture_front")
+        const latest_back = back_sm[back_sm.length - 1];
+        setSoilMoistureBack(latest_back.value);
 
-        const latest_back = back_sm[back_sm.length - 1]
-        setSoilMoistureBack(latest_back.value)
-
-        const latest_front = front_sm[front_sm.length - 1]
-        setSoilMoistureFront(latest_front.value)
-
+        const latest_front = front_sm[front_sm.length - 1];
+        setSoilMoistureFront(latest_front.value);
       } else {
         setSoilMoistureBack(null);
         setSoilMoistureFront(null);
@@ -161,7 +163,7 @@ export default function Dashboard() {
           start_time: startTimeSeries,
           end_time: endTimeSeries,
         }),
-      ])
+      ]);
 
       // Temperature Measurements
       if (Array.isArray(results[0]) && results[0].length > 0) {
@@ -190,7 +192,6 @@ export default function Dashboard() {
       } else {
         setWindowOpeningIntervals([]);
       }
-
     }
 
     fetchMeasurementsSingle();
@@ -206,25 +207,27 @@ export default function Dashboard() {
           display: "grid",
           gridTemplateColumns: "36% 2% 40% 2% 20%",
           gap: "10px",
-          marginBottom: "15px"
+          marginBottom: "15px",
         }}
       >
-
         <div></div>
 
-        <button style={{
-          backgroundColor: "rgba(146, 204, 159, 0.92)",
-          fontSize: "18px",
-          color: "white",
-          boxShadow: "0 4px 20px #3a3f3c",
-          borderRadius: "5px",
-          alignItems: "center"
-        }}
-        onClick={() => moveTimeWindow("back")}>
+        <button
+          style={{
+            backgroundColor: "rgba(146, 204, 159, 0.92)",
+            fontSize: "18px",
+            color: "white",
+            boxShadow: "0 4px 20px #3a3f3c",
+            borderRadius: "5px",
+            alignItems: "center",
+          }}
+          onClick={() => moveTimeWindow("back")}
+        >
           {"<"}
         </button>
 
-        <div style={{
+        <div
+          style={{
             display: "grid",
             gridTemplateColumns: "48% 4% 48%",
             backgroundColor: "rgba(146, 204, 159, 0.92)",
@@ -234,39 +237,46 @@ export default function Dashboard() {
             color: "white",
             boxShadow: "0 4px 20px #3a3f3c",
             borderRadius: "5px",
-            alignItems: "center"
+            alignItems: "center",
           }}
         >
-          <div style={{ textAlign: "center" }}>{formatDateTime(displayStartTimeSeries)}</div>
+          <div style={{ textAlign: "center" }}>
+            {formatDateTime(displayStartTimeSeries)}
+          </div>
           <div>-</div>
-          <div style={{ textAlign: "center" }}>{formatDateTime(endTimeSeries)}</div>
+          <div style={{ textAlign: "center" }}>
+            {formatDateTime(endTimeSeries)}
+          </div>
         </div>
 
-        <button style={{
-          backgroundColor: "rgba(146, 204, 159, 0.92)",
-          fontSize: "18px",
-          color: "white",
-          boxShadow: "0 4px 20px #3a3f3c",
-          borderRadius: "5px",
-          alignItems: "center"
-        }}
-        onClick={() => moveTimeWindow("front")}>
+        <button
+          style={{
+            backgroundColor: "rgba(146, 204, 159, 0.92)",
+            fontSize: "18px",
+            color: "white",
+            boxShadow: "0 4px 20px #3a3f3c",
+            borderRadius: "5px",
+            alignItems: "center",
+          }}
+          onClick={() => moveTimeWindow("front")}
+        >
           {">"}
         </button>
 
         <label>
-          <select name="timeRange"
-          style={{
-            backgroundColor: "rgba(146, 204, 159, 0.92)",
-            width: "80%",
-            height: "30px",
-            fontSize: "20px",
-            color: "white",
-            boxShadow: "0 4px 20px #3a3f3c",
-            borderRadius: "5px"
-          }}
-          value={timeSeriesDiff}
-          onChange={e => setTimeSeriesDiff(e.target.value)}
+          <select
+            name="timeRange"
+            style={{
+              backgroundColor: "rgba(146, 204, 159, 0.92)",
+              width: "80%",
+              height: "30px",
+              fontSize: "20px",
+              color: "white",
+              boxShadow: "0 4px 20px #3a3f3c",
+              borderRadius: "5px",
+            }}
+            value={timeSeriesDiff}
+            onChange={(e) => setTimeSeriesDiff(e.target.value)}
           >
             <option value="5m">5 minutes</option>
             <option value="30m">30 minutes</option>
@@ -282,7 +292,6 @@ export default function Dashboard() {
             <option value="60d">60 days</option>
           </select>
         </label>
-
       </div>
 
       <div
@@ -290,13 +299,12 @@ export default function Dashboard() {
           display: "grid",
           gridTemplateColumns: "220px 1fr 220px",
           gap: "20px",
-          marginBottom: "10px"
+          marginBottom: "10px",
         }}
       >
-
         <div
           style={{
-            width: "80px"
+            width: "80px",
           }}
         >
           <SingleValueWidget
@@ -309,7 +317,7 @@ export default function Dashboard() {
 
         <div
           style={{
-            width: "100%"
+            width: "100%",
           }}
         >
           <MultipleTimeseriesChart
@@ -324,10 +332,10 @@ export default function Dashboard() {
             color="rgba(85, 88, 193, 0.92)"
           />
         </div>
-        
+
         <div
           style={{
-            justifySelf: "end"
+            justifySelf: "end",
           }}
         >
           <SingleValueWidget
@@ -344,13 +352,12 @@ export default function Dashboard() {
           display: "grid",
           gridTemplateColumns: "220px 1fr 220px",
           gap: "20px",
-          marginBottom: "10px"
+          marginBottom: "10px",
         }}
       >
-
         <div
           style={{
-            width: "80px"
+            width: "80px",
           }}
         >
           <SingleValueWidget
@@ -363,7 +370,7 @@ export default function Dashboard() {
 
         <div
           style={{
-            width: "100%"
+            width: "100%",
           }}
         >
           <TimeseriesChart
@@ -394,10 +401,9 @@ export default function Dashboard() {
           display: "grid",
           gridTemplateColumns: "220px 1fr 220px",
           gap: "20px",
-          marginBottom: "10px"
+          marginBottom: "10px",
         }}
       >
-
         <div
           style={{
             width: "80px",
@@ -430,37 +436,40 @@ export default function Dashboard() {
             display: "grid",
             gridTemplateColumns: "1fr / 1fr",
             gap: "10px",
-            marginBottom: "10px"
+            marginBottom: "10px",
           }}
         >
-            <div style={{
+          <div
+            style={{
               width: "100%",
-              height: "50%"
-            }}>
-              <BinaryWidget
-                label="Soil Moisture Back (Current)"
-                value={soilMoistureBack}
-                binary_value={soilMoistureBack == "wet" ? 1 : 0}
-                height="70px"
-                fontsize="15px"
-                fontsizelabel="12px"
-              />
-            </div>
+              height: "50%",
+            }}
+          >
+            <BinaryWidget
+              label="Soil Moisture Back (Current)"
+              value={soilMoistureBack}
+              binary_value={soilMoistureBack == "wet" ? 1 : 0}
+              height="70px"
+              fontsize="15px"
+              fontsizelabel="12px"
+            />
+          </div>
 
-            <div style={{
+          <div
+            style={{
               width: "100%",
-              height: "50%"
-            }}>
-
-              <BinaryWidget
-                label="Soil Moisture Front (Current)"
-                value={soilMoistureFront}
-                binary_value={soilMoistureFront == "wet" ? 1 : 0}
-                height="70px"
-                fontsize="15px"
-                fontsizelabel="12px"
-              />
-            </div>
+              height: "50%",
+            }}
+          >
+            <BinaryWidget
+              label="Soil Moisture Front (Current)"
+              value={soilMoistureFront}
+              binary_value={soilMoistureFront == "wet" ? 1 : 0}
+              height="70px"
+              fontsize="15px"
+              fontsizelabel="12px"
+            />
+          </div>
         </div>
       </div>
     </div>

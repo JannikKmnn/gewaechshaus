@@ -6,7 +6,8 @@ import { formatDateTime, formatDuration, isoAgo } from "../utils/time";
 
 export default function WateringControl() {
   const [lastWateringDatetime, setlastWateringDatetime] = useState(null);
-  const [lastWateringDurationSeconds, setlastWateringDurationSeconds] = useState(null);
+  const [lastWateringDurationSeconds, setlastWateringDurationSeconds] =
+    useState(null);
 
   const [wateringDays, setWateringDays] = useState([]);
 
@@ -20,13 +21,12 @@ export default function WateringControl() {
 
     setlastWateringDatetime(result.last_watering);
     setlastWateringDurationSeconds(result.last_watering_duration);
-
   }
 
   async function getWateringDates() {
     const wateringEvents = await getWateringEvents({
       start_datetime: startDateTime,
-      end_datetime: endDateTime
+      end_datetime: endDateTime,
     });
 
     const aggregated = Object.entries(
@@ -35,7 +35,7 @@ export default function WateringControl() {
 
         acc[day] = (acc[day] || 0) + value;
         return acc;
-      }, {})
+      }, {}),
     ).map(([date, duration_seconds]) => ({
       date,
       duration_seconds,
@@ -50,46 +50,50 @@ export default function WateringControl() {
   }, []);
 
   return (
-      <div>
-        <h1 style={{ marginBottom: "20px" }}>Control Center Watering</h1>
+    <div>
+      <h1 style={{ marginBottom: "20px" }}>Control Center Watering</h1>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr / 1fr",
-              gap: "20px",
-              marginBottom: "10px"
-            }}
-          >
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr / 1fr",
+          gap: "20px",
+          marginBottom: "10px",
+        }}
+      >
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "20px",
+            marginBottom: "10px",
+          }}
+        >
+          <DoubleValueWidget
+            label={"Last Watering"}
+            value1={formatDateTime(lastWateringDatetime)}
+            value2={
+              lastWateringDuration.minutes +
+              " Minutes, " +
+              lastWateringDuration.seconds +
+              " Seconds"
+            }
+            unit1={""}
+            unit2={""}
+            color="rgba(10, 138, 212, 0.95)"
+          />
+        </div>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "20px",
-                marginBottom: "10px"
-              }}
-            >
-              <DoubleValueWidget
-                label={"Last Watering"}
-                value1={formatDateTime(lastWateringDatetime)}
-                value2={lastWateringDuration.minutes + " Minutes, " + lastWateringDuration.seconds + " Seconds"}
-                unit1={""}
-                unit2={""}
-                color="rgba(10, 138, 212, 0.95)"
-              />
-            </div>
-
-            <div>
-              <TimeBarChart
-                data={wateringDays}
-                dataKeyxAxis={"date"}
-                dataKeybar={"duration_seconds"}
-                unit={"s"}
-                yAxisLabel={"Duration"}
-              />
-            </div>
-          </div>
+        <div>
+          <TimeBarChart
+            data={wateringDays}
+            dataKeyxAxis={"date"}
+            dataKeybar={"duration_seconds"}
+            unit={"s"}
+            yAxisLabel={"Duration"}
+          />
+        </div>
       </div>
-    )
+    </div>
+  );
 }

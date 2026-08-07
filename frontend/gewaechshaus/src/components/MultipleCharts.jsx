@@ -5,7 +5,7 @@ import {
   YAxis,
   Tooltip,
   ReferenceArea,
-  ResponsiveContainer
+  ResponsiveContainer,
 } from "recharts";
 import CustomTooltip from "./ChartTooltip";
 import { temperatureToColor } from "../utils/color";
@@ -25,22 +25,19 @@ export default function MultipleTimeseriesChart({
   yAxisMax,
   yAxisMin,
 }) {
-
-  const wideData = reshapeTimeseries(data, exclude).map(d => ({
+  const wideData = reshapeTimeseries(data, exclude).map((d) => ({
     ...d,
     timestamp: new Date(d.timestamp).getTime(),
   }));
 
-  const chartIntervals = intervals.map(i => ({
+  const chartIntervals = intervals.map((i) => ({
     ...i,
     from: new Date(i.from).getTime(),
     to: new Date(i.to).getTime(),
   }));
 
-  const seriesKeys = Array.from(
-    new Set(data.map(d => d.field))
-  );
-  const filteredKeys = seriesKeys.filter(val => val !== exclude);
+  const seriesKeys = Array.from(new Set(data.map((d) => d.field)));
+  const filteredKeys = seriesKeys.filter((val) => val !== exclude);
 
   function stateColor(state) {
     switch (state) {
@@ -63,7 +60,7 @@ export default function MultipleTimeseriesChart({
         padding: "20px",
         width: "100%",
         height: "100%",
-        boxShadow: "0 4px 20px #3a3f3c"
+        boxShadow: "0 4px 20px #3a3f3c",
       }}
     >
       <ResponsiveContainer width="100%" height={110}>
@@ -87,40 +84,34 @@ export default function MultipleTimeseriesChart({
               new Date(startTime).getTime(),
               new Date(endTime).getTime(),
             ]}
-            tickFormatter={(value) =>
-              formatTime(new Date(value).toISOString())
-            }
+            tickFormatter={(value) => formatTime(new Date(value).toISOString())}
           />
           <YAxis
-              label={{ 
-                value: yAxisLabel, 
-                fontSize: 12, 
-                angle: -90, 
-                position: "Left",
-                offset: 32,
-                dx: -20
-              }}
-              unit={unit}
-              tick={{
-                fontSize: 10,
-              }}
-              domain={[yAxisMin, yAxisMax]}
+            label={{
+              value: yAxisLabel,
+              fontSize: 12,
+              angle: -90,
+              position: "Left",
+              offset: 32,
+              dx: -20,
+            }}
+            unit={unit}
+            tick={{
+              fontSize: 10,
+            }}
+            domain={[yAxisMin, yAxisMax]}
           />
-          <Tooltip
-            content={<CustomTooltip unit={unit} />}
-          />
-          {
-            filteredKeys.map((key) => (
-              <Line 
-                key={key}
-                type="monotone" 
-                dataKey={key}
-                stroke={color} 
-                dot={false}
-                strokeWidth={2}
-              />
-            ))
-          }
+          <Tooltip content={<CustomTooltip unit={unit} />} />
+          {filteredKeys.map((key) => (
+            <Line
+              key={key}
+              type="monotone"
+              dataKey={key}
+              stroke={color}
+              dot={false}
+              strokeWidth={2}
+            />
+          ))}
         </LineChart>
       </ResponsiveContainer>
     </div>

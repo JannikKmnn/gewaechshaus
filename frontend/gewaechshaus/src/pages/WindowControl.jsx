@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import BinaryWidget from "../components/BinaryWidget";
 import DoubleValueWidget from "../components/DoubleValueWidget";
-import { getWindowConfigs, getWindowStatus, callWindowActuators } from "../api/windows";
+import {
+  getWindowConfigs,
+  getWindowStatus,
+  callWindowActuators,
+} from "../api/windows";
 import { formatDateTime, windowOpenTime } from "../utils/time";
 
 export default function WindowControl() {
@@ -15,12 +19,13 @@ export default function WindowControl() {
   const [windowClosingRight, setWindowClosingRight] = useState(null);
 
   const [windowTempThresholdLeft, setWindowTempThresholdLeft] = useState(null);
-  const [windowTempThresholdRight, setWindowTempThresholdRight] = useState(null);
+  const [windowTempThresholdRight, setWindowTempThresholdRight] =
+    useState(null);
 
   const [loadingLeft, setLoadingLeft] = useState(false);
   const [loadingRight, setLoadingRight] = useState(false);
 
-  async function actOnWindows(movement, position=null) {
+  async function actOnWindows(movement, position = null) {
     if (position === "left") setLoadingLeft(true);
     if (position === "right") setLoadingRight(true);
 
@@ -38,7 +43,7 @@ export default function WindowControl() {
 
     setLoadingLeft(false);
     setLoadingRight(false);
-  };
+  }
 
   async function getWindowsStatus() {
     const results = await Promise.all([
@@ -48,7 +53,7 @@ export default function WindowControl() {
       getWindowStatus({
         window_position: "right",
       }),
-    ])
+    ]);
 
     if (results.length === 2) {
       setWindowStatusLeft(results[0].status);
@@ -58,7 +63,6 @@ export default function WindowControl() {
       setWindowClosingLeft(results[0].last_closing);
       setWindowClosingRight(results[1].last_closing);
     }
-    
   }
 
   async function getWindowsConfig() {
@@ -69,13 +73,16 @@ export default function WindowControl() {
       getWindowConfigs({
         window_position: "right",
       }),
-    ])
+    ]);
 
     if (results.length === 2) {
-      setWindowTempThresholdLeft(results[0].inside_temperature_opening_threshold);
-      setWindowTempThresholdRight(results[1].inside_temperature_opening_threshold);
+      setWindowTempThresholdLeft(
+        results[0].inside_temperature_opening_threshold,
+      );
+      setWindowTempThresholdRight(
+        results[1].inside_temperature_opening_threshold,
+      );
     }
-    
   }
 
   useEffect(() => {
@@ -92,15 +99,14 @@ export default function WindowControl() {
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
           gap: "20px",
-          marginBottom: "10px"
+          marginBottom: "10px",
         }}
       >
-
         <BinaryWidget
           label="Window Left"
           value={windowStatusLeft}
           binary_value={windowStatusLeft == "closed" ? 1 : 0}
-          color_false = "#3737d3"
+          color_false="#3737d3"
           height="70px"
           fontsize="15px"
           fontsizelabel="12px"
@@ -110,12 +116,11 @@ export default function WindowControl() {
           label="Window Right"
           value={windowStatusRight}
           binary_value={windowStatusRight == "closed" ? 1 : 0}
-          color_false = "#3737d3"
+          color_false="#3737d3"
           height="70px"
           fontsize="15px"
           fontsizelabel="12px"
         />
-
       </div>
 
       <div
@@ -123,21 +128,46 @@ export default function WindowControl() {
           display: "grid",
           gridTemplateColumns: "1fr 1fr 1fr 1fr",
           gap: "20px",
-          marginBottom: "10px"
+          marginBottom: "10px",
         }}
       >
-
         <DoubleValueWidget
           label={windowStatusLeft == "closed" ? "Last open time" : "Open for"}
-          value1={windowOpenTime(windowOpeningLeft, windowClosingLeft)[Object.keys(windowOpenTime(windowOpeningLeft, windowClosingLeft))[0]]}
-          value2={windowOpenTime(windowOpeningLeft, windowClosingLeft)[Object.keys(windowOpenTime(windowOpeningLeft, windowClosingLeft))[1]]}
-          unit1={Object.keys(windowOpenTime(windowOpeningLeft, windowClosingLeft))[0] == "diffDays" ? "Days" 
-            : Object.keys(windowOpenTime(windowOpeningLeft, windowClosingLeft))[0] == "diffHours" ? "Hours"
-            : "Minutes"
+          value1={
+            windowOpenTime(windowOpeningLeft, windowClosingLeft)[
+              Object.keys(
+                windowOpenTime(windowOpeningLeft, windowClosingLeft),
+              )[0]
+            ]
           }
-          unit2={Object.keys(windowOpenTime(windowOpeningLeft, windowClosingLeft))[1] == "diffHours" ? "Hours" 
-            : Object.keys(windowOpenTime(windowOpeningLeft, windowClosingLeft))[1] == "diffMinutes" ? "Minutes"
-            : "Seconds"
+          value2={
+            windowOpenTime(windowOpeningLeft, windowClosingLeft)[
+              Object.keys(
+                windowOpenTime(windowOpeningLeft, windowClosingLeft),
+              )[1]
+            ]
+          }
+          unit1={
+            Object.keys(
+              windowOpenTime(windowOpeningLeft, windowClosingLeft),
+            )[0] == "diffDays"
+              ? "Days"
+              : Object.keys(
+                    windowOpenTime(windowOpeningLeft, windowClosingLeft),
+                  )[0] == "diffHours"
+                ? "Hours"
+                : "Minutes"
+          }
+          unit2={
+            Object.keys(
+              windowOpenTime(windowOpeningLeft, windowClosingLeft),
+            )[1] == "diffHours"
+              ? "Hours"
+              : Object.keys(
+                    windowOpenTime(windowOpeningLeft, windowClosingLeft),
+                  )[1] == "diffMinutes"
+                ? "Minutes"
+                : "Seconds"
           }
           color="rgba(212, 44, 10, 0.95)"
         />
@@ -147,48 +177,86 @@ export default function WindowControl() {
             display: "grid",
             gridTemplateColumns: "1fr / 1fr / 1fr",
             gap: "20px",
-            marginBottom: "10px"
+            marginBottom: "10px",
           }}
         >
-
           <div>
             <div>Last Opening: {formatDateTime(windowOpeningLeft)}</div>
             <div>Last Closing: {formatDateTime(windowClosingLeft)}</div>
           </div>
 
           <div>
-            <div>Opens when temperature inside exceeds <p><font color={"yellow"}>{windowTempThresholdLeft}°C</font></p> for 15 minutes.</div>
+            <div>
+              Opens when temperature inside exceeds{" "}
+              <p>
+                <font color={"yellow"}>{windowTempThresholdLeft}°C</font>
+              </p>{" "}
+              for 15 minutes.
+            </div>
           </div>
 
-          <button style={{
-            backgroundColor: "rgba(146, 204, 159, 0.92)",
-            fontSize: "18px",
-            color: "white",
-            boxShadow: "0 4px 20px #3a3f3c",
-            borderRadius: "5px",
-            alignItems: "center",
-            opacity: loadingLeft ? 0.6 : 1,
-          }}
-          onClick={() => {windowStatusLeft == "closed" ? actOnWindows("open", "left")
-            : actOnWindows("close", "left")
-          }}
-          disabled={loadingLeft}>
-            {loadingLeft ? "Moving..." : windowStatusLeft == "closed" ? "Open Window" : "Close Window"}
+          <button
+            style={{
+              backgroundColor: "rgba(146, 204, 159, 0.92)",
+              fontSize: "18px",
+              color: "white",
+              boxShadow: "0 4px 20px #3a3f3c",
+              borderRadius: "5px",
+              alignItems: "center",
+              opacity: loadingLeft ? 0.6 : 1,
+            }}
+            onClick={() => {
+              windowStatusLeft == "closed"
+                ? actOnWindows("open", "left")
+                : actOnWindows("close", "left");
+            }}
+            disabled={loadingLeft}
+          >
+            {loadingLeft
+              ? "Moving..."
+              : windowStatusLeft == "closed"
+                ? "Open Window"
+                : "Close Window"}
           </button>
-
         </div>
 
         <DoubleValueWidget
           label={windowStatusRight == "closed" ? "Last open time" : "Open for"}
-          value1={windowOpenTime(windowOpeningRight, windowClosingRight)[Object.keys(windowOpenTime(windowOpeningRight, windowClosingRight))[0]]}
-          value2={windowOpenTime(windowOpeningRight, windowClosingRight)[Object.keys(windowOpenTime(windowOpeningRight, windowClosingRight))[1]]}
-          unit1={Object.keys(windowOpenTime(windowOpeningRight, windowClosingRight))[0] == "diffDays" ? "Days" 
-            : Object.keys(windowOpenTime(windowOpeningRight, windowClosingRight))[0] == "diffHours" ? "Hours"
-            : "Minutes"
+          value1={
+            windowOpenTime(windowOpeningRight, windowClosingRight)[
+              Object.keys(
+                windowOpenTime(windowOpeningRight, windowClosingRight),
+              )[0]
+            ]
           }
-          unit2={Object.keys(windowOpenTime(windowOpeningRight, windowClosingRight))[1] == "diffHours" ? "Hours" 
-            : Object.keys(windowOpenTime(windowOpeningRight, windowClosingRight))[1] == "diffMinutes" ? "Minutes"
-            : "Seconds"
+          value2={
+            windowOpenTime(windowOpeningRight, windowClosingRight)[
+              Object.keys(
+                windowOpenTime(windowOpeningRight, windowClosingRight),
+              )[1]
+            ]
+          }
+          unit1={
+            Object.keys(
+              windowOpenTime(windowOpeningRight, windowClosingRight),
+            )[0] == "diffDays"
+              ? "Days"
+              : Object.keys(
+                    windowOpenTime(windowOpeningRight, windowClosingRight),
+                  )[0] == "diffHours"
+                ? "Hours"
+                : "Minutes"
+          }
+          unit2={
+            Object.keys(
+              windowOpenTime(windowOpeningRight, windowClosingRight),
+            )[1] == "diffHours"
+              ? "Hours"
+              : Object.keys(
+                    windowOpenTime(windowOpeningRight, windowClosingRight),
+                  )[1] == "diffMinutes"
+                ? "Minutes"
+                : "Seconds"
           }
           color="rgba(212, 44, 10, 0.95)"
         />
@@ -198,70 +266,87 @@ export default function WindowControl() {
             display: "grid",
             gridTemplateColumns: "1fr / 1fr",
             gap: "20px",
-            marginBottom: "10px"
+            marginBottom: "10px",
           }}
         >
-
           <div>
             <div>Last Opening: {formatDateTime(windowOpeningRight)}</div>
             <div>Last Closing: {formatDateTime(windowClosingRight)}</div>
           </div>
 
           <div>
-            <div>Opens when temperature inside exceeds <p><font color={"yellow"}>{windowTempThresholdRight}°C</font></p> for 15 minutes.</div>
+            <div>
+              Opens when temperature inside exceeds{" "}
+              <p>
+                <font color={"yellow"}>{windowTempThresholdRight}°C</font>
+              </p>{" "}
+              for 15 minutes.
+            </div>
           </div>
 
-          <button style={{
+          <button
+            style={{
+              backgroundColor: "rgba(146, 204, 159, 0.92)",
+              fontSize: "18px",
+              color: "white",
+              boxShadow: "0 4px 20px #3a3f3c",
+              borderRadius: "5px",
+              alignItems: "center",
+              opacity: loadingRight ? 0.6 : 1,
+            }}
+            onClick={() => {
+              windowStatusRight == "closed"
+                ? actOnWindows("open", "right")
+                : actOnWindows("close", "right");
+            }}
+            disabled={loadingRight}
+          >
+            {loadingRight
+              ? "Moving..."
+              : windowStatusRight === "closed"
+                ? "Open Window"
+                : "Close Window"}
+          </button>
+        </div>
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <button
+          style={{
             backgroundColor: "rgba(146, 204, 159, 0.92)",
             fontSize: "18px",
             color: "white",
             boxShadow: "0 4px 20px #3a3f3c",
             borderRadius: "5px",
             alignItems: "center",
-            opacity: loadingRight ? 0.6 : 1,
+            minWidth: "220px",
+            minHeight: "90px",
+            opacity: loadingRight && loadingLeft ? 0.6 : 1,
           }}
-          onClick={() => {windowStatusRight == "closed" ? actOnWindows("open", "right")
-            : actOnWindows("close", "right")
+          onClick={() => {
+            windowStatusRight == "closed" && windowStatusLeft == "closed"
+              ? actOnWindows("open")
+              : windowStatusRight == "open" && windowStatusLeft == "open"
+                ? actOnWindows("close")
+                : null;
           }}
-          disabled={loadingRight}>
-            {loadingRight ? "Moving..." : windowStatusRight === "closed" ? "Open Window" : "Close Window"}
-          </button>
-
-        </div>
-
-      </div>
-
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
+          disabled={loadingRight || loadingLeft}
         >
-
-        <button style={{
-          backgroundColor: "rgba(146, 204, 159, 0.92)",
-          fontSize: "18px",
-          color: "white",
-          boxShadow: "0 4px 20px #3a3f3c",
-          borderRadius: "5px",
-          alignItems: "center",
-          minWidth: "220px",
-          minHeight: "90px",
-          opacity: loadingRight && loadingLeft ? 0.6 : 1,
-        }}
-        onClick={() => {windowStatusRight == "closed" && windowStatusLeft == "closed" ? actOnWindows("open")
-          : windowStatusRight == "open" && windowStatusLeft == "open" ? actOnWindows("close")
-          : null
-        }}
-        disabled={loadingRight || loadingLeft}>
-          {loadingRight && loadingLeft ? "Moving..." 
-          : windowStatusRight === "closed" && windowStatusLeft == "closed" ? "Open Both Windows" 
-          : windowStatusRight === "open" && windowStatusLeft == "open" ? "Close Both Windows"
-          : "Both windows not in the same state"
-          }
+          {loadingRight && loadingLeft
+            ? "Moving..."
+            : windowStatusRight === "closed" && windowStatusLeft == "closed"
+              ? "Open Both Windows"
+              : windowStatusRight === "open" && windowStatusLeft == "open"
+                ? "Close Both Windows"
+                : "Both windows not in the same state"}
         </button>
       </div>
     </div>
-  )
+  );
 }

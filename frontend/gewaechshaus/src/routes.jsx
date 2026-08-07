@@ -5,13 +5,15 @@ import WindowControl from "./pages/WindowControl";
 
 export default function AppRoutes() {
   return (
-    <div style={{
-      width: "100%",
-      height: "100%",
-      padding: "10px",
-      paddingLeft: "80px",
-      boxSizing: "border-box"
-    }}>
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        padding: "10px",
+        paddingLeft: "80px",
+        boxSizing: "border-box",
+      }}
+    >
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/control/windows" element={<WindowControl />} />

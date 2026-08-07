@@ -1,51 +1,43 @@
 import api from "./client";
 
-export async function getWindowStatus({
-    window_position,
-}) {
-    const route = `window/status/${window_position}`;
-    const result = await api.get(route);
+export async function getWindowStatus({ window_position }) {
+  const route = `window/status/${window_position}`;
+  const result = await api.get(route);
 
-    return result?.data ?? null;
+  return result?.data ?? null;
 }
 
-export async function getWindowConfigs({
-    window_position,
-}) {
-    const route = `window/config/${window_position}`;
-    const result = await api.get(route);
+export async function getWindowConfigs({ window_position }) {
+  const route = `window/config/${window_position}`;
+  const result = await api.get(route);
 
-    return result?.data ?? null;
+  return result?.data ?? null;
 }
 
 export async function callWindowActuators({
-    operation,
-    window_position = null,
+  operation,
+  window_position = null,
 }) {
-    let route = `/window/${operation}`
+  let route = `/window/${operation}`;
 
-    if (window_position !== null) {
-        route = `/window/${operation}/${window_position}`
-    }
+  if (window_position !== null) {
+    route = `/window/${operation}/${window_position}`;
+  }
 
-    const result = await api.post(route);
+  const result = await api.post(route);
 
-    return result?.data ?? null;
+  return result?.data ?? null;
 }
 
-
-export async function getWindowIntervals({
+export async function getWindowIntervals({ start_time, end_time }) {
+  const data = {
     start_time,
     end_time,
-}) {
-    const data = {
-        start_time,
-        end_time
-    }
+  };
 
-    let route = `window/intervals`;
+  let route = `window/intervals`;
 
-    const result = await api.post(route, data);
-    
-    return result?.data ?? null;
+  const result = await api.post(route, data);
+
+  return result?.data ?? null;
 }

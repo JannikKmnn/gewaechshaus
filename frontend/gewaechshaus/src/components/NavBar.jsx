@@ -19,7 +19,7 @@ export default function NavBar() {
     textDecoration: "none",
     background: location.pathname === path ? "#32cd32" : "transparent",
     transition: "background 0.2s",
-    cursor: "pointer"
+    cursor: "pointer",
   });
 
   const labelStyle = {
@@ -28,11 +28,11 @@ export default function NavBar() {
     transition: "opacity 0.2s",
     fontSize: "14px",
     fontWeight: 500,
-    letterSpacing: "0.02em"
+    letterSpacing: "0.02em",
   };
 
   const iconStyle = {
-    minWidth: "24px"
+    minWidth: "24px",
   };
 
   return (
@@ -51,7 +51,7 @@ export default function NavBar() {
         position: "fixed",
         left: 0,
         top: 0,
-        zIndex: 1000
+        zIndex: 1000,
       }}
     >
       <Link to="/" style={itemStyle("/")}>
