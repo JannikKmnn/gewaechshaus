@@ -32,3 +32,20 @@ export async function callWindowActuators({
 
     return result?.data ?? null;
 }
+
+
+export async function getWindowIntervals({
+    start_time,
+    end_time,
+}) {
+    const data = {
+        start_time,
+        end_time
+    }
+
+    let route = `window/intervals`;
+
+    const result = await api.post(route, data);
+    
+    return result?.data ?? null;
+}

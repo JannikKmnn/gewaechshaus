@@ -4,6 +4,7 @@ import MultipleTimeseriesChart from "../components/MultipleCharts";
 import TimeseriesChart from "../components/TimeseriesChart";
 import SingleValueWidget from "../components/SingleValueWidget";
 import { getData } from "../api/data";
+import { getWindowIntervals } from "../api/windows";
 import { temperatureToColor } from "../utils/color";
 import { formatDateTime, isoAgo, isoWayOff } from "../utils/time";
 
@@ -19,6 +20,8 @@ export default function Dashboard() {
   const [temperatureArray, setTemperatureArray] = useState([]);
   const [upHumidityArray, setUpHumidityArray] = useState([]);
   const [airPressureArray, setAirPressureArray] = useState([]);
+
+  const [windowOpeningIntervals, setWindowOpeningIntervals] = useState([]);
 
   const endTimeSingle = new Date().toISOString();
   const startTimeSingle = isoAgo("2m");
@@ -154,6 +157,10 @@ export default function Dashboard() {
           start_time: startTimeSeries,
           end_time: endTimeSeries,
         }),
+        getWindowIntervals({
+          start_time: startTimeSeries,
+          end_time: endTimeSeries,
+        }),
       ])
 
       // Temperature Measurements
@@ -176,6 +183,14 @@ export default function Dashboard() {
       } else {
         setAirPressureArray([]);
       }
+
+      // Window Opening Intervals
+      if (Array.isArray(results[3]) && results[3].length > 0) {
+        setWindowOpeningIntervals(results[3]);
+      } else {
+        setWindowOpeningIntervals([]);
+      }
+
     }
 
     fetchMeasurementsSingle();
@@ -299,6 +314,7 @@ export default function Dashboard() {
         >
           <MultipleTimeseriesChart
             data={temperatureArray}
+            intervals={windowOpeningIntervals}
             exclude="temperature_cpu"
             label="Temperature"
             unit="°C"
