@@ -26,7 +26,6 @@ export function formatDateTime(isoString) {
 }
 
 export function windowOpenTime(lastOpening, lastClosing) {
-
   const lastOpeningDate = new Date(lastOpening);
   let lastClosingDate = new Date(lastClosing);
 
@@ -37,35 +36,30 @@ export function windowOpenTime(lastOpening, lastClosing) {
 
   const timeDiff = Math.abs(lastClosingDate - lastOpeningDate);
 
-  const diffDays = Math.floor((timeDiff / (1000 * 60 * 60 * 24))); 
-  const diffHours = Math.floor((timeDiff / (1000 * 60 * 60) % 24)); 
+  const diffDays = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+  const diffHours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24);
   const diffMinutes = Math.floor((timeDiff / (1000 * 60)) % 60);
   const diffSeconds = Math.floor((timeDiff / 1000) % 60);
 
   if (diffDays > 0) {
     return {
-      "diffDays": diffDays,
-      "diffHours": diffHours,
-    }
-  }
-  else if (diffHours > 0) {
+      diffDays: diffDays,
+      diffHours: diffHours,
+    };
+  } else if (diffHours > 0) {
     return {
-      "diffHours": diffHours,
-      "diffMinutes": diffMinutes,
-    }
-  }
-  else {
+      diffHours: diffHours,
+      diffMinutes: diffMinutes,
+    };
+  } else {
     return {
-      "diffMinutes": diffMinutes,
-      "diffSeconds": diffSeconds,
-    }
+      diffMinutes: diffMinutes,
+      diffSeconds: diffSeconds,
+    };
   }
 }
 
-export function isoAgo(
-  str,
-  base = Date.now(),
-) {
+export function isoAgo(str, base = Date.now()) {
   const value = parseInt(str);
   const unit = str.replace(value, "");
 
@@ -80,10 +74,7 @@ export function isoAgo(
   return new Date(baseMs - value * multipliers[unit]).toISOString();
 }
 
-export function isoWayOff(
-  str,
-  base,
-) {
+export function isoWayOff(str, base) {
   const value = parseInt(str);
   const unit = str.replace(value, "");
 
@@ -98,11 +89,9 @@ export function isoWayOff(
   return new Date(baseMs + value * multipliers[unit]).toISOString();
 }
 
-export function formatDuration(
-  duration_seconds
-) {
-  const hours = Math.floor(duration_seconds / 3600); 
-  const minutes = Math.floor((duration_seconds % 3600 ) / 60);
+export function formatDuration(duration_seconds) {
+  const hours = Math.floor(duration_seconds / 3600);
+  const minutes = Math.floor((duration_seconds % 3600) / 60);
   const seconds = Math.floor(duration_seconds % 60);
 
   return {

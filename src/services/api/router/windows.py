@@ -6,6 +6,7 @@ from fastapi import APIRouter, Request, HTTPException
 from src.models.components.actuators import LinearActuator
 from src.services.api.models.windows import (
     WindowEventsRequestProperties,
+    WindowIntervalsRequestProperties,
     WindowConfigurationUpdateProperties,
 )
 
@@ -84,6 +85,17 @@ async def close_window(window_position: str, request: Request):
 async def get_window_events(req_properties: WindowEventsRequestProperties):
 
     results = await windows.get_window_events(
+        actuator_events_table=str(os.getenv("SQLITE_ACTUATOR_EVENTS_TABLE")),
+        req_properties=req_properties,
+    )
+
+    return results
+
+
+@router.post("/intervals", tags=["actuators"])
+async def get_window_intervals(req_properties: WindowIntervalsRequestProperties):
+
+    results = await windows.get_window_intervals(
         actuator_events_table=str(os.getenv("SQLITE_ACTUATOR_EVENTS_TABLE")),
         req_properties=req_properties,
     )

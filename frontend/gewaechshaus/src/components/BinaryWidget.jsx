@@ -6,17 +6,17 @@ export default function BinaryWidget({
   color_false = "#cc923a",
   height,
   fontsize,
-  fontsizelabel
+  fontsizelabel,
 }) {
   return (
     <div
       style={{
-        background: binary_value? color_true : color_false,
+        background: binary_value ? color_true : color_false,
         borderRadius: "12px",
         padding: "20px",
         minWidth: "220px",
         minHeight: height || "150px",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.25)"
+        boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
       }}
     >
       <div

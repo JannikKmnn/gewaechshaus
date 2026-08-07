@@ -1,24 +1,24 @@
 import api from "./client";
 
 export async function getData({
-    measurement,
-    start_time,
-    sensor_identifier = null,
-    end_time = null
+  measurement,
+  start_time,
+  sensor_identifier = null,
+  end_time = null,
 }) {
-    const data = {
-        start_time,
-        measurement,
-        end_time
-    }
+  const data = {
+    start_time,
+    measurement,
+    end_time,
+  };
 
-    let route = `/data`
+  let route = `/data`;
 
-    if (sensor_identifier !== null) {
-        route = `/data/${sensor_identifier}`
-    }
+  if (sensor_identifier !== null) {
+    route = `/data/${sensor_identifier}`;
+  }
 
-    const result = await api.post(route, data);
+  const result = await api.post(route, data);
 
-    return result?.data ?? null;
+  return result?.data ?? null;
 }

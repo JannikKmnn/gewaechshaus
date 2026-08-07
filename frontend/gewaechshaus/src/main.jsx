@@ -9,14 +9,14 @@ import "./index.css";
 function App() {
   return (
     <BrowserRouter>
-        <div
+      <div
         style={{
-            position: "relative",
-            width: "100vw",
-            height: "100vh",
-            overflow: "hidden"
+          position: "relative",
+          width: "100vw",
+          height: "100vh",
+          overflow: "hidden",
         }}
-        >
+      >
         <NavBar />
         <AppRoutes />
       </div>

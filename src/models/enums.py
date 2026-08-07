@@ -1,6 +1,15 @@
 from enum import Enum
 
 
+class WindowCombination(str, Enum):
+
+    LEFT = "left"
+    BOTH = "both"
+    CLOSED = "closed"
+    RIGHT = "right"
+    UNKNOWN = "unknown"
+
+
 class SensorType(str, Enum):
 
     TEMPERATURE = "Temperature"

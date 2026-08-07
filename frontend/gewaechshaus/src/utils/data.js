@@ -1,10 +1,9 @@
-export function reshapeTimeseries(data, exclude=null) {
+export function reshapeTimeseries(data, exclude = null) {
   const byTimestamp = {};
 
   for (const point of data) {
-
-    if (point.field == exclude){
-        continue;
+    if (point.field == exclude) {
+      continue;
     }
 
     const { timestamp, field, value } = point;
