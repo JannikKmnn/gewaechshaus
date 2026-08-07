@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Literal
 
 from src.services.api.models.windows import WindowConfigurationUpdateProperties
 from src.shared.sqlite import setup_client
@@ -41,6 +41,34 @@ async def get_window_events(
         await sqlite_client.close()
 
     return rows
+
+
+async def get_nearest_window_event(
+    actuator_events_table: str,
+    identifier: str,
+    target_time: datetime,
+    mode: Literal["before", "after"],
+):
+    sqlite_client = await setup_client()
+
+    timestamp_operator = "<=" if mode == "before" else ">="
+    order = "ASC" if mode == "after" else "DESC"
+
+    sql = f"""
+        SELECT * FROM {actuator_events_table}
+        WHERE identifier = ? AND timestamp {timestamp_operator} ?
+        ORDER BY timestamp {order}
+        LIMIT 1
+    """
+
+    async with sqlite_client:
+        cursor = await sqlite_client.execute(sql, [identifier, target_time.isoformat()])
+        row = await cursor.fetchone()
+
+        await sqlite_client.commit()
+        await sqlite_client.close()
+
+    return row
 
 
 async def get_window_configurations(
