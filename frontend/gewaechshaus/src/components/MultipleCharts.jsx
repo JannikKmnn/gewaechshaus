@@ -15,6 +15,8 @@ import { formatTime } from "../utils/time";
 export default function MultipleTimeseriesChart({
   data,
   intervals,
+  startTime,
+  endTime,
   exclude,
   label,
   unit,
@@ -39,10 +41,6 @@ export default function MultipleTimeseriesChart({
     new Set(data.map(d => d.field))
   );
   const filteredKeys = seriesKeys.filter(val => val !== exclude);
-
-  chartIntervals.forEach(i => {
-    console.log(i.from > wideData[0].timestamp);
-  });
 
   function stateColor(state) {
     switch (state) {
@@ -85,8 +83,13 @@ export default function MultipleTimeseriesChart({
             dataKey="timestamp"
             type="number"
             scale="time"
-            domain={["dataMin", "dataMax"]}
-            tickFormatter={(value) => formatTime(new Date(value).toISOString())}
+            domain={[
+              new Date(startTime).getTime(),
+              new Date(endTime).getTime(),
+            ]}
+            tickFormatter={(value) =>
+              formatTime(new Date(value).toISOString())
+            }
           />
           <YAxis
               label={{ 

@@ -315,6 +315,8 @@ export default function Dashboard() {
           <MultipleTimeseriesChart
             data={temperatureArray}
             intervals={windowOpeningIntervals}
+            startTime={displayStartTimeSeries}
+            endTime={endTimeSeries}
             exclude="temperature_cpu"
             label="Temperature"
             unit="°C"
