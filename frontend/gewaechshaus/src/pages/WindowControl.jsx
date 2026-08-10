@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import { Pencil } from "lucide-react";
 import BinaryWidget from "../components/BinaryWidget";
 import DoubleValueWidget from "../components/DoubleValueWidget";
 import {
   getWindowConfigs,
   getWindowStatus,
   callWindowActuators,
+  updateWindowConfig,
 } from "../api/windows";
 import { formatDateTime, windowOpenTime } from "../utils/time";
 
@@ -18,7 +20,12 @@ export default function WindowControl() {
   const [windowClosingLeft, setWindowClosingLeft] = useState(null);
   const [windowClosingRight, setWindowClosingRight] = useState(null);
 
+  const [editingThresholdLeft, setEditingThresholdLeft] = useState(false);
+  const [editedThresholdLeft, setEditedThresholdLeft] = useState(null);
   const [windowTempThresholdLeft, setWindowTempThresholdLeft] = useState(null);
+
+  const [editingThresholdRight, setEditingThresholdRight] = useState(false);
+  const [editedThresholdRight, setEditedThresholdRight] = useState(null);
   const [windowTempThresholdRight, setWindowTempThresholdRight] =
     useState(null);
 
@@ -79,9 +86,13 @@ export default function WindowControl() {
       setWindowTempThresholdLeft(
         results[0].inside_temperature_opening_threshold,
       );
+      setEditedThresholdLeft(results[0].inside_temperature_opening_threshold);
+      setEditingThresholdLeft(false);
       setWindowTempThresholdRight(
         results[1].inside_temperature_opening_threshold,
       );
+      setEditedThresholdRight(results[1].inside_temperature_opening_threshold);
+      setEditingThresholdRight(false);
     }
   }
 
@@ -91,7 +102,12 @@ export default function WindowControl() {
   }, []);
 
   return (
-    <div>
+    <div
+      style={{
+        position: "relative",
+        opacity: editingThresholdLeft || editingThresholdRight ? 0.4 : 1,
+      }}
+    >
       <h1 style={{ marginBottom: "20px" }}>Control Center Windows</h1>
 
       <div
@@ -186,9 +202,27 @@ export default function WindowControl() {
           </div>
 
           <div>
-            <div>Opens when temperature inside exceeds 
-              <p><font color={"yellow"}>{windowTempThresholdLeft}°C</font></p> 
-            for 15 minutes.</div>
+            Opens when temperature inside exceeds{" "}
+            <span style={{ color: "yellow" }}>{windowTempThresholdLeft}°C</span>
+            <button
+              onClick={() => {
+                setEditedThresholdLeft(windowTempThresholdLeft);
+                setEditingThresholdLeft(true);
+              }}
+              style={{
+                background: "none",
+                border: "none",
+                padding: 0,
+                marginLeft: "6px",
+                color: "white",
+                cursor: "pointer",
+                display: "inline-flex",
+                verticalAlign: "middle",
+              }}
+            >
+              <Pencil size={14} />
+            </button>{" "}
+            for 15 minutes.
           </div>
 
           <button
@@ -271,19 +305,29 @@ export default function WindowControl() {
           </div>
 
           <div>
-            <div>Opens when temperature inside exceeds 
-              <p>
-                <font color={"yellow"}>{windowTempThresholdRight}°C</font>
-                <button style={{
-                  backgroundColor: "rgba(146, 204, 159, 0.92)",
-                  fontSize: "18px",
-                  color: "white",
-                  alignItems: "center"
-                }}>
-                  {">"}
-                </button>
-              </p> 
-            for 15 minutes.</div>
+            Opens when temperature inside exceeds{" "}
+            <span style={{ color: "yellow" }}>
+              {windowTempThresholdRight}°C
+            </span>
+            <button
+              onClick={() => {
+                setEditedThresholdRight(windowTempThresholdRight);
+                setEditingThresholdRight(true);
+              }}
+              style={{
+                background: "none",
+                border: "none",
+                padding: 0,
+                marginLeft: "6px",
+                color: "white",
+                cursor: "pointer",
+                display: "inline-flex",
+                verticalAlign: "middle",
+              }}
+            >
+              <Pencil size={14} />
+            </button>{" "}
+            for 15 minutes.
           </div>
 
           <button

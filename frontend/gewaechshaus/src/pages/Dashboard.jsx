@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Pencil } from "lucide-react";
 import BinaryWidget from "../components/BinaryWidget";
 import MultipleTimeseriesChart from "../components/MultipleCharts";
 import TimeseriesChart from "../components/TimeseriesChart";

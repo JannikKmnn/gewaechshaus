@@ -20,12 +20,10 @@ export default function TimeseriesChart({
   return (
     <div
       style={{
-        background: "#3a3f3c",
-        borderRadius: "12px",
+        background: "transparent",
         padding: "20px",
         width: "100%",
         height: "100%",
-        boxShadow: "0 4px 20px #3a3f3c",
       }}
     >
       <ResponsiveContainer width="100%" height={110}>
@@ -34,7 +32,7 @@ export default function TimeseriesChart({
             dataKey="timestamp"
             tickFormatter={formatTime}
             tick={{
-              fill: "#9ca3af",
+              fill: "#2e2f31",
               fontSize: 10,
               angle: -20,
               dy: 10,
@@ -48,11 +46,14 @@ export default function TimeseriesChart({
               position: "Left",
               offset: 32,
               dx: -20,
+              fill: "#2e2f31",
             }}
             unit={unit}
             tick={{
               fontSize: 10,
+              fill: "#2e2f31",
             }}
+            tickFormatter={(value) => Number(value).toFixed(1)}
             domain={[yAxisMin, yAxisMax]}
           />
           <Tooltip

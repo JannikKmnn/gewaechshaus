@@ -41,3 +41,11 @@ export async function getWindowIntervals({ start_time, end_time }) {
 
   return result?.data ?? null;
 }
+
+export async function updateWindowConfig({ window_position, config }) {
+  let route = `window/config/${window_position}`;
+
+  const result = await api.post(route, config);
+
+  return result?.data ?? null;
+}
