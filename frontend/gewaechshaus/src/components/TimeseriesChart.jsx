@@ -65,7 +65,10 @@ export default function TimeseriesChart({
                 minute: "2-digit",
               })
             }
-            formatter={(value) => [`${value} ${unit}`, label]}
+            formatter={(value) => [
+              `${Number(value).toFixed(1)} ${unit}`,
+              label,
+            ]}
             contentStyle={{
               backgroundColor: "#0b1220",
               border: "none",

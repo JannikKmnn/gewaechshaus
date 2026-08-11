@@ -18,12 +18,10 @@ export default function TimeBarChart({
   return (
     <div
       style={{
-        background: "#3a3f3c",
-        borderRadius: "12px",
+        background: "transparent",
         padding: "20px",
         width: "100%",
         height: "100%",
-        boxShadow: "0 4px 20px #3a3f3c",
       }}
     >
       <ResponsiveContainer width="100%" height={110}>
@@ -56,10 +54,17 @@ export default function TimeBarChart({
               `${formatDuration(value).minutes} min, ${formatDuration(value).seconds} s`,
               "Watering Duration",
             ]}
+            contentStyle={{
+              backgroundColor: "#0b1220",
+              border: "none",
+              borderRadius: "8px",
+              color: "#e5e7eb",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.35)",
+            }}
           />
           <Bar
             dataKey={dataKeybar}
-            fill="#8884d8"
+            fill="rgba(17, 84, 123, 0.95)"
             activeBar={{ fill: "pink", stroke: "blue" }}
             radius={[10, 10, 0, 0]}
           />

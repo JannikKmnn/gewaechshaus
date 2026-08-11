@@ -8,24 +8,22 @@ export default function DoubleValueWidget({
   height,
   fontsize,
   fontsizelabel,
-  background_color = "#3a3f3c",
+  background_color = "transparent",
 }) {
   return (
     <div
       style={{
         background: background_color,
-        borderRadius: "12px",
         padding: "20px",
         minWidth: "220px",
         minHeight: height || "150px",
-        boxShadow: "0 4px 20px #3a3f3c",
       }}
     >
       <div
         style={{
           fontSize: fontsizelabel || "14px",
-          opacity: 0.7,
           marginBottom: "10px",
+          color: "#2e2f31",
         }}
       >
         {label}

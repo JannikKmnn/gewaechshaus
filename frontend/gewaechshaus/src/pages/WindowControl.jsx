@@ -197,8 +197,12 @@ export default function WindowControl() {
           }}
         >
           <div>
-            <div>Last Opening: {formatDateTime(windowOpeningLeft)}</div>
-            <div>Last Closing: {formatDateTime(windowClosingLeft)}</div>
+            <div style={{ color: "#2e2f31" }}>
+              Last Opening: {formatDateTime(windowOpeningLeft)}
+            </div>
+            <div style={{ color: "#2e2f31" }}>
+              Last Closing: {formatDateTime(windowClosingLeft)}
+            </div>
           </div>
 
           <div>
@@ -227,13 +231,13 @@ export default function WindowControl() {
 
           <button
             style={{
-              backgroundColor: "rgba(146, 204, 159, 0.92)",
+              backgroundColor: "transparent",
               fontSize: "18px",
-              color: "white",
+              color: "#2e2f31",
               boxShadow: "0 4px 20px #3a3f3c",
               borderRadius: "5px",
               alignItems: "center",
-              opacity: loadingLeft ? 0.6 : 1,
+              opacity: loadingRight ? 0.6 : 1,
             }}
             onClick={() => {
               windowStatusLeft == "closed"
@@ -300,8 +304,12 @@ export default function WindowControl() {
           }}
         >
           <div>
-            <div>Last Opening: {formatDateTime(windowOpeningRight)}</div>
-            <div>Last Closing: {formatDateTime(windowClosingRight)}</div>
+            <div style={{ color: "#2e2f31" }}>
+              Last Opening: {formatDateTime(windowOpeningRight)}
+            </div>
+            <div style={{ color: "#2e2f31" }}>
+              Last Closing: {formatDateTime(windowClosingRight)}
+            </div>
           </div>
 
           <div>
@@ -332,9 +340,9 @@ export default function WindowControl() {
 
           <button
             style={{
-              backgroundColor: "rgba(146, 204, 159, 0.92)",
+              backgroundColor: "transparent",
               fontSize: "18px",
-              color: "white",
+              color: "#2e2f31",
               boxShadow: "0 4px 20px #3a3f3c",
               borderRadius: "5px",
               alignItems: "center",
@@ -365,9 +373,9 @@ export default function WindowControl() {
       >
         <button
           style={{
-            backgroundColor: "rgba(146, 204, 159, 0.92)",
+            backgroundColor: "transparent",
             fontSize: "18px",
-            color: "white",
+            color: "#2e2f31",
             boxShadow: "0 4px 20px #3a3f3c",
             borderRadius: "5px",
             alignItems: "center",
