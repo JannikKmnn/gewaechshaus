@@ -34,6 +34,9 @@ export default function TimeBarChart({
                 month: "2-digit",
               })
             }
+            tick={{
+              fill: "#2e2f31",
+            }}
           />
           <YAxis
             label={{
@@ -43,6 +46,7 @@ export default function TimeBarChart({
               position: "Left",
               offset: 32,
               dx: -20,
+              fill: "#2e2f31",
             }}
             unit={unit}
             tick={{
