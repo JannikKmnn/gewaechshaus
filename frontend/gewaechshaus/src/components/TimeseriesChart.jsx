@@ -32,7 +32,7 @@ export default function TimeseriesChart({
             dataKey="timestamp"
             tickFormatter={formatTime}
             tick={{
-              fill: "#2e2f31",
+              fill: "white",
               fontSize: 10,
               angle: -20,
               dy: 10,
@@ -51,7 +51,7 @@ export default function TimeseriesChart({
             unit={unit}
             tick={{
               fontSize: 10,
-              fill: "#2e2f31",
+              fill: "white",
             }}
             tickFormatter={(value) => Number(value).toFixed(1)}
             domain={[yAxisMin, yAxisMax]}

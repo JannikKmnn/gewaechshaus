@@ -216,7 +216,7 @@ export default function Dashboard() {
           style={{
             backgroundColor: "transparent",
             fontSize: "18px",
-            color: "#2e2f31",
+            color: "white",
             borderRadius: "5px",
             borderColor: "#2e2f31",
             alignItems: "center",
@@ -240,11 +240,11 @@ export default function Dashboard() {
             alignItems: "center",
           }}
         >
-          <div style={{ textAlign: "center" }}>
+          <div style={{ textAlign: "center", color: "white" }}>
             {formatDateTime(displayStartTimeSeries)}
           </div>
-          <div>-</div>
-          <div style={{ textAlign: "center" }}>
+          <div style={{ color: "white" }}>-</div>
+          <div style={{ textAlign: "center", color: "white" }}>
             {formatDateTime(endTimeSeries)}
           </div>
         </div>
@@ -253,7 +253,7 @@ export default function Dashboard() {
           style={{
             backgroundColor: "transparent",
             fontSize: "18px",
-            color: "#2e2f31",
+            color: "white",
             borderRadius: "5px",
             borderColor: "#2e2f31",
             alignItems: "center",
@@ -271,7 +271,7 @@ export default function Dashboard() {
               width: "80%",
               height: "30px",
               fontSize: "20px",
-              color: "#2e2f31",
+              color: "white",
               borderRadius: "5px",
               borderColor: "#2e2f31",
             }}

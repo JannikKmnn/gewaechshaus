@@ -278,16 +278,18 @@ export default function WindowControl() {
               {editingThresholdLeft && (
                 <div
                   style={{
-                    position: "absolute",
+                    position: "relative",
                     top: "-10px",
                     left: "0",
                     zIndex: 20,
+                    whiteSpace: "nowrap",
+                    width: "fit-content",
 
                     display: "flex",
                     alignItems: "center",
                     gap: "8px",
 
-                    background: "#f5f5f5",
+                    background: "#8ba288",
                     padding: "8px 10px",
                     borderRadius: "8px",
                     boxShadow: "0 4px 15px rgba(0, 0, 0, 0.25)",
@@ -313,6 +315,15 @@ export default function WindowControl() {
                       borderRadius: "4px",
                     }}
                   />
+
+                  <div
+                    style={{
+                      textAlign: "center",
+                      fontSize: "16px",
+                    }}
+                  >
+                    °C
+                  </div>
 
                   <div
                     style={{
@@ -483,16 +494,18 @@ export default function WindowControl() {
               {editingThresholdRight && (
                 <div
                   style={{
-                    position: "absolute",
+                    position: "relative",
                     top: "-10px",
                     left: "0",
                     zIndex: 20,
+                    whiteSpace: "nowrap",
+                    width: "fit-content",
 
                     display: "flex",
                     alignItems: "center",
                     gap: "8px",
 
-                    background: "#f5f5f5",
+                    background: "#",
                     padding: "8px 10px",
                     borderRadius: "8px",
                     boxShadow: "0 4px 15px rgba(0, 0, 0, 0.25)",
@@ -518,6 +531,15 @@ export default function WindowControl() {
                       borderRadius: "4px",
                     }}
                   />
+
+                  <div
+                    style={{
+                      textAlign: "center",
+                      fontSize: "16px",
+                    }}
+                  >
+                    °C
+                  </div>
 
                   <div
                     style={{
@@ -642,6 +664,10 @@ export default function WindowControl() {
       </div>
       {(editingThresholdLeft || editingThresholdRight) && (
         <div
+          onClick={() => {
+            setEditingThresholdLeft(false);
+            setEditingThresholdRight(false);
+          }}
           style={{
             position: "absolute",
             inset: 0,

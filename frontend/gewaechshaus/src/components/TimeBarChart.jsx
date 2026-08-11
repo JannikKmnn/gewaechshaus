@@ -35,7 +35,7 @@ export default function TimeBarChart({
               })
             }
             tick={{
-              fill: "#2e2f31",
+              fill: "white",
             }}
           />
           <YAxis
@@ -51,9 +51,11 @@ export default function TimeBarChart({
             unit={unit}
             tick={{
               fontSize: 10,
+              fill: "white",
             }}
           />
           <Tooltip
+            cursor={false}
             formatter={(value) => [
               `${formatDuration(value).minutes} min, ${formatDuration(value).seconds} s`,
               "Watering Duration",
@@ -69,7 +71,7 @@ export default function TimeBarChart({
           <Bar
             dataKey={dataKeybar}
             fill="rgba(17, 84, 123, 0.95)"
-            activeBar={{ fill: "pink", stroke: "blue" }}
+            activeBar={{ fill: "rgba(66, 142, 186, 0.95)", stroke: "blue" }}
             radius={[10, 10, 0, 0]}
           />
         </BarChart>
