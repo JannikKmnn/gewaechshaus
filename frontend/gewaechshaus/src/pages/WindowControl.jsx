@@ -480,6 +480,100 @@ export default function WindowControl() {
                 <Pencil size={14} />
               </button>{" "}
               for 15 minutes.
+              {editingThresholdRight && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "-10px",
+                    left: "0",
+                    zIndex: 20,
+
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+
+                    background: "#f5f5f5",
+                    padding: "8px 10px",
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 15px rgba(0, 0, 0, 0.25)",
+                  }}
+                >
+                  <input
+                    type="number"
+                    step="1"
+                    value={editedThresholdRight}
+                    onChange={(e) => {
+                      const value = e.target.value;
+
+                      if (/^\d*$/.test(value)) {
+                        setEditedThresholdRight(value);
+                      }
+                    }}
+                    style={{
+                      width: "50px",
+                      height: "30px",
+                      textAlign: "center",
+                      fontSize: "16px",
+                      border: "1px solid #2e2f31",
+                      borderRadius: "4px",
+                    }}
+                  />
+
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <button
+                      onClick={() =>
+                        setEditedThresholdRight((value) => Number(value) + 1)
+                      }
+                      style={{
+                        background: "none",
+                        border: "none",
+                        padding: 0,
+                        height: "15px",
+                        cursor: "pointer",
+                        fontSize: "10px",
+                      }}
+                    >
+                      ▲
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        setEditedThresholdRight((value) =>
+                          Math.max(0, Number(value) - 1),
+                        )
+                      }
+                      style={{
+                        background: "none",
+                        border: "none",
+                        padding: 0,
+                        height: "15px",
+                        cursor: "pointer",
+                        fontSize: "10px",
+                      }}
+                    >
+                      ▼
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={handleSaveThresholdRight}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      padding: 0,
+                      color: "#2e2f31",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <Check size={18} />
+                  </button>
+                </div>
+              )}
             </div>
 
             <button
