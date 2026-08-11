@@ -80,7 +80,7 @@ export default function WateringControl() {
             }
             unit1={""}
             unit2={""}
-            color="rgba(10, 138, 212, 0.95)"
+            color="rgba(17, 84, 123, 0.95)"
           />
         </div>
 

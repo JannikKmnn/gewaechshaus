@@ -18,12 +18,10 @@ export default function TimeBarChart({
   return (
     <div
       style={{
-        background: "#3a3f3c",
-        borderRadius: "12px",
+        background: "transparent",
         padding: "20px",
         width: "100%",
         height: "100%",
-        boxShadow: "0 4px 20px #3a3f3c",
       }}
     >
       <ResponsiveContainer width="100%" height={110}>
@@ -36,6 +34,9 @@ export default function TimeBarChart({
                 month: "2-digit",
               })
             }
+            tick={{
+              fill: "white",
+            }}
           />
           <YAxis
             label={{
@@ -45,22 +46,32 @@ export default function TimeBarChart({
               position: "Left",
               offset: 32,
               dx: -20,
+              fill: "#2e2f31",
             }}
             unit={unit}
             tick={{
               fontSize: 10,
+              fill: "white",
             }}
           />
           <Tooltip
+            cursor={false}
             formatter={(value) => [
               `${formatDuration(value).minutes} min, ${formatDuration(value).seconds} s`,
               "Watering Duration",
             ]}
+            contentStyle={{
+              backgroundColor: "#0b1220",
+              border: "none",
+              borderRadius: "8px",
+              color: "#e5e7eb",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.35)",
+            }}
           />
           <Bar
             dataKey={dataKeybar}
-            fill="#8884d8"
-            activeBar={{ fill: "pink", stroke: "blue" }}
+            fill="rgba(17, 84, 123, 0.95)"
+            activeBar={{ fill: "rgba(66, 142, 186, 0.95)", stroke: "blue" }}
             radius={[10, 10, 0, 0]}
           />
         </BarChart>

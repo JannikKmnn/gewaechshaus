@@ -214,11 +214,11 @@ export default function Dashboard() {
 
         <button
           style={{
-            backgroundColor: "rgba(146, 204, 159, 0.92)",
+            backgroundColor: "transparent",
             fontSize: "18px",
             color: "white",
-            boxShadow: "0 4px 20px #3a3f3c",
             borderRadius: "5px",
+            borderColor: "#2e2f31",
             alignItems: "center",
           }}
           onClick={() => moveTimeWindow("back")}
@@ -230,32 +230,32 @@ export default function Dashboard() {
           style={{
             display: "grid",
             gridTemplateColumns: "48% 4% 48%",
-            backgroundColor: "rgba(146, 204, 159, 0.92)",
+            backgroundColor: "transparent",
             width: "100%",
             height: "30px",
             fontSize: "18px",
-            color: "white",
-            boxShadow: "0 4px 20px #3a3f3c",
+            color: "#2e2f31",
             borderRadius: "5px",
+            border: "1px solid #2e2f31",
             alignItems: "center",
           }}
         >
-          <div style={{ textAlign: "center" }}>
+          <div style={{ textAlign: "center", color: "white" }}>
             {formatDateTime(displayStartTimeSeries)}
           </div>
-          <div>-</div>
-          <div style={{ textAlign: "center" }}>
+          <div style={{ color: "white" }}>-</div>
+          <div style={{ textAlign: "center", color: "white" }}>
             {formatDateTime(endTimeSeries)}
           </div>
         </div>
 
         <button
           style={{
-            backgroundColor: "rgba(146, 204, 159, 0.92)",
+            backgroundColor: "transparent",
             fontSize: "18px",
             color: "white",
-            boxShadow: "0 4px 20px #3a3f3c",
             borderRadius: "5px",
+            borderColor: "#2e2f31",
             alignItems: "center",
           }}
           onClick={() => moveTimeWindow("front")}
@@ -267,13 +267,13 @@ export default function Dashboard() {
           <select
             name="timeRange"
             style={{
-              backgroundColor: "rgba(146, 204, 159, 0.92)",
+              backgroundColor: "transparent",
               width: "80%",
               height: "30px",
               fontSize: "20px",
               color: "white",
-              boxShadow: "0 4px 20px #3a3f3c",
               borderRadius: "5px",
+              borderColor: "#2e2f31",
             }}
             value={timeSeriesDiff}
             onChange={(e) => setTimeSeriesDiff(e.target.value)}

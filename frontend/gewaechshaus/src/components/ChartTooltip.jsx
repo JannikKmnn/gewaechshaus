@@ -46,7 +46,7 @@ export default function CustomTooltip({ active, payload, label, unit }) {
         >
           <span>{entry.dataKey}</span>
           <span>
-            {entry.value} {unit}
+            {Number(entry.value).toFixed(1)} {unit}
           </span>
         </div>
       ))}

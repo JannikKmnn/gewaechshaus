@@ -55,12 +55,10 @@ export default function MultipleTimeseriesChart({
   return (
     <div
       style={{
-        background: "#3a3f3c",
-        borderRadius: "12px",
+        background: "transparent",
         padding: "20px",
         width: "100%",
         height: "100%",
-        boxShadow: "0 4px 20px #3a3f3c",
       }}
     >
       <ResponsiveContainer width="100%" height={110}>
@@ -72,7 +70,7 @@ export default function MultipleTimeseriesChart({
                 x1={interval.from}
                 x2={interval.to}
                 fill={stateColor(interval.state)}
-                fillOpacity={0.15}
+                fillOpacity={0.25}
               />
             );
           })}
@@ -80,6 +78,12 @@ export default function MultipleTimeseriesChart({
             dataKey="timestamp"
             type="number"
             scale="time"
+            tick={{
+              fill: "white",
+              fontSize: 10,
+              angle: -20,
+              dy: 10,
+            }}
             domain={[
               new Date(startTime).getTime(),
               new Date(endTime).getTime(),
@@ -94,11 +98,14 @@ export default function MultipleTimeseriesChart({
               position: "Left",
               offset: 32,
               dx: -20,
+              fill: "#2e2f31",
             }}
             unit={unit}
             tick={{
               fontSize: 10,
+              fill: "white",
             }}
+            tickFormatter={(value) => Number(value).toFixed(1)}
             domain={[yAxisMin, yAxisMax]}
           />
           <Tooltip content={<CustomTooltip unit={unit} />} />
