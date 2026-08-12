@@ -278,18 +278,42 @@ export default function Dashboard() {
             value={timeSeriesDiff}
             onChange={(e) => setTimeSeriesDiff(e.target.value)}
           >
-            <option value="5m">5 minutes</option>
-            <option value="30m">30 minutes</option>
-            <option value="1h">1 hour</option>
-            <option value="3h">3 hours</option>
-            <option value="6h">6 hours</option>
-            <option value="12h">12 hours</option>
-            <option value="1d">1 day</option>
-            <option value="3d">3 days</option>
-            <option value="7d">1 week</option>
-            <option value="14d">2 weeks</option>
-            <option value="30d">30 days</option>
-            <option value="60d">60 days</option>
+            <option style={{ backgroundColor: "#8ba288" }} value="5m">
+              5 minutes
+            </option>
+            <option style={{ backgroundColor: "#8ba288" }} value="30m">
+              30 minutes
+            </option>
+            <option style={{ backgroundColor: "#8ba288" }} value="1h">
+              1 hour
+            </option>
+            <option style={{ backgroundColor: "#8ba288" }} value="3h">
+              3 hours
+            </option>
+            <option style={{ backgroundColor: "#8ba288" }} value="6h">
+              6 hours
+            </option>
+            <option style={{ backgroundColor: "#8ba288" }} value="12h">
+              12 hours
+            </option>
+            <option style={{ backgroundColor: "#8ba288" }} value="1d">
+              1 day
+            </option>
+            <option style={{ backgroundColor: "#8ba288" }} value="3d">
+              3 days
+            </option>
+            <option style={{ backgroundColor: "#8ba288" }} value="7d">
+              1 week
+            </option>
+            <option style={{ backgroundColor: "#8ba288" }} value="14d">
+              2 weeks
+            </option>
+            <option style={{ backgroundColor: "#8ba288" }} value="30d">
+              30 days
+            </option>
+            <option style={{ backgroundColor: "#8ba288" }} value="60d">
+              60 days
+            </option>
           </select>
         </label>
       </div>
