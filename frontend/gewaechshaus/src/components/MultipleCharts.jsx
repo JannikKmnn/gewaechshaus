@@ -24,6 +24,7 @@ export default function MultipleTimeseriesChart({
   color,
   yAxisMax,
   yAxisMin,
+  height = 110,
 }) {
   const wideData = reshapeTimeseries(data, exclude).map((d) => ({
     ...d,
@@ -61,7 +62,7 @@ export default function MultipleTimeseriesChart({
         height: "100%",
       }}
     >
-      <ResponsiveContainer width="100%" height={110}>
+      <ResponsiveContainer width="100%" height={height}>
         <LineChart data={wideData}>
           {chartIntervals.map((interval, i) => {
             return (
