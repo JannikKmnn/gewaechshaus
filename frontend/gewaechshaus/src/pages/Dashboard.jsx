@@ -62,54 +62,42 @@ export default function Dashboard() {
     switch (fullScreenSensor) {
       case "temperature":
         return (
-          <div
-            style={{ display: "flex", alignItems: "center", height: "100%" }}
-          >
-            <MultipleTimeseriesChart
-              data={temperatureArray}
-              intervals={windowOpeningIntervals}
-              startTime={displayStartTimeSeries}
-              endTime={endTimeSeries}
-              exclude="temperature_cpu"
-              label="Temperature"
-              unit="°C"
-              yAxisLabel="Temperature"
-              color="rgba(85, 88, 193, 0.92)"
-              height="220"
-            />
-          </div>
+          <MultipleTimeseriesChart
+            data={temperatureArray}
+            intervals={windowOpeningIntervals}
+            startTime={displayStartTimeSeries}
+            endTime={endTimeSeries}
+            exclude="temperature_cpu"
+            label="Temperature"
+            unit="°C"
+            yAxisLabel="Temperature"
+            color="rgba(85, 88, 193, 0.92)"
+            height="220"
+          />
         );
 
       case "humidity":
         return (
-          <div
-            style={{ display: "flex", alignItems: "center", height: "100%" }}
-          >
-            <TimeseriesChart
-              data={upHumidityArray}
-              label="Humidity"
-              unit="%"
-              yAxisLabel="Humidity"
-              color="rgba(85, 88, 193, 0.92)"
-              height="220"
-            />
-          </div>
+          <TimeseriesChart
+            data={upHumidityArray}
+            label="Humidity"
+            unit="%"
+            yAxisLabel="Humidity"
+            color="rgba(85, 88, 193, 0.92)"
+            height="220"
+          />
         );
 
       case "airpressure":
         return (
-          <div
-            style={{ display: "flex", alignItems: "center", height: "100%" }}
-          >
-            <TimeseriesChart
-              data={airPressureArray}
-              label="Air Pressure"
-              unit="hPa"
-              yAxisLabel="Air Pressure"
-              color="rgba(186, 84, 40, 0.92)"
-              height="220"
-            />
-          </div>
+          <TimeseriesChart
+            data={airPressureArray}
+            label="Air Pressure"
+            unit="hPa"
+            yAxisLabel="Air Pressure"
+            color="rgba(186, 84, 40, 0.92)"
+            height="220"
+          />
         );
 
       default:
@@ -269,8 +257,15 @@ export default function Dashboard() {
   return (
     <>
       {fullScreenMode == true ? (
-        <div>
-          <div style={{ float: "right" }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr / 1fr",
+            gap: "50%",
+            marginBottom: "15px",
+          }}
+        >
+          <div style={{ justifySelf: "right" }}>
             <button
               style={{
                 backgroundColor: "transparent",
@@ -288,7 +283,7 @@ export default function Dashboard() {
               <X />
             </button>
           </div>
-          <div>{renderFullScreen()}</div>
+          <div style={{ justifySelf: "stretch" }}>{renderFullScreen()}</div>
         </div>
       ) : (
         <div>
