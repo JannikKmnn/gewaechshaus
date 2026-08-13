@@ -16,6 +16,7 @@ export default function TimeseriesChart({
   color,
   yAxisMax,
   yAxisMin,
+  height = 110,
 }) {
   return (
     <div
@@ -26,7 +27,7 @@ export default function TimeseriesChart({
         height: "100%",
       }}
     >
-      <ResponsiveContainer width="100%" height={110}>
+      <ResponsiveContainer width="100%" height={height}>
         <AreaChart data={data}>
           <XAxis
             dataKey="timestamp"
