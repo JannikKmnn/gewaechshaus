@@ -23,7 +23,7 @@ export async function getWateringEvents({
   return result?.data ?? null;
 }
 
-export async function run_watering({ watering_time_seconds }) {
+export async function runWatering({ watering_time_seconds }) {
   const data = {
     watering_time_seconds,
   };
