@@ -22,3 +22,15 @@ export async function getWateringEvents({
 
   return result?.data ?? null;
 }
+
+export async function runWatering({ watering_time_seconds }) {
+  const data = {
+    watering_time_seconds,
+  };
+
+  let route = `watering/run_watering`;
+
+  const result = await api.post(route, data);
+
+  return result?.data ?? null;
+}
