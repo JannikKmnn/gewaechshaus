@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
-import { LayoutDashboard, Grid2x2, Droplets } from "lucide-react";
+import { LayoutDashboard, Grid2x2, Droplets, Images } from "lucide-react";
 
 export default function NavBar() {
   const [expanded, setExpanded] = useState(false);
@@ -67,6 +67,11 @@ export default function NavBar() {
       <Link to="/control/watering" style={itemStyle("/control/watering")}>
         <Droplets style={iconStyle} />
         <span style={labelStyle}>Watering</span>
+      </Link>
+
+      <Link to="/gallery" style={itemStyle("/gallery")}>
+        <Images style={iconStyle} />
+        <span style={labelStyle}>Gallery</span>
       </Link>
     </div>
   );
