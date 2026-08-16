@@ -99,49 +99,49 @@ The docker-compose will load these environment variables while building the imag
 The greenhouse is made of wood and isolated with standard greenhouse foil to trap heat inside. 
 
 <p align="center">
-    <img src="images/gallery/inside_greenhouse.jpg" alt="Inside the greenhouse" width="300"/>
+    <img src="frontend/gewaechshaus/src/assets/gallery/inside_greenhouse.jpg" alt="Inside the greenhouse" width="300"/>
 </p>
 
 It's 70cm x 90cm x ca. 160cm, while the bottom is directly connected to the surrounding soil and a second level is addable. This level serves also as an option either to add more plant pots or to develop directly at a desktop inside the greenhouse! (ssh access is activated now so not required but still cool)
 
 <p align="center">
-    <img src="images/gallery/desktop_greenhouse.jpg" alt="Desktop in greenhouse" width="300"/>
+    <img src="frontend/gewaechshaus/src/assets/gallery/desktop_greenhouse.jpg" alt="Desktop in greenhouse" width="300"/>
 </p>
 
 The box at the top left position is the "house" of the Raspberry and the 16x2 lcd display, which displays all the measurements successively in every measure cycle. Inside, a breadboard and a bunch of jumper cables ensure a stable connection between the sensors and the pi, which measures on different GPIO pins asynchronously.
 
 <p align="center">
-    <img src="images/gallery/inside_box.jpg" alt="Inside box" width="300"/>
+    <img src="frontend/gewaechshaus/src/assets/gallery/inside_box.jpg" alt="Inside box" width="300"/>
 </p>
 
 Another cool feature is the lightning in the night since different leds indicate wet or dry soil moistures, and together with the display a futuristic effect is made:
 
 <p align="center">
-    <img src="images/gallery/night_greenhouse.jpg" alt="Greenhouse at night" width="300"/>
+    <img src="frontend/gewaechshaus/src/assets/gallery/night_greenhouse.jpg" alt="Greenhouse at night" width="300"/>
 </p>
 
 The windows are opened and closed by 12V linear actuators which are connected with a H-Bridge to 2-channel-relays that are controlled by the pi and via the API or via scripts.
 
 <p align="center">
-    <img src="images/gallery/window_open.jpg" alt="Opened window by actuator" width="300"/>
+    <img src="frontend/gewaechshaus/src/assets/gallery/window_open.jpg" alt="Opened window by actuator" width="300"/>
 </p>
 
 <p align="center">
-    <img src="images/gallery/actuator_wiring.jpg" alt="Actuators connected to raspi house" width="300"/>
+    <img src="frontend/gewaechshaus/src/assets/gallery/actuator_wiring.jpg" alt="Actuators connected to raspi house" width="300"/>
 </p>
 
 The peristaltic pump is attached in the box at the front left corner of the bottom box and is also controlled by a 12V relay circuit. When running, it pumps water from a rain barrel outside the greenhouse into a irrigation ring to distribute the water in the soil evenly.
 
 <p align="center">
-    <img src="images/gallery/irrigation_system_pump.jpg" alt="Watering System with Pump" width="300"/>
+    <img src="frontend/gewaechshaus/src/assets/gallery/irrigation_system_pump.jpg" alt="Watering System with Pump" width="300"/>
 </p>
 
 <p align="center">
-    <img src="images/gallery/irrigation_system_soil.jpg" alt="Irrigation Ring" width="300"/>
+    <img src="frontend/gewaechshaus/src/assets/gallery/irrigation_system_soil.jpg" alt="Irrigation Ring" width="300"/>
 </p>
 
 <p align="center">
-    <img src="images/gallery/rain_barrel.jpg" alt="Rain Barrel as water tank" width="300"/>
+    <img src="frontend/gewaechshaus/src/assets/gallery/rain_barrel.jpg" alt="Rain Barrel as water tank" width="300"/>
 </p>
 
 ---
