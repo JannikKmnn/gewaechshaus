@@ -16,13 +16,13 @@ export default function WateringControl() {
 
   const [wateringDays, setWateringDays] = useState([]);
 
-  const [wateringCallMinutes, setWateringCallMinutes] = useState(15);
+  const [wateringCallMinutes, setWateringCallMinutes] = useState(3);
   const [wateringCallSeconds, setWateringCallSeconds] = useState(0);
 
   const [wateringRunning, setWateringRunning] = useState(false);
 
   const [editingDuration, setEditingDuration] = useState(false);
-  const [editedDurationMinutes, setEditedDurationMinutes] = useState(15);
+  const [editedDurationMinutes, setEditedDurationMinutes] = useState(3);
   const [editedDurationSeconds, setEditedDurationSeconds] = useState(0);
 
   const [dateTimeDiff, setDateTimeDiff] = useState("14d");
