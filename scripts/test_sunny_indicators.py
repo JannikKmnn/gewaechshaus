@@ -32,7 +32,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-LOOKBACK_DAYS = 25
+LOOKBACK_DAYS = 70
 
 
 async def fetch_temperature_data(
@@ -83,17 +83,32 @@ async def main():
             tzinfo=timezone.utc,
         )
 
-        inside, up, outside = await asyncio.gather(
+        inside, outside = await asyncio.gather(
             fetch_temperature_data(start=start_time, end=end_time, sensor="inside"),
-            fetch_temperature_data(start=start_time, end=end_time, sensor="up"),
             fetch_temperature_data(start=start_time, end=end_time, sensor="outside"),
         )
 
-        stds = np.std(np.array([inside, up, outside]), axis=0)
+        mean_inside = np.mean(inside)
 
-        mean_std_current_day = np.mean(stds)
+        delta = np.abs(np.array(inside) - np.array(outside))
+        mean_delta = np.mean(delta)
+
+        temperature_score = np.clip(
+            (mean_inside - 15) / (35 - 15),
+            0,
+            1,
+        )
+
+        solar_score = np.clip(
+            (mean_delta - 0) / (10 - 0),
+            0,
+            1,
+        )
+
+        water_score = temperature_score * 0.5 + solar_score * 0.5
+
         print(
-            f"{start_time.isoformat()} - {end_time.isoformat()}: {round(mean_std_current_day, 2)}"
+            f"{start_time.isoformat()} - {end_time.isoformat()}: temp={round(temperature_score, 2)}, sol={round(solar_score, 2)}, score={round(water_score, 2)}"
         )
 
 
