@@ -12,17 +12,13 @@ export async function getWateringEvents({
   end_datetime = null,
 }) {
   const data = {
-    start_datetime,
-    end_datetime,
+    start_time: start_datetime,
+    end_time: end_datetime,
   };
 
   let route = `watering/events`;
 
-  console.log(data)
-
   const result = await api.post(route, data);
-
-  console.log(result)
 
   return result?.data ?? null;
 }
