@@ -24,7 +24,9 @@ class Settings(BaseSettings):
     # watering cron hours
     watering_cron_hour_morning: int = Field(default=6)
     watering_cron_hour_evening: int = Field(default=20)
-    watering_time_seconds: int = Field(default=400)
+
+    # base time -> additional time depends on weather
+    watering_time_seconds: int = Field(default=300)
 
     # for API calls
     vite_api_base_url: str = Field(...)
