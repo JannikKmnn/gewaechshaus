@@ -154,13 +154,16 @@ async def run_scheduled_watering(
     async with httpx.AsyncClient(timeout=timeout) as client:
         logger.warning(f"Starting Watering API call with duration {duration}...")
         try:
+            watering_time_seconds = None
+            if duration is not None:
+                watering_time_seconds = min(
+                    int(duration.total_seconds()),
+                    20 * 60,
+                )
+
             response = await client.post(
                 url=base_url,
-                json={
-                    "watering_time_seconds": (
-                        int(duration.total_seconds()) if duration else None
-                    )
-                },
+                json={"watering_time_seconds": (watering_time_seconds)},
             )
             response.raise_for_status()
             return response
