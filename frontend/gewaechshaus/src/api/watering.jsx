@@ -18,7 +18,11 @@ export async function getWateringEvents({
 
   let route = `watering/events`;
 
+  console.log(data)
+
   const result = await api.post(route, data);
+
+  console.log(result)
 
   return result?.data ?? null;
 }
