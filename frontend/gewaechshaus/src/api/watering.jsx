@@ -12,8 +12,8 @@ export async function getWateringEvents({
   end_datetime = null,
 }) {
   const data = {
-    start_datetime,
-    end_datetime,
+    start_time: start_datetime,
+    end_time: end_datetime,
   };
 
   let route = `watering/events`;
