@@ -146,7 +146,7 @@ async def run_scheduled_watering(
         now.year, now.month, now.day, 15, tzinfo=timezone.utc
     ):
         water_score = await calculate_watering_score(
-            url=base_url,
+            url=url,
             logger=logger,
         )
         duration += timedelta(minutes=15 * water_score)
