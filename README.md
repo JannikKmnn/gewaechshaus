@@ -99,13 +99,18 @@ The docker-compose will load these environment variables while building the imag
 The greenhouse is made of wood and isolated with standard greenhouse foil to trap heat inside. 
 
 <p align="center">
-    <img src="frontend/gewaechshaus/src/assets/gallery/inside_greenhouse.jpg" alt="Inside the greenhouse" width="300"/>
+    <img src="frontend/gewaechshaus/src/assets/gallery/04_inside_greenhouse.jpg" alt="Inside the greenhouse" width="300"/>
 </p>
 
 It's 70cm x 90cm x ca. 160cm, while the bottom is directly connected to the surrounding soil and a second level is addable. This level serves also as an option either to add more plant pots or to develop directly at a desktop inside the greenhouse! (ssh access is activated now so not required but still cool)
 
+
 <p align="center">
-    <img src="frontend/gewaechshaus/src/assets/gallery/desktop_greenhouse.jpg" alt="Desktop in greenhouse" width="300"/>
+    <img src="frontend/gewaechshaus/src/assets/gallery/01_first_plants.jpg" alt="First plants inside the greenhouse" width="300"/>
+</p>
+
+<p align="center">
+    <img src="frontend/gewaechshaus/src/assets/gallery/03_desktop_greenhouse.jpg" alt="Desktop in greenhouse" width="300"/>
 </p>
 
 The box at the top left position is the "house" of the Raspberry and the 16x2 lcd display, which displays all the measurements successively in every measure cycle. Inside, a breadboard and a bunch of jumper cables ensure a stable connection between the sensors and the pi, which measures on different GPIO pins asynchronously.
@@ -137,11 +142,11 @@ The peristaltic pump is attached in the box at the front left corner of the bott
 </p>
 
 <p align="center">
-    <img src="frontend/gewaechshaus/src/assets/gallery/irrigation_system_soil.jpg" alt="Irrigation Ring" width="300"/>
+    <img src="frontend/gewaechshaus/src/assets/gallery/06_irrigation_system_soil.jpg" alt="Irrigation Ring" width="300"/>
 </p>
 
 <p align="center">
-    <img src="frontend/gewaechshaus/src/assets/gallery/rain_barrel.jpg" alt="Rain Barrel as water tank" width="300"/>
+    <img src="frontend/gewaechshaus/src/assets/gallery/05_rain_barrel.jpg" alt="Rain Barrel as water tank" width="300"/>
 </p>
 
 ---
