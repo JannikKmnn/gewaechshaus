@@ -17,7 +17,7 @@ load_dotenv(env_path)
 # from src.shared.actuators import setup_watering_system
 
 WATERING_PUMP_PIN = 21
-WATERING_TIME_SECONDS = 900.0
+WATERING_TIME_SECONDS = 400.0
 
 
 async def main():
