@@ -152,7 +152,6 @@ async def run_scheduled_watering(
         duration += timedelta(minutes=15 * water_score)
 
     async with httpx.AsyncClient(timeout=timeout) as client:
-        logger.warning(f"Starting Watering API call with duration {duration}...")
         try:
             watering_time_seconds = None
             if duration is not None:
@@ -161,6 +160,10 @@ async def run_scheduled_watering(
                     20 * 60,
                 )
 
+            logger.warning(
+                f"Starting Watering API call with duration in seconds: {watering_time_seconds}..."
+            )
+
             response = await client.post(
                 url=base_url,
                 json={"watering_time_seconds": (watering_time_seconds)},
@@ -168,5 +171,5 @@ async def run_scheduled_watering(
             response.raise_for_status()
             return response
         except httpx.HTTPError as err:
-            logger.error(f"Watering call failed due to {err}")
+            logger.error(f"Watering call failed: {type(err).__name__}: {err!r}")
             return None
