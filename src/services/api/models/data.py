@@ -21,3 +21,10 @@ class DataResponseProperties:
     timestamps: list[datetime]
     sensor_identifier: list[str]
     values: np.ndarray
+
+
+@dataclass
+class SoilMoistureIntervalsRequestProperties:
+
+    start_time: datetime
+    end_time: datetime
