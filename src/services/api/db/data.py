@@ -5,10 +5,10 @@ from src.models.enums import SensorType
 from src.shared.influxdb import setup_client
 
 
-async def get_measurements(
+async def fetch_measurements(
     start_time: datetime,
     measurement: Optional[SensorType] = None,
-    end_time: Optional[list[str]] = None,
+    end_time: Optional[datetime] = None,
     field_identifier: Optional[list[str]] = None,
     aggregation: Optional[str] = None,
 ) -> list[list]:
@@ -23,18 +23,18 @@ async def get_measurements(
         |> range(start: {start_time.isoformat()}, stop: {end_time.isoformat()})
     """
 
-    if measurement:
+    if measurement is not None:
         query += (
             f"""    |> filter(fn: (r) => r["_measurement"] == "{measurement.value}")"""
         )
 
-    if field_identifier:
+    if field_identifier is not None:
         filters = " or ".join(
             [f'r["_field"] == "{ident}"' for ident in field_identifier]
         )
         query += f"""    |> filter(fn: (r) => {filters})"""
 
-    if aggregation:
+    if aggregation is not None:
         query += f"""    |> aggregateWindow(every: {aggregation}, fn: mean)"""
 
     async with influxdb_client:

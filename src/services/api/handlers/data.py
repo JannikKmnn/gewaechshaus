@@ -8,7 +8,7 @@ from src.services.api.models.data import (
     SoilMoistureIntervalsRequestProperties,
 )
 from src.models.enums import DynamicDataAggregation, SensorType
-from src.services.api.db.data import get_measurements as get_db_measurements
+from src.services.api.db.data import fetch_measurements
 
 
 def pick_aggregation(timediff):
@@ -45,7 +45,7 @@ async def get_measurements(
     if timediff_days >= int(list(DynamicDataAggregation)[0].name.split("_")[1]):
         aggregation = pick_aggregation(timediff=timediff_days)
 
-    values = await get_db_measurements(
+    values = await fetch_measurements(
         start_time=req_properties.start_time,
         measurement=req_properties.measurement,
         end_time=req_properties.end_time,
@@ -73,7 +73,7 @@ async def get_soil_moisture_intervals(
             status_code=400, detail="Query end time must be after start time."
         )
 
-    values = await get_db_measurements(
+    values = await fetch_measurements(
         start_time=req_properties.start_time,
         measurement=SensorType.SOIL_MOISTURE,
         end_time=req_properties.end_time,

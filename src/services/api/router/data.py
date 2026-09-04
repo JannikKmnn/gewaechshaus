@@ -20,6 +20,18 @@ async def get_measurements(req_properties: DataRequestProperties):
     return values
 
 
+@router.post("/soil_moisture_intervals", tags=["measurements"])
+async def get_soil_moisture_intervals(
+    req_properties: SoilMoistureIntervalsRequestProperties,
+):
+
+    results = await get_handlers_soil_moisture_intervals(
+        req_properties=req_properties,
+    )
+
+    return results
+
+
 @router.post("/{sensor_identifier}", tags=["measurements"])
 async def get_measurements(
     sensor_identifier: str, req_properties: DataRequestProperties
@@ -31,15 +43,3 @@ async def get_measurements(
     )
 
     return values
-
-
-@router.post("/soil_moisture_intervals", tags=["measurements"])
-async def get_soil_moisture_intervals(
-    req_properties: SoilMoistureIntervalsRequestProperties,
-):
-
-    results = await get_handlers_soil_moisture_intervals(
-        req_properties=req_properties,
-    )
-
-    return results
