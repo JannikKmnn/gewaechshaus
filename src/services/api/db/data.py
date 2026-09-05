@@ -2,15 +2,17 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from src.models.enums import SensorType
+from src.models.exceptions import QueryError
 from src.shared.influxdb import setup_client
 
 
-async def get_measurements(
+async def fetch_measurements(
     start_time: datetime,
     measurement: Optional[SensorType] = None,
-    end_time: Optional[list[str]] = None,
+    end_time: Optional[datetime] = None,
     field_identifier: Optional[list[str]] = None,
     aggregation: Optional[str] = None,
+    state_changes_only: bool = False,
 ) -> list[list]:
 
     influxdb_client = await setup_client()
@@ -23,19 +25,31 @@ async def get_measurements(
         |> range(start: {start_time.isoformat()}, stop: {end_time.isoformat()})
     """
 
-    if measurement:
+    if measurement is not None:
         query += (
             f"""    |> filter(fn: (r) => r["_measurement"] == "{measurement.value}")"""
         )
 
-    if field_identifier:
+    if field_identifier is not None:
         filters = " or ".join(
             [f'r["_field"] == "{ident}"' for ident in field_identifier]
         )
         query += f"""    |> filter(fn: (r) => {filters})"""
 
-    if aggregation:
+    if aggregation is not None:
         query += f"""    |> aggregateWindow(every: {aggregation}, fn: mean)"""
+
+    if state_changes_only:
+        if field_identifier is None or len(field_identifier) != 1:
+            raise QueryError(
+                f"State changes can only be fetched for a single field identifier, got {field_identifier}."
+            )
+        if aggregation is not None:
+            raise QueryError(
+                f"State changes cannot be fetched when aggregation is specified, got {aggregation}."
+            )
+
+        query += f"""    |> experimental.stateChangesOnly()"""
 
     async with influxdb_client:
         table = await influxdb_client.query_api().query(query=query)
