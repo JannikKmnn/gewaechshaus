@@ -1,6 +1,6 @@
 from datetime import datetime
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Literal
 
 from src.models.enums import SensorType
 
@@ -28,3 +28,4 @@ class SoilMoistureIntervalsRequestProperties:
 
     start_time: datetime
     end_time: datetime
+    sensor_identifier: Literal["soil_moisture_back", "soil_moisture_front"]

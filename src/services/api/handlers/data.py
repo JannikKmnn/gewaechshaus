@@ -77,7 +77,11 @@ async def get_soil_moisture_intervals(
         start_time=req_properties.start_time,
         measurement=SensorType.SOIL_MOISTURE,
         end_time=req_properties.end_time,
+        field_identifier=[req_properties.sensor_identifier],
+        state_changes_only=True,
     )
+
+    print(values)
 
     return [
         {
