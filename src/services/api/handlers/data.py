@@ -73,22 +73,47 @@ async def get_soil_moisture_intervals(
             status_code=400, detail="Query end time must be after start time."
         )
 
-    values = await fetch_measurements(
+    soil_moisture_state_changes = await fetch_measurements(
         start_time=req_properties.start_time,
         measurement=SensorType.SOIL_MOISTURE,
         end_time=req_properties.end_time,
         field_identifier=[req_properties.sensor_identifier],
-        state_changes_only=True,
+        binary_state_changes_identifier="wet",
     )
 
-    print(values)
-
-    return [
+    soil_moisture_intervals = [
         {
-            "measurement": val[0],
-            "field": val[1],
-            "timestamp": val[2],
-            "value": val[3],
+            "from": req_properties.start_time.isoformat(),
+            "to": (
+                soil_moisture_state_changes[0][2]
+                if len(soil_moisture_state_changes) > 0
+                else req_properties.end_time.isoformat()
+            ),
+            "state": (
+                "dry"
+                if len(soil_moisture_state_changes) > 0
+                and soil_moisture_state_changes[0][3] == "wet"
+                else "wet"
+            ),
         }
-        for val in values
     ]
+
+    if len(soil_moisture_state_changes) > 0:
+        for i in range(len(soil_moisture_state_changes) - 1):
+            soil_moisture_intervals.append(
+                {
+                    "from": soil_moisture_state_changes[i][2],
+                    "to": soil_moisture_state_changes[i + 1][2],
+                    "state": soil_moisture_state_changes[i][3],
+                }
+            )
+
+        soil_moisture_intervals.append(
+            {
+                "from": soil_moisture_state_changes[-1][2],
+                "to": req_properties.end_time.isoformat(),
+                "state": soil_moisture_state_changes[-1][3],
+            }
+        )
+
+    return soil_moisture_intervals
