@@ -414,7 +414,7 @@ export default function Dashboard() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "220px 1fr 220px",
+              gridTemplateColumns: "15% 1fr 15%",
               gap: "20px",
               marginBottom: "10px",
             }}
@@ -457,7 +457,6 @@ export default function Dashboard() {
               className="hovering-panel"
               style={{
                 borderRadius: "8px",
-                justifySelf: "end",
               }}
             >
               <SingleValueWidget
@@ -472,7 +471,7 @@ export default function Dashboard() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "220px 1fr 220px",
+              gridTemplateColumns: "15% 1fr 15%",
               gap: "20px",
               marginBottom: "10px",
             }}
@@ -511,7 +510,6 @@ export default function Dashboard() {
               className="hovering-panel"
               style={{
                 borderRadius: "8px",
-                justifySelf: "end",
               }}
             >
               <SingleValueWidget
@@ -526,7 +524,7 @@ export default function Dashboard() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "220px 1fr 220px",
+              gridTemplateColumns: "15% 1fr 15%",
               gap: "20px",
               marginBottom: "10px",
             }}
@@ -561,12 +559,24 @@ export default function Dashboard() {
               />
             </div>
 
+            <div></div>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "15% 1fr",
+              gap: "20px",
+              marginBottom: "10px",
+            }}
+          >
             <div
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr / 1fr",
                 gap: "10px",
                 marginBottom: "10px",
+                justifySelf: "stretch",
               }}
             >
               <div
@@ -579,7 +589,7 @@ export default function Dashboard() {
                   label="Soil Moisture Back (Current)"
                   value={soilMoistureBack}
                   binary_value={soilMoistureBack == "wet" ? 1 : 0}
-                  height="70px"
+                  height="70%"
                   fontsize="15px"
                   fontsizelabel="12px"
                 />
@@ -595,12 +605,14 @@ export default function Dashboard() {
                   label="Soil Moisture Front (Current)"
                   value={soilMoistureFront}
                   binary_value={soilMoistureFront == "wet" ? 1 : 0}
-                  height="70px"
+                  height="70%"
                   fontsize="15px"
                   fontsizelabel="12px"
                 />
               </div>
             </div>
+
+            <div></div>
           </div>
         </div>
       )}
