@@ -3,7 +3,7 @@ import BinaryWidget from "../components/BinaryWidget";
 import MultipleTimeseriesChart from "../components/MultipleCharts";
 import TimeseriesChart from "../components/TimeseriesChart";
 import SingleValueWidget from "../components/SingleValueWidget";
-import { getData } from "../api/data";
+import { getData, getSoilMoistureIntervals } from "../api/data";
 import { getWindowIntervals } from "../api/windows";
 import { temperatureToColor } from "../utils/color";
 import { formatDateTime, isoAgo, isoWayOff } from "../utils/time";
@@ -17,6 +17,13 @@ export default function Dashboard() {
   const [airPressure, setAirPressure] = useState(null);
   const [soilMoistureFront, setSoilMoistureFront] = useState(null);
   const [soilMoistureBack, setSoilMoistureBack] = useState(null);
+
+  const [soilMoistureFrontIntervals, setSoilMoistureFrontIntervals] = useState(
+    [],
+  );
+  const [soilMoistureBackIntervals, setSoilMoistureBackIntervals] = useState(
+    [],
+  );
 
   const [temperatureArray, setTemperatureArray] = useState([]);
   const [upHumidityArray, setUpHumidityArray] = useState([]);
@@ -219,6 +226,16 @@ export default function Dashboard() {
           start_time: startTimeSeries,
           end_time: endTimeSeries,
         }),
+        getSoilMoistureIntervals({
+          start_time: startTimeSeries,
+          end_time: endTimeSeries,
+          sensor_identifier: "soil_moisture_front",
+        }),
+        getSoilMoistureIntervals({
+          start_time: startTimeSeries,
+          end_time: endTimeSeries,
+          sensor_identifier: "soil_moisture_back",
+        }),
       ]);
 
       // Temperature Measurements
@@ -247,6 +264,19 @@ export default function Dashboard() {
         setWindowOpeningIntervals(results[3]);
       } else {
         setWindowOpeningIntervals([]);
+      }
+
+      // Soil Moisture Intervals
+      if (Array.isArray(results[4]) && results[4].length > 0) {
+        setSoilMoistureFrontIntervals(results[4]);
+      } else {
+        setSoilMoistureFrontIntervals([]);
+      }
+
+      if (Array.isArray(results[5]) && results[5].length > 0) {
+        setSoilMoistureBackIntervals(results[5]);
+      } else {
+        setSoilMoistureBackIntervals([]);
       }
     }
 
