@@ -22,3 +22,21 @@ export async function getData({
 
   return result?.data ?? null;
 }
+
+export async function getSoilMoistureIntervals({
+  start_time,
+  end_time,
+  sensor_identifier,
+}) {
+  const data = {
+    start_time,
+    end_time,
+    sensor_identifier,
+  };
+
+  let route = `data/soil_moisture_intervals`;
+
+  const result = await api.post(route, data);
+
+  return result?.data ?? null;
+}

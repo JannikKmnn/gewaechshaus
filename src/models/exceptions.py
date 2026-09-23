@@ -16,3 +16,7 @@ class WateringEventFetchingFailed(Exception):
 
 class EventRecordFailed(Exception):
     pass
+
+
+class QueryError(Exception):
+    pass
