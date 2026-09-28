@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import BinaryWidget from "../components/BinaryWidget";
 import MultipleTimeseriesChart from "../components/MultipleCharts";
 import TimeseriesChart from "../components/TimeseriesChart";
+import TimeSectionsChart from "../components/TimeSectionsChart";
 import SingleValueWidget from "../components/SingleValueWidget";
 import { getData, getSoilMoistureIntervals } from "../api/data";
 import { getWindowIntervals } from "../api/windows";
@@ -642,7 +643,20 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div></div>
+            <div>
+              <div
+                className="hovering-panel"
+                style={{
+                  borderRadius: "8px",
+                }}
+              >
+                <TimeSectionsChart
+                  intervals={soilMoistureFrontIntervals}
+                  startTime={displayStartTimeSeries}
+                  endTime={endTimeSeries}
+                />
+              </div>
+            </div>
           </div>
         </div>
       )}

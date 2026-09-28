@@ -1,4 +1,10 @@
-import { XAxis, ReferenceArea, ResponsiveContainer } from "recharts";
+import {
+  ComposedChart,
+  XAxis,
+  YAxis,
+  ReferenceArea,
+  ResponsiveContainer,
+} from "recharts";
 import { formatTime } from "../utils/time";
 
 export default function TimeSectionsChart({
@@ -34,30 +40,39 @@ export default function TimeSectionsChart({
       }}
     >
       <ResponsiveContainer width="100%" height={height}>
-        {chartIntervals.map((interval, i) => {
-          return (
-            <ReferenceArea
-              key={i}
-              x1={interval.from}
-              x2={interval.to}
-              fill={stateColor(interval.state)}
-              fillOpacity={0.25}
-            />
-          );
-        })}
-        <XAxis
-          dataKey="timestamp"
-          type="number"
-          scale="time"
-          tick={{
-            fill: "white",
-            fontSize: 10,
-            angle: -20,
-            dy: 10,
-          }}
-          domain={[new Date(startTime).getTime(), new Date(endTime).getTime()]}
-          tickFormatter={(value) => formatTime(new Date(value).toISOString())}
-        />
+        <ComposedChart
+          data={[]}
+          margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+        >
+          <XAxis
+            dataKey="timestamp"
+            type="number"
+            scale="time"
+            tick={{
+              fill: "white",
+              fontSize: 10,
+              angle: -20,
+              dy: 10,
+            }}
+            domain={[
+              new Date(startTime).getTime(),
+              new Date(endTime).getTime(),
+            ]}
+            tickFormatter={(value) => formatTime(new Date(value).toISOString())}
+          />
+          <YAxis domain={[0, 1]} hide />
+          {chartIntervals.map((interval, i) => {
+            return (
+              <ReferenceArea
+                key={i}
+                x1={interval.from}
+                x2={interval.to}
+                fill={stateColor(interval.state)}
+                fillOpacity={0.25}
+              />
+            );
+          })}
+        </ComposedChart>
       </ResponsiveContainer>
     </div>
   );
